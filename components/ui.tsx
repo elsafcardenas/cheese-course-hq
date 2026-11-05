@@ -26,8 +26,8 @@ export function PageHeader({
     <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="max-w-3xl">
         {(g || eyebrow) && (
-          <p className="mb-1.5 flex items-center gap-1.5 text-[12.5px] font-semibold text-ink">
-            {g && <Icon name={item?.icon ?? g.icon} size={14} strokeWidth={2.2} style={{ color: `rgb(var(${g.tone}))` }} />}
+          <p className="mb-1.5 flex items-center gap-1.5 text-[12.5px] font-semibold" style={g ? { color: `rgb(var(${g.tone}))` } : undefined}>
+            {g && <Icon name={item?.icon ?? g.icon} size={14} strokeWidth={2.2} />}
             {eyebrow ?? g?.label}
           </p>
         )}
@@ -52,8 +52,8 @@ export function Pill({ children, className, style, title }: { children: ReactNod
   return (
     <span
       title={title}
-      style={style ? { ...style, color: "rgb(var(--ink))" } : undefined}
-      className={cx("inline-flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-[3px] text-[11.5px] font-semibold leading-none text-ink", className ?? "bg-sunk")}
+      style={style}
+      className={cx("inline-flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-[3px] text-[11.5px] font-semibold leading-none", className ?? "bg-sunk text-muted")}
     >
       {children}
     </span>
@@ -71,10 +71,11 @@ const GOOD = ["Done", "Approved", "Published", "Paid in full", "Picked up", "Fix
 const WARN = ["In review", "Waiting on someone", "Deposit", "Scheduled", "Sent", "In progress", "In prep", "Ready", "Negotiating", "Visited", "To visit", "On leave", "Seasonal", "In talks", "Quoted", "Needs Ricardo", "To confirm", "Escalated"];
 const BAD = ["Changes requested", "Cancelled", "Unpaid", "Blocked", "Rejected", "Left", "Closed", "Retired", "Not a fit", "Refunded"];
 export function statusTone(v: string) {
-  if (GOOD.includes(v)) return "bg-ink/[0.08] text-ink";
-  if (WARN.includes(v)) return "bg-sunk text-ink";
+  if (GOOD.includes(v)) return "bg-good/10 text-good";
+  if (WARN.includes(v)) return "bg-warn/10 text-warn";
   if (BAD.includes(v)) return "bg-bad/10 text-bad";
-  return "bg-sunk text-ink";
+  if (v === "New" || v === "Enquiry" || v === "Confirmed" || v === "Draft") return "bg-info/10 text-info";
+  return "bg-sunk text-muted";
 }
 
 export function Stat({

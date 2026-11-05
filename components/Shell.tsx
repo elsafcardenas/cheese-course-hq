@@ -55,7 +55,7 @@ export function Shell({
       <Sidebar groups={groups} user={user} mode={mode} people={people} badges={badges} onSearch={() => setOpen(true)} ws={ws} workspaces={workspaces} lang={lang} theme={theme} />
       <div className="min-w-0 flex-1">
         {mode === "demo" && (
-          <div className="border-b border-line bg-sunk px-6 py-1.5 text-[12.5px] text-ink">
+          <div className="border-b border-line bg-rind/10 px-6 py-1.5 text-[12.5px] text-rind">
             <b>Preview mode.</b> Changes aren&apos;t saved permanently until the database is connected.
           </div>
         )}

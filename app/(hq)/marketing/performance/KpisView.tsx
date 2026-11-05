@@ -197,7 +197,7 @@ function VideoSection({ videos, canEdit, reelMedian }: { videos: VideoLog[]; can
   return (
     <Section
       title="Video log"
-      sub="Black bars beat the median; grey ones fall below it. Synced videos keep any pillar you set."
+      sub="Bars in green beat the median; ochre ones fall below it. Synced videos keep any pillar you set."
       actions={
         <div className="flex items-center gap-2">
           <div className="inline-flex rounded-md border border-line p-0.5">

@@ -21,6 +21,7 @@ export default {
         good: v("good"),
         warn: v("warn"),
         bad: v("bad"),
+        info: v("dept-finance"),
       },
       fontFamily: {
         display: ["Manrope", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
