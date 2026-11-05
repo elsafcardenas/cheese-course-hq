@@ -22,12 +22,14 @@ type Props = {
   canComment: boolean;
   canAnswer: boolean;
   thisWeek: Task[];
+  comingUp?: boolean;
   waiting: Task[];
   upcoming: Post[];
   needsDad: Decision[];
   stats: { medianViews: number; reelCount: number; followers: number; followersSynced: boolean; postsThisWeek: number; openTasks: number; overdue: number };
   byWorkstream: { name: string; value: number }[];
   mix: { name: string; planned: number; target: number }[];
+  children?: React.ReactNode;
 };
 
 function greeting(name: string) {
@@ -45,10 +47,11 @@ export function TodayView(p: Props) {
     <>
       <PageHeader eyebrow={fmtDate(p.today, { weekday: "long", month: "long", day: "numeric" })} title={greeting(p.user.name)}>
         {s.overdue > 0 ? `${s.overdue} overdue task${s.overdue > 1 ? "s" : ""}, ` : ""}
-        {p.thisWeek.length} due this week{p.needsDad.length ? `, ${p.needsDad.length} decisions waiting on Ricardo` : ""}.
+        {p.comingUp ? 0 : p.thisWeek.length} due this week{p.needsDad.length ? `, ${p.needsDad.length} decisions waiting on Ricardo` : ""}.
       </PageHeader>
 
       <Clocks />
+      {p.children}
 
       <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Median Reel views" value={fmtNum(Math.round(s.medianViews))} sub={`Last ${s.reelCount} Reels · target 2,000 by month 3`} tone={s.medianViews >= 2000 ? "good" : "warn"} />
@@ -59,10 +62,10 @@ export function TodayView(p: Props) {
 
       <div className="mt-6 grid gap-5 lg:grid-cols-[1.35fr_1fr]">
         <Section
-          title="Due this week"
-          sub="Overdue first, then by deadline"
+          title={p.comingUp ? "Coming up" : "Due this week"}
+          sub={p.comingUp ? "Nothing due this week. Coming up:" : "Overdue first, then by deadline"}
           actions={
-            <Link href="/tasks" className="btn-ghost">
+            <Link href="/company/tasks" className="btn-ghost">
               All tasks <ArrowUpRight size={14} />
             </Link>
           }
@@ -108,7 +111,7 @@ export function TodayView(p: Props) {
           <Section
             title="Next posts"
             actions={
-              <Link href="/calendar" className="btn-ghost">
+              <Link href="/marketing/calendar" className="btn-ghost">
                 Calendar <ArrowUpRight size={14} />
               </Link>
             }

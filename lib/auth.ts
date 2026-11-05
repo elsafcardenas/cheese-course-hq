@@ -47,11 +47,3 @@ export function visibleToUser<T extends Pick<Task | Post, "store">>(user: Profil
   if (!user || user.role !== "store_manager") return rows;
   return rows.filter((r) => r.store === user.store || r.store === "Both stores");
 }
-
-/** Which tabs show in the sidebar for each role. */
-export const NAV_FOR_ROLE: Record<Role, string[]> = {
-  admin: ["/", "/calendar", "/tasks", "/platforms", "/kpis", "/plan", "/decisions", "/toolkit", "/assets", "/integrations", "/team"],
-  editor: ["/", "/calendar", "/tasks", "/platforms", "/kpis", "/plan", "/decisions", "/toolkit", "/assets"],
-  viewer: ["/", "/calendar", "/tasks", "/platforms", "/kpis", "/plan", "/decisions", "/assets"],
-  store_manager: ["/", "/calendar", "/tasks", "/assets", "/toolkit"],
-};

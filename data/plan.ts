@@ -27,23 +27,25 @@ export const TWO_TRACKS = [
 export type Phase = { name: string; start: string; end: string; track: "Miami" | "Spain" | "Both"; note?: string };
 
 export const TIMELINE_START = "2026-11-01";
-export const TIMELINE_END = "2027-04-30";
+export const TIMELINE_END = "2027-05-31";
+export const TEAM_START = "2026-11-30";
 
 export const PHASES: Phase[] = [
-  { name: "Takeover: access, Luana handover, baseline", start: "2026-11-05", end: "2026-11-30", track: "Miami" },
-  { name: "Profile, Linktree and templates v1", start: "2026-11-06", end: "2026-11-20", track: "Miami" },
-  { name: "Content rhythm: 4–5 feed posts a week", start: "2026-11-16", end: "2027-04-30", track: "Miami", note: "Thanksgiving and holidays first" },
-  { name: "Google profiles claimed, Facebook revived", start: "2026-11-16", end: "2026-12-15", track: "Miami" },
-  { name: "Re-engineering 1–2: Square data, menu matrix", start: "2026-11-16", end: "2026-12-11", track: "Miami" },
-  { name: "Re-engineering 3–4: prices, then costs", start: "2026-12-14", end: "2027-02-12", track: "Miami" },
-  { name: "TikTok live (reusing Reels)", start: "2027-01-04", end: "2027-04-30", track: "Miami" },
-  { name: "Yelp claimed", start: "2027-02-01", end: "2027-02-28", track: "Miami" },
-  { name: "Email through Square Marketing", start: "2027-03-01", end: "2027-04-30", track: "Miami" },
-  { name: "Madrid: locations, partner shortlist, focus group", start: "2026-11-09", end: "2026-12-18", track: "Spain" },
-  { name: "Business plan presentation update", start: "2026-12-01", end: "2026-12-18", track: "Spain" },
-  { name: "Spain grid and highlights (Dairy Pastel)", start: "2026-12-01", end: "2027-01-15", track: "Spain" },
-  { name: "Madrid menu from the Miami results", start: "2027-01-04", end: "2027-01-29", track: "Spain" },
-  { name: "Spain 24-post bank, creators and neighbours lists", start: "2027-01-15", end: "2027-03-31", track: "Spain" },
+  { name: "Elsa prep (solo, before the team starts)", start: "2026-11-05", end: "2026-11-29", track: "Both", note: "Team start: Monday Nov 30" },
+  { name: "Takeover: access, Luana handover, baseline", start: "2026-11-30", end: "2026-12-24", track: "Miami" },
+  { name: "Profile, Linktree and templates v1", start: "2026-11-30", end: "2026-12-14", track: "Miami" },
+  { name: "Content rhythm: 4–5 feed posts a week", start: "2026-12-07", end: "2027-05-24", track: "Miami", note: "Starts with December holiday content" },
+  { name: "Google profiles claimed, Facebook revived", start: "2026-12-10", end: "2027-01-08", track: "Miami" },
+  { name: "Re-engineering 1–2: Square data, menu matrix", start: "2026-12-10", end: "2027-01-04", track: "Miami" },
+  { name: "Re-engineering 3–4: prices, then costs", start: "2027-01-07", end: "2027-03-08", track: "Miami" },
+  { name: "TikTok live (reusing Reels)", start: "2027-01-28", end: "2027-05-24", track: "Miami" },
+  { name: "Yelp claimed", start: "2027-02-25", end: "2027-03-24", track: "Miami" },
+  { name: "Email through Square Marketing", start: "2027-03-25", end: "2027-05-24", track: "Miami" },
+  { name: "Madrid: locations, partner shortlist, focus group", start: "2026-12-03", end: "2027-01-11", track: "Spain" },
+  { name: "Business plan presentation update", start: "2026-12-25", end: "2027-01-11", track: "Spain" },
+  { name: "Spain grid and highlights (Dairy Pastel)", start: "2026-12-25", end: "2027-02-08", track: "Spain" },
+  { name: "Madrid menu from the Miami results", start: "2027-01-28", end: "2027-02-22", track: "Spain" },
+  { name: "Spain 24-post bank, creators and neighbours lists", start: "2027-02-08", end: "2027-04-24", track: "Spain" },
 ];
 
 export const TIMELINES = [
@@ -61,7 +63,7 @@ export const PILLAR_NOTES: Record<Pillar, string> = {
 };
 
 export const WORKFLOW = [
-  { who: "Elsa", when: "Monday, Madrid morning", what: "Plans the week in Calendar. Every post gets a hook, footage and status Brief ready." },
+  { who: "Elsa", when: "Monday, Madrid morning (from Nov 30)", what: "Plans the week in Calendar. Every post gets a hook, footage and status Brief ready." },
   { who: "Elsa", when: "Before 14:00 Madrid (07:00 CDMX)", what: "Sends Luis the briefs from Toolkit > Brief for Luis, so they land at the start of his day." },
   { who: "Luis", when: "His day in CDMX", what: "Designs covers, carousels and Stories in the templates; drops finals in Drive; pastes the link in the post; sets Ready to post." },
   { who: "Elsa", when: "Tuesday to Thursday", what: "Edits Reels from Drive footage in Edits or Canva; sets In edit, then Ready to post." },

@@ -4,30 +4,30 @@ One place to run The Cheese Course's content and operations for Miami (Weston an
 
 It replaces the Notion workspace as the day-to-day tool. Notion keeps the long write-ups; the Plan tab links to them.
 
-## Tabs
+## How it's organised
 
-| Tab | What it's for |
+Miami and Spain are **two separate workspaces** (switch at the top of the sidebar). Nothing mixes between them; a few shared decisions are tagged "Both".
+
+| Miami | Spain |
 | --- | --- |
-| **Today** | Clocks for Madrid, Miami and Mexico City; what's due this week; next posts; decisions waiting on Ricardo; open work by workstream; Miami pillar mix vs target. |
-| **Calendar** | Month view (drag a post to another day), board by status (drag to move it along), list view, a "For Ricardo" filter, and the Spain post bank. |
-| **Tasks** | List, board and by-owner views; filters; inline status changes; edit drawer. |
-| **Platforms** | Every Miami and Spain account in opening order, with status and a tickable setup checklist. |
-| **KPIs** | Baselines and 3/6-month targets, a monthly log with charts, the video log (median views, engagement), sales by store, Google Business numbers, and the Square menu-engineering matrix. |
-| **Plan** | The two tracks, the Balanced timeline as a Gantt, pillars, the weekly Elsa ↔ Luis workflow, links to Notion. |
-| **Decisions** | Decisions by status; Ricardo can answer the ones waiting on him; meeting log. |
-| **Toolkit** | Hook library, caption builder, shoot-list generator, brief for Luis, time-zone helper, hashtag sets. |
-| **Assets** | Drive folders and links; store managers upload footage. |
-| **Integrations** | Connect, sync and check each data source. |
-| **Team** | Invite people and set their role. |
+| **Overview**: today's pickups, low stock, open issues, reviews, review queue, checklists, tasks, posts, decisions | **Overview**: milestone progress, locations, budget, content bank, Spain tasks and decisions |
+| **Marketing**: Content calendar · Review & approval · Platforms · Performance · Toolkit · Plan · Assets | **Opening project**: milestones by phase, location board, opening budget, contacts |
+| **Operations**: Stores · Catering orders · Staff & schedule · Checklists · Inventory & suppliers · Maintenance | **Marketing**: Content bank · Review & approval · Platforms · Plan · Toolkit · Targets |
+| **Menu & pricing** · **Finance** · **Reviews & feedback** | **Madrid menu** |
+| **Company**: Tasks · Decisions & meetings · SOPs & documents | **Company**: Tasks · Decisions & meetings · Documents |
+
+Shared: **How to use HQ** (guide for every role, English and Spanish), **Integrations**, **Team & access**.
+
+Also: ⌘K search across everything, spreadsheet import/export on every list, drag-and-drop boards, and an **EN / ES** switch that turns the interface Spanish (typed content stays as written).
 
 ## Who can do what
 
 | Role | For | Can |
 | --- | --- | --- |
 | Admin | Elsa | Everything, including integrations and the team. |
-| Editor | Luis | Edit posts, tasks, assets and the video log. |
-| Viewer | Ricardo | See everything; comment on posts; answer decisions. |
-| Store manager | Weston, Pinecrest | See their store's tasks and posts; update their tasks; upload footage. |
+| Editor | Luis | Marketing: posts, review & approval (new versions), tasks, assets. No finance or operations. |
+| Viewer | Ricardo | See everything (incl. finance); comment on posts and reviews; answer decisions. |
+| Store manager | Weston, Pinecrest | Miami only, their store only: checklists, catering, staff rota, stock, waste, maintenance, reviews, footage. |
 
 Roles are enforced twice: in the app, and in the database with row level security, so nobody can read or write more than their role allows even outside the app. Integration tokens are only readable by the server.
 
@@ -51,7 +51,7 @@ You can put it online in demo mode first: deploy on Vercel with just `SITE_PASSW
 ### 1. Supabase (database, sign-in, file storage)
 
 1. Create a project at [supabase.com](https://supabase.com) (region: US East is closest to Miami).
-2. **SQL Editor → New query**, paste the contents of `supabase/migrations/0001_init.sql`, and run it.
+2. **SQL Editor → New query**, paste and run `supabase/migrations/0001_init.sql`, then `0002_operations.sql`.
 3. **Authentication → Sign In / Providers**: keep Email on; turn **off** "Allow new users to sign up" (only people you invite can get in).
 4. **Authentication → URL Configuration**: set Site URL to your app's address (from step 2) and add `https://YOUR-APP.vercel.app/auth/callback` to Redirect URLs.
 5. **Project Settings → API**: copy the Project URL, the `anon` key and the `service_role` key.
@@ -86,7 +86,11 @@ app/actions.ts     every change goes through these server actions, with role che
 app/api/           OAuth connect/callback per provider, nightly cron
 lib/integrations/  Square, Meta, Google and TikTok clients and sync jobs
 lib/repo/          data access: Supabase in production, in-memory in demo mode
-data/seed.ts       the Notion data
+data/seed.ts       the Notion data (marketing)
+data/seed-ops.ts   starting operations data (stores, checklists, Madrid)
+lib/schema.ts      every operations list: fields, permissions; drives forms, tables, import and SQL
+data/help.ts       the in-app guide (EN + ES)
+lib/i18n/es.ts     Spanish interface text
 data/plan.ts       timeline, pillars, workflow
 data/toolkit.ts    hooks, shot library, hashtags, brief presets
 supabase/          database schema, roles and security rules

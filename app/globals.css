@@ -23,6 +23,15 @@
   --pillar-gift: 140 47 57;
   --pillar-bts: 76 101 138;
   --pillar-community: 104 138 116;
+
+  --dept-home: 31 61 54;
+  --dept-marketing: 190 70 102;
+  --dept-ops: 196 128 32;
+  --dept-menu: 52 132 92;
+  --dept-finance: 56 104 178;
+  --dept-customers: 214 150 24;
+  --dept-madrid: 196 74 54;
+  --dept-company: 108 106 100;
   color-scheme: light;
 }
 
@@ -48,6 +57,15 @@
     --pillar-gift: 222 120 130;
     --pillar-bts: 140 166 210;
     --pillar-community: 150 190 165;
+
+    --dept-home: 132 186 168;
+    --dept-marketing: 236 128 158;
+    --dept-ops: 232 172 88;
+    --dept-menu: 112 196 148;
+    --dept-finance: 128 168 236;
+    --dept-customers: 240 196 92;
+    --dept-madrid: 236 128 108;
+    --dept-company: 170 168 160;
     color-scheme: dark;
   }
 }
@@ -59,38 +77,49 @@ body {
 }
 
 body {
-  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  font-family: Manrope, ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
+  font-feature-settings: "tnum" 0;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Manrope is used for headings too: heavier and tighter instead of a serif. */
+.font-display {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.tabular-nums,
+.font-display {
+  font-variant-numeric: tabular-nums;
 }
 
 @layer components {
   .card {
-    @apply rounded-card border border-line bg-surface;
+    @apply rounded-card border border-line/80 bg-surface shadow-card;
   }
   .btn {
-    @apply inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-3 py-1.5 text-[13px] font-medium text-ink transition hover:bg-sunk disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-[13px] font-medium text-ink transition hover:bg-sunk disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-primary {
-    @apply inline-flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-[13px] font-medium text-accent-ink transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-[13px] font-medium text-accent-ink transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-ghost {
     @apply inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] text-muted transition hover:bg-sunk hover:text-ink;
   }
   .input {
-    @apply w-full rounded-md border border-line bg-surface px-2.5 py-1.5 text-[13px] text-ink outline-none placeholder:text-muted/70 focus:border-accent focus:ring-2 focus:ring-accent/15;
+    @apply w-full rounded-lg border border-line bg-surface px-2.5 py-1.5 text-[13px] text-ink outline-none placeholder:text-muted/70 focus:border-accent focus:ring-2 focus:ring-accent/15;
   }
   .label {
-    @apply mb-1 block text-[11px] font-medium uppercase tracking-wide text-muted;
+    @apply mb-1 block text-[12px] font-semibold text-muted;
   }
   .th {
-    @apply border-b border-line px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-muted;
+    @apply border-b border-line bg-sunk/40 px-3 py-2 text-left text-[11.5px] font-semibold text-muted;
   }
   .td {
     @apply border-b border-line px-3 py-2 align-top;
   }
   .eyebrow {
-    @apply text-[11px] font-medium uppercase tracking-[0.08em] text-muted;
+    @apply text-[11.5px] font-semibold uppercase tracking-[0.06em] text-muted;
   }
 }
 

@@ -60,7 +60,7 @@ export const HASHTAGS: { name: string; tags: string[] }[] = [
   { name: "Catering and boards", tags: ["#miamicatering", "#cheeseboard", "#charcuterieboard", "#grazingplatter", "#partyplatter"] },
   { name: "Cheese 101", tags: ["#cheese101", "#cheesemonger", "#cheesepairing", "#cheeselover", "#cheeseboardideas"] },
   { name: "Holidays", tags: ["#thanksgivingmiami", "#holidayhosting", "#giftideas", "#cheeseboard", "#miamiholidays"] },
-  { name: "Spain (for later)", tags: ["#madrid", "#quesos", "#tabladequesos", "#madridfood", "#thecheesecoursees"] },
+  { name: "Spain: Madrid", tags: ["#madrid", "#quesos", "#tabladequesos", "#madridfood", "#thecheesecoursees"] },
 ];
 
 export const SHOT_RULES = [

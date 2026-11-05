@@ -1,4 +1,5 @@
-import { fromRow, toRow } from "@/lib/case";
+import { fromRow, recordFromRow, recordToRow, toRow, columnFor } from "@/lib/case";
+import { SCHEMAS, type Rec, type RecordName } from "@/lib/schema";
 import { supabaseServer } from "@/lib/supabase";
 import type { ItemSale, MetricPoint, Profile, ProviderId, SalesRow } from "@/lib/types";
 import type { Collections, CollectionName, Repo, StoredIntegration } from "./types";
@@ -89,6 +90,31 @@ export class SupabaseRepo implements Repo {
     const { data, error } = await sb.from("integrations").select("*");
     check(error);
     return (data ?? []).map((r) => fromRow<StoredIntegration>(r));
+  }
+
+  async listRecords(name: RecordName): Promise<Rec[]> {
+    const sb = await supabaseServer();
+    const def = SCHEMAS[name];
+    let q = sb.from(name).select("*").limit(5000);
+    if (def.sort) q = q.order(columnFor(def.sort.key), { ascending: def.sort.dir === "asc", nullsFirst: false });
+    const { data, error } = await q;
+    check(error);
+    const keys = def.fields.map((f) => f.key);
+    return (data ?? []).map((r) => recordFromRow(keys, r) as Rec);
+  }
+
+  async upsertRecords(name: RecordName, rows: Rec[]) {
+    if (!rows.length) return;
+    const sb = await supabaseServer();
+    const keys = SCHEMAS[name].fields.map((f) => f.key);
+    const { error } = await sb.from(name).upsert(rows.map((r) => recordToRow(keys, r)));
+    check(error);
+  }
+
+  async removeRecord(name: RecordName, id: string) {
+    const sb = await supabaseServer();
+    const { error } = await sb.from(name).delete().eq("id", id);
+    check(error);
   }
 
   async profiles(): Promise<Profile[]> {

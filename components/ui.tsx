@@ -1,15 +1,49 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
+import { groupFor, itemFor } from "@/lib/nav";
 import { cx } from "@/lib/ui";
+import { Icon, IconTile } from "./Icon";
 
-export function PageHeader({ eyebrow, title, children, actions }: { eyebrow?: string; title: string; children?: ReactNode; actions?: ReactNode }) {
+export const helpAnchor = (href: string) => (href === "/" ? "home" : href.replace(/^\//, "").replace(/\//g, "-"));
+
+/** Page title with the department's coloured icon and name above it. */
+export function PageHeader({
+  href,
+  eyebrow,
+  title,
+  children,
+  actions,
+}: {
+  href?: string;
+  eyebrow?: string;
+  title: string;
+  children?: ReactNode;
+  actions?: ReactNode;
+}) {
+  const g = href ? groupFor(href) : null;
+  const item = href ? itemFor(href) : null;
   return (
     <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-      <div className="max-w-3xl">
-        {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h1 className="font-display text-[40px] leading-[1.05] tracking-tight">{title}</h1>
-        {children && <div className="mt-2 text-[14px] text-muted">{children}</div>}
+      <div className="flex max-w-3xl items-start gap-3.5">
+        {g && <IconTile name={item?.icon ?? g.icon} tone={g.tone} size={44} />}
+        <div>
+          {(g || eyebrow) && (
+            <p className="text-[12px] font-bold uppercase tracking-[0.08em]" style={g ? { color: `rgb(var(${g.tone}))` } : undefined}>
+              {eyebrow ?? g?.label}
+            </p>
+          )}
+          <h1 className="font-display text-[28px] leading-tight">{title}</h1>
+          {children && <div className="mt-1 text-[14px] text-muted">{children}</div>}
+        </div>
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      <div className="flex flex-wrap items-center gap-2">
+        {actions}
+        {href && href !== "/help" && (
+          <Link href={`/help#${helpAnchor(href)}`} className="btn-ghost" title="How this page works">
+            <Icon name="help" size={16} /> <span className="hidden sm:inline">How this works</span>
+          </Link>
+        )}
+      </div>
     </header>
   );
 }
@@ -19,32 +53,79 @@ export function Pill({ children, className, style, title }: { children: ReactNod
     <span
       title={title}
       style={style}
-      className={cx("inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[11.5px] font-medium", className ?? "bg-sunk text-muted")}
+      className={cx("inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11.5px] font-semibold", className ?? "bg-sunk text-muted")}
     >
       {children}
     </span>
   );
 }
 
-export function Stat({ label, value, sub, tone }: { label: string; value: ReactNode; sub?: ReactNode; tone?: "good" | "warn" | "bad" }) {
+/** A coloured pill for any status word, using a shared colour scale. */
+export function StatusPill({ value }: { value: unknown }) {
+  const v = String(value ?? "");
+  if (!v) return <span className="text-muted">—</span>;
+  return <Pill className={statusTone(v)}>{v}</Pill>;
+}
+
+const GOOD = ["Done", "Approved", "Published", "Paid in full", "Picked up", "Fixed", "Received", "Active", "Open", "Signed", "Resolved", "Replied", "Hired", "Live", "Decided"];
+const WARN = ["In review", "Waiting on someone", "Deposit", "Scheduled", "Sent", "In progress", "In prep", "Ready", "Negotiating", "Visited", "To visit", "On leave", "Seasonal", "In talks", "Quoted", "Needs Ricardo", "To confirm", "Escalated"];
+const BAD = ["Changes requested", "Cancelled", "Unpaid", "Blocked", "Rejected", "Left", "Closed", "Retired", "Not a fit", "Refunded"];
+export function statusTone(v: string) {
+  if (GOOD.includes(v)) return "bg-good/15 text-good";
+  if (WARN.includes(v)) return "bg-warn/15 text-warn";
+  if (BAD.includes(v)) return "bg-bad/10 text-bad";
+  if (v === "New" || v === "Enquiry" || v === "Confirmed" || v === "Draft") return "bg-accent/10 text-accent";
+  return "bg-sunk text-muted";
+}
+
+export function Stat({
+  label,
+  value,
+  sub,
+  tone,
+  icon,
+  color,
+  progress,
+}: {
+  label: string;
+  value: ReactNode;
+  sub?: ReactNode;
+  tone?: "good" | "warn" | "bad";
+  icon?: string;
+  color?: string;
+  progress?: number;
+}) {
   return (
-    <div className="card p-4">
-      <div className="eyebrow">{label}</div>
-      <div className={cx("mt-1.5 font-display text-[34px] leading-none", tone === "good" && "text-good", tone === "warn" && "text-warn", tone === "bad" && "text-bad")}>
-        {value}
+    <div className="card relative overflow-hidden p-4">
+      <div className="flex items-start justify-between gap-2">
+        <div className="text-[12.5px] font-semibold text-muted">{label}</div>
+        {icon && (
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ background: `rgb(var(${color ?? "--accent"}) / 0.12)`, color: `rgb(var(${color ?? "--accent"}))` }}>
+            <Icon name={icon} size={15} strokeWidth={2.2} />
+          </span>
+        )}
       </div>
+      <div className={cx("font-display mt-1 text-[30px] leading-none", tone === "good" && "text-good", tone === "warn" && "text-warn", tone === "bad" && "text-bad")}>{value}</div>
       {sub && <div className="mt-1.5 text-[12.5px] text-muted">{sub}</div>}
+      {progress !== undefined && (
+        <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-sunk">
+          <div className="h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, progress * 100))}%`, background: `rgb(var(${color ?? "--accent"}))` }} />
+        </div>
+      )}
     </div>
   );
 }
 
-export function Section({ title, children, actions, className, sub }: { title: string; children: ReactNode; actions?: ReactNode; className?: string; sub?: ReactNode }) {
+export function Section({ title, children, actions, className, sub, icon, tone }: { title: string; children: ReactNode; actions?: ReactNode; className?: string; sub?: ReactNode; icon?: string; tone?: string }) {
   return (
     <section className={cx("card", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3">
-        <div>
-          <h2 className="text-[14px] font-semibold">{title}</h2>
-          {sub && <p className="text-[12.5px] text-muted">{sub}</p>}
+        <div className="flex items-center gap-2.5">
+          {icon && <IconTile name={icon} tone={tone ?? "--accent"} size={28} />}
+          <div>
+            <h2 className="text-[14.5px] font-bold">{title}</h2>
+            {sub && <p className="text-[12.5px] text-muted">{sub}</p>}
+          </div>
         </div>
         {actions}
       </div>
@@ -53,8 +134,17 @@ export function Section({ title, children, actions, className, sub }: { title: s
   );
 }
 
-export function Empty({ children }: { children: ReactNode }) {
-  return <div className="px-4 py-8 text-center text-[13px] text-muted">{children}</div>;
+export function Empty({ children, icon }: { children: ReactNode; icon?: string }) {
+  return (
+    <div className="flex flex-col items-center gap-2 px-4 py-10 text-center text-[13px] text-muted">
+      {icon && (
+        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sunk text-muted">
+          <Icon name={icon} size={20} />
+        </span>
+      )}
+      <div className="max-w-sm">{children}</div>
+    </div>
+  );
 }
 
 export function Note({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "warn" | "good" | "bad" }) {
@@ -64,5 +154,42 @@ export function Note({ children, tone = "neutral" }: { children: ReactNode; tone
     good: "bg-good/10 text-good",
     bad: "bg-bad/10 text-bad",
   };
-  return <div className={cx("rounded-md px-3 py-2 text-[13px]", tones[tone])}>{children}</div>;
+  return <div className={cx("rounded-lg px-3 py-2 text-[13px]", tones[tone])}>{children}</div>;
+}
+
+/** A circular progress indicator. */
+export function Ring({ value, size = 64, stroke = 7, color = "--accent", label }: { value: number; size?: number; stroke?: number; color?: string; label?: ReactNode }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const v = Math.max(0, Math.min(1, value || 0));
+  return (
+    <div className="relative inline-flex shrink-0 items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgb(var(--sunk))" strokeWidth={stroke} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke={`rgb(var(${color}))`}
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={`${c * v} ${c}`}
+          style={{ transition: "stroke-dasharray .4s ease" }}
+        />
+      </svg>
+      <span className="absolute text-[13px] font-bold tabular-nums">{label ?? `${Math.round(v * 100)}%`}</span>
+    </div>
+  );
+}
+
+/** Horizontal bar with a value label, for stock levels, budgets and progress. */
+export function Meter({ value, max, color = "--accent", warnBelow, height = 8 }: { value: number; max: number; color?: string; warnBelow?: number; height?: number }) {
+  const pct = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
+  const low = warnBelow !== undefined && value < warnBelow;
+  return (
+    <div className="w-full overflow-hidden rounded-full bg-sunk" style={{ height }}>
+      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `rgb(var(${low ? "--bad" : color}))` }} />
+    </div>
+  );
 }

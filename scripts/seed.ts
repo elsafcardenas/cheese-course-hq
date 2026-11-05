@@ -3,7 +3,9 @@
 // Safe to run twice: rows are upserted by id.
 import { readFileSync, existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
-import { toRow } from "../lib/case";
+import { recordToRow, toRow } from "../lib/case";
+import { OPS_SEED } from "../data/seed-ops";
+import { SCHEMAS, type RecordName } from "../lib/schema";
 import * as seed from "../data/seed";
 
 for (const file of [".env.local", ".env"]) {
@@ -39,6 +41,12 @@ async function main() {
   await load("video_log", seed.videoLog);
   await load("assets", seed.assets);
   await load("sales_by_store", seed.sales, "store,period");
+  for (const [name, list] of Object.entries(OPS_SEED)) {
+    const keys = SCHEMAS[name as RecordName].fields.map((f) => f.key);
+    const { error } = await sb.from(name).upsert((list ?? []).map((r) => recordToRow(keys, r)));
+    if (error) throw new Error(`${name}: ${error.message}`);
+    console.log(`✓ ${name}: ${list?.length ?? 0}`);
+  }
   console.log("Done. Sign in once with your email: the first account becomes admin.");
 }
 

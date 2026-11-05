@@ -19,6 +19,11 @@ export const WORKSTREAMS = [
   "Production system",
   "Business plan",
   "Paid (parked)",
+  "Store operations",
+  "Catering",
+  "Inventory",
+  "Finance",
+  "Customers",
 ] as const;
 export type Workstream = (typeof WORKSTREAMS)[number];
 

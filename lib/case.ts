@@ -18,3 +18,20 @@ export function toRow(obj: object): Record<string, unknown> {
 export function fromRow<T>(row: Record<string, unknown>): T {
   return Object.fromEntries(Object.entries(row).map(([k, v]) => [toCamelKey(k), v])) as T;
 }
+
+/** Column name a record field is stored under. */
+export const columnFor = (key: string) => toSnakeKey(key);
+
+/** Reads a database row back into a record, using the schema's field list (so renamed columns round-trip exactly). */
+export function recordFromRow(keys: string[], row: Record<string, unknown>) {
+  const out: Record<string, unknown> = { id: row.id };
+  for (const k of keys) out[k] = row[toSnakeKey(k)] ?? null;
+  return out;
+}
+
+/** Writes a record as a database row, keeping only the schema's fields. */
+export function recordToRow(keys: string[], rec: Record<string, unknown>) {
+  const out: Record<string, unknown> = { id: rec.id };
+  for (const k of keys) if (k in rec) out[toSnakeKey(k)] = rec[k] === "" ? null : rec[k];
+  return out;
+}

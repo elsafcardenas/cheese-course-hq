@@ -389,6 +389,21 @@ export async function updateMember(id: string, patch: { role: string; store: str
   });
 }
 
+/** Interface language (English or Spanish), remembered per device. */
+export async function setLang(lang: string) {
+  const store = await cookies();
+  store.set("lang", lang === "es" ? "es" : "en", { path: "/", sameSite: "lax", maxAge: 60 * 60 * 24 * 365 });
+  revalidatePath("/", "layout");
+}
+
+/** Switches between the Miami and Spain workspaces. */
+export async function setWorkspace(ws: string) {
+  const store = await cookies();
+  if (ws !== "miami" && ws !== "spain") return;
+  store.set("ws", ws, { path: "/", sameSite: "lax", maxAge: 60 * 60 * 24 * 365 });
+  revalidatePath("/", "layout");
+}
+
 /** Demo mode only: preview the app as Luis, Ricardo or a store manager. */
 export async function setDemoAs(profileId: string) {
   if (isLive()) return;

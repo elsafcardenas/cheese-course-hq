@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 import * as seed from "@/data/seed";
+import { OPS_SEED } from "@/data/seed-ops";
+import { RECORD_NAMES, type Rec, type RecordName } from "@/lib/schema";
 import type { ItemSale, MetricPoint, Profile, ProviderId } from "@/lib/types";
 import type { Collections, CollectionName, Repo, StoredIntegration } from "./types";
 
@@ -16,6 +18,7 @@ type Db = { [K in CollectionName]: Collections[K][] } & {
   metrics: MetricPoint[];
   itemSales: ItemSale[];
   integrations: StoredIntegration[];
+  records: Record<RecordName, Rec[]>;
 };
 
 const clone = <T,>(v: T): T => structuredClone(v);
@@ -36,6 +39,7 @@ function fresh(): Db {
     metrics: [],
     itemSales: [],
     integrations: [],
+    records: Object.fromEntries(RECORD_NAMES.map((n) => [n, clone(OPS_SEED[n] ?? [])])) as Record<RecordName, Rec[]>,
   };
 }
 
@@ -88,6 +92,23 @@ export class MemoryRepo implements Repo {
   async integrations() {
     return clone(db().integrations);
   }
+  async listRecords(name: RecordName) {
+    return clone(db().records[name] ?? []);
+  }
+  async upsertRecords(name: RecordName, rows: Rec[]) {
+    const list = (db().records[name] ??= []);
+    for (const row of rows) {
+      const i = list.findIndex((r) => r.id === row.id);
+      if (i >= 0) list[i] = clone(row);
+      else list.push(clone(row));
+    }
+  }
+  async removeRecord(name: RecordName, id: string) {
+    const list = db().records[name] ?? [];
+    const i = list.findIndex((r) => r.id === id);
+    if (i >= 0) list.splice(i, 1);
+  }
+
   async profiles() {
     return clone(db().profiles);
   }

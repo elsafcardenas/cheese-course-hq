@@ -1,8 +1,10 @@
 "use client";
 
-import { ExternalLink, Trash2 } from "lucide-react";
+import { CircleCheckBig, ExternalLink, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { deletePost, savePost, setDadComment } from "@/app/actions";
+import { sendPostForReview } from "@/app/record-actions";
 import { FORMATS, PILLARS, POST_PLATFORMS, POST_STATUSES, STORES, UNLOCKS, type Post } from "@/lib/types";
 import { pillarColor } from "@/lib/ui";
 import { CopyButton } from "./CopyButton";
@@ -40,8 +42,12 @@ export function PostDrawer({
   canComment: boolean;
 }) {
   const [p, setP] = useState<Post>(post ?? blankPost());
+  const [sent, setSent] = useState(false);
   const { pending, error, run } = useRun();
-  useEffect(() => setP(post ?? blankPost()), [post]);
+  useEffect(() => {
+    setP(post ?? blankPost());
+    setSent(false);
+  }, [post]);
   const set = <K extends keyof Post>(k: K, v: Post[K]) => setP((x) => ({ ...x, [k]: v }));
   const ro = !canEdit;
   const togglePlatform = (pl: Post["platforms"][number]) =>
@@ -72,6 +78,16 @@ export function PostDrawer({
               </button>
             )}
             {p.id && <CopyButton text={brief} label="Copy brief" className="btn-ghost" />}
+            {canEdit && p.id && (
+              <button className="btn-ghost" disabled={pending} onClick={() => run(() => sendPostForReview(p.id), () => setSent(true))}>
+                <CircleCheckBig size={14} /> Send for review
+              </button>
+            )}
+            {sent && (
+              <Link href="/marketing/review" className="text-[12.5px] font-semibold text-good hover:underline">
+                Sent. Open Review →
+              </Link>
+            )}
           </div>
           <div className="flex items-center gap-2">
             {error && <span className="text-[12.5px] text-bad">{error}</span>}

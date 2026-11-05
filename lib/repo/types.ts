@@ -1,3 +1,4 @@
+import type { Rec, RecordName } from "@/lib/schema";
 import type {
   Asset,
   Campaign,
@@ -53,6 +54,11 @@ export interface Repo {
   itemSales(): Promise<ItemSale[]>;
   metrics(provider?: ProviderId): Promise<MetricPoint[]>;
   integrations(): Promise<StoredIntegration[]>;
+
+  /** Operations collections described in lib/schema.ts. */
+  listRecords(name: RecordName): Promise<Rec[]>;
+  upsertRecords(name: RecordName, rows: Rec[]): Promise<void>;
+  removeRecord(name: RecordName, id: string): Promise<void>;
 
   profiles(): Promise<Profile[]>;
   updateProfile(id: string, patch: Partial<Pick<Profile, "name" | "role" | "store">>): Promise<void>;

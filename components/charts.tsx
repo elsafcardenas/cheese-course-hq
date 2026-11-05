@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
@@ -8,20 +10,61 @@ import {
   Legend,
   Line,
   LineChart,
+  Pie,
+  PieChart,
   ReferenceLine,
   ResponsiveContainer,
+  Scatter,
+  ScatterChart,
   Tooltip,
   XAxis,
   YAxis,
+  ZAxis,
 } from "recharts";
 
 import { useEffect, useState } from "react";
 
 // SVG attributes can't read CSS variables, so resolve the theme colours to real values
 // (and again when the system switches between light and dark).
-const VARS = { accent: "--accent", rind: "--rind", miami: "--miami", spain: "--spain", muted: "--muted", line: "--line", good: "--good", bts: "--pillar-bts", sunk: "--sunk" } as const;
+const VARS = {
+  accent: "--accent",
+  rind: "--rind",
+  miami: "--miami",
+  spain: "--spain",
+  muted: "--muted",
+  line: "--line",
+  good: "--good",
+  bad: "--bad",
+  warn: "--warn",
+  bts: "--pillar-bts",
+  sunk: "--sunk",
+  marketing: "--dept-marketing",
+  ops: "--dept-ops",
+  menu: "--dept-menu",
+  finance: "--dept-finance",
+  customers: "--dept-customers",
+  madrid: "--dept-madrid",
+} as const;
 type Palette = Record<keyof typeof VARS, string>;
-const FALLBACK: Palette = { accent: "#1F3D36", rind: "#B07C2A", miami: "#8C2F39", spain: "#688A74", muted: "#6C6A64", line: "#E1DED7", good: "#2C7A4E", bts: "#4C658A", sunk: "#EFEDE8" };
+const FALLBACK: Palette = {
+  accent: "#1F3D36",
+  rind: "#B07C2A",
+  miami: "#8C2F39",
+  spain: "#688A74",
+  muted: "#6C6A64",
+  line: "#E1DED7",
+  good: "#2C7A4E",
+  bad: "#B03030",
+  warn: "#B87814",
+  bts: "#4C658A",
+  sunk: "#EFEDE8",
+  marketing: "#BE4666",
+  ops: "#C48020",
+  menu: "#34845C",
+  finance: "#3868B2",
+  customers: "#D69618",
+  madrid: "#C44A36",
+};
 
 function useColors(): Palette {
   const [c, setC] = useState<Palette>(FALLBACK);
@@ -37,7 +80,8 @@ function useColors(): Palette {
   }, []);
   return c;
 }
-const series = (C: Palette) => [C.accent, C.rind, C.miami, C.bts, C.spain, C.muted];
+const series = (C: Palette) => [C.accent, C.rind, C.marketing, C.finance, C.spain, C.customers, C.madrid, C.muted];
+export { useColors };
 const tip = (C: Palette) => ({ contentStyle: { borderRadius: 8 }, cursor: { fill: C.sunk } });
 
 export function HBar({ data, height = 260 }: { data: { name: string; value: number }[]; height?: number }) {
@@ -163,6 +207,157 @@ export function TrendLine({
           <ReferenceLine key={t.label} y={t.value} stroke={C.good} strokeDasharray="4 4" label={{ value: t.label, position: "insideTopLeft", fill: C.good, fontSize: 11 }} />
         ))}
       </LineChart>
+    </ResponsiveContainer>
+  );
+}
+
+
+/** Donut with a big number in the middle. `color` keys come from the theme (accent, ops, finance…). */
+export function Donut({
+  data,
+  height = 200,
+  center,
+  centerSub,
+  colorKeys,
+}: {
+  data: { name: string; value: number }[];
+  height?: number;
+  center?: string;
+  centerSub?: string;
+  colorKeys?: (keyof Palette)[];
+}) {
+  const C = useColors();
+  const colors = colorKeys ? colorKeys.map((k) => C[k]) : series(C);
+  const total = data.reduce((a, d) => a + d.value, 0);
+  return (
+    <div className="flex items-center gap-4">
+      <div className="relative shrink-0" style={{ width: height, height }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie data={total ? data : [{ name: "None", value: 1 }]} dataKey="value" innerRadius="64%" outerRadius="100%" paddingAngle={total ? 2 : 0} stroke="none" isAnimationActive={false}>
+              {(total ? data : [{ name: "None", value: 1 }]).map((_, i) => (
+                <Cell key={i} fill={total ? colors[i % colors.length] : C.sunk} />
+              ))}
+            </Pie>
+            {total ? <Tooltip contentStyle={{ borderRadius: 8 }} formatter={(v: number) => v.toLocaleString()} /> : null}
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+          <span className="font-display text-[22px] leading-none">{center ?? total.toLocaleString()}</span>
+          {centerSub && <span className="mt-1 text-[11px] text-muted">{centerSub}</span>}
+        </div>
+      </div>
+      <ul className="min-w-0 flex-1 space-y-1.5 text-[12.5px]">
+        {data.map((d, i) => (
+          <li key={d.name} className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: colors[i % colors.length] }} />
+            <span className="truncate">{d.name}</span>
+            <span className="ml-auto font-semibold tabular-nums">{d.value.toLocaleString()}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Tiny area chart for stat cards. */
+export function Spark({ data, colorKey = "accent", height = 40 }: { data: number[]; colorKey?: keyof Palette; height?: number }) {
+  const C = useColors();
+  const pts = data.map((v, i) => ({ i, v }));
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <AreaChart data={pts} margin={{ left: 0, right: 0, top: 4, bottom: 0 }}>
+        <defs>
+          <linearGradient id={`sp-${colorKey}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={C[colorKey]} stopOpacity={0.35} />
+            <stop offset="100%" stopColor={C[colorKey]} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <Area type="monotone" dataKey="v" stroke={C[colorKey]} strokeWidth={2} fill={`url(#sp-${colorKey})`} isAnimationActive={false} />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+}
+
+/** Stacked or grouped bars with named colour keys. */
+export function Bars({
+  data,
+  keys,
+  colorKeys,
+  stacked,
+  height = 260,
+  prefix = "",
+  horizontal,
+}: {
+  data: Record<string, string | number>[];
+  keys: string[];
+  colorKeys?: (keyof Palette)[];
+  stacked?: boolean;
+  height?: number;
+  prefix?: string;
+  horizontal?: boolean;
+}) {
+  const C = useColors();
+  const colors = colorKeys ? colorKeys.map((k) => C[k]) : series(C);
+  const fmt = (v: number) => `${prefix}${Number(v).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <BarChart data={data} layout={horizontal ? "vertical" : "horizontal"} margin={{ left: horizontal ? 8 : 0, right: 12, top: 8, bottom: 4 }}>
+        <CartesianGrid vertical={!!horizontal} horizontal={!horizontal} />
+        {horizontal ? (
+          <>
+            <XAxis type="number" tickLine={false} axisLine={false} tickFormatter={fmt} />
+            <YAxis type="category" dataKey="name" width={120} tickLine={false} axisLine={false} />
+          </>
+        ) : (
+          <>
+            <XAxis dataKey="name" tickLine={false} axisLine={false} />
+            <YAxis tickLine={false} axisLine={false} tickFormatter={fmt} />
+          </>
+        )}
+        <Tooltip contentStyle={{ borderRadius: 8 }} cursor={{ fill: C.sunk }} formatter={(v: number) => fmt(v)} />
+        {keys.length > 1 && <Legend iconType="circle" iconSize={8} />}
+        {keys.map((k, i) => (
+          <Bar key={k} dataKey={k} stackId={stacked ? "s" : undefined} fill={colors[i % colors.length]} radius={stacked ? 0 : horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]} barSize={horizontal ? 14 : undefined} />
+        ))}
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+/** Menu engineering: popularity (x) vs margin (y), quadrants split at the medians. */
+export function MenuScatter({ data, xMid, yMid, height = 320 }: { data: { name: string; x: number; y: number; z: number }[]; xMid: number; yMid: number; height?: number }) {
+  const C = useColors();
+  const tone = (d: { x: number; y: number }) => (d.x >= xMid && d.y >= yMid ? C.good : d.x >= xMid ? C.rind : d.y >= yMid ? C.finance : C.bad);
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <ScatterChart margin={{ left: 0, right: 16, top: 12, bottom: 8 }}>
+        <CartesianGrid />
+        <XAxis type="number" dataKey="x" name="Sold" tickLine={false} axisLine={false} label={{ value: "Popularity (sold) →", position: "insideBottomRight", offset: -4, fill: C.muted, fontSize: 11 }} />
+        <YAxis type="number" dataKey="y" name="Margin" tickLine={false} axisLine={false} tickFormatter={(v) => `$${v}`} label={{ value: "Margin per item →", angle: -90, position: "insideLeft", fill: C.muted, fontSize: 11 }} />
+        <ZAxis type="number" dataKey="z" range={[60, 400]} />
+        <ReferenceLine x={xMid} stroke={C.line} strokeDasharray="4 4" />
+        <ReferenceLine y={yMid} stroke={C.line} strokeDasharray="4 4" />
+        <Tooltip
+          cursor={{ strokeDasharray: "3 3" }}
+          content={({ payload }) => {
+            const d = payload?.[0]?.payload as { name: string; x: number; y: number } | undefined;
+            return d ? (
+              <div className="rounded-lg border border-line bg-surface px-2.5 py-1.5 text-[12px] shadow-lift">
+                <b>{d.name}</b>
+                <div>
+                  {d.x.toLocaleString()} sold · ${d.y.toFixed(2)} margin
+                </div>
+              </div>
+            ) : null;
+          }}
+        />
+        <Scatter data={data} isAnimationActive={false}>
+          {data.map((d, i) => (
+            <Cell key={i} fill={tone(d)} fillOpacity={0.8} />
+          ))}
+        </Scatter>
+      </ScatterChart>
     </ResponsiveContainer>
   );
 }
