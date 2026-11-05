@@ -24,20 +24,22 @@ export function Clocks() {
   }, []);
 
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="card grid grid-cols-3 divide-x divide-line">
       {ZONES.map((z) => {
         const h = now ? hourIn(z.tz, now) : null;
         const working = h !== null && h >= z.work[0] && h < z.work[1];
         return (
-          <div key={z.city} className="card px-4 py-3">
-            <div className="flex items-center justify-between">
-              <span className="eyebrow">{z.city}</span>
-              <span className={`h-2 w-2 rounded-full ${working ? "bg-good" : "bg-line"}`} title={working ? "Working hours" : "Outside working hours"} />
+          <div key={z.city} className="flex items-center gap-3 px-4 py-2.5">
+            <span className={`h-2 w-2 shrink-0 rounded-full ${working ? "bg-good" : "bg-line"}`} title={working ? "Working hours" : "Outside working hours"} />
+            <div className="min-w-0">
+              <div className="flex items-baseline gap-2">
+                <span className="text-[18px] font-bold tabular-nums tracking-tight" suppressHydrationWarning>
+                  {now ? now.toLocaleTimeString("en-US", { timeZone: z.tz, hour: "numeric", minute: "2-digit" }) : "--:--"}
+                </span>
+                <span className="truncate text-[12.5px] font-semibold">{z.city}</span>
+              </div>
+              <div className="truncate text-[11.5px] text-muted">{z.who}</div>
             </div>
-            <div className="mt-1 font-mono text-[26px] leading-none tabular-nums" suppressHydrationWarning>
-              {now ? now.toLocaleTimeString("en-US", { timeZone: z.tz, hour: "numeric", minute: "2-digit" }) : "--:--"}
-            </div>
-            <div className="mt-1 text-[12px] text-muted">{z.who}</div>
           </div>
         );
       })}

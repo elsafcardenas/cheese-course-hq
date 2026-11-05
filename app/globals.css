@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --bg: 246 245 242;
+  --bg: 249 249 247;
   --surface: 255 255 255;
-  --sunk: 239 237 232;
-  --ink: 27 28 26;
-  --muted: 108 106 100;
-  --line: 225 222 215;
+  --sunk: 243 243 240;
+  --ink: 22 23 21;
+  --muted: 112 112 106;
+  --line: 234 233 229;
   --accent: 31 61 54;
   --accent-ink: 255 255 255;
   --rind: 176 124 42;
@@ -95,10 +95,10 @@ body {
 
 @layer components {
   .card {
-    @apply rounded-card border border-line/80 bg-surface shadow-card;
+    @apply rounded-card border border-line bg-surface;
   }
   .btn {
-    @apply inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-[13px] font-medium text-ink transition hover:bg-sunk disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-[13px] font-semibold text-ink transition hover:border-ink/20 hover:bg-sunk/60 disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-primary {
     @apply inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-[13px] font-medium text-accent-ink transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
@@ -144,4 +144,30 @@ body {
 
 ::selection {
   background: rgb(var(--accent) / 0.2);
+}
+
+/* Dark sidebar: the same components, re-coloured by redefining the palette locally. */
+.sidebar-dark {
+  --bg: 17 24 22;
+  --surface: 27 36 33;
+  --sunk: 32 42 39;
+  --ink: 236 238 234;
+  --muted: 150 160 154;
+  --line: 44 55 51;
+  --accent: 150 205 182;
+  --accent-ink: 14 26 22;
+  --dept-home: 150 205 182;
+  --dept-company: 170 178 172;
+  background: rgb(17 24 22);
+  color: rgb(236 238 234);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  .sidebar-dark {
+    --bg: 12 14 13;
+    --surface: 22 25 24;
+    --sunk: 28 32 30;
+    --line: 38 42 40;
+    background: rgb(12 14 13);
+  }
 }

@@ -27,7 +27,7 @@ export default {
         sans: ["Manrope", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
         mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
-      borderRadius: { card: "14px" },
+      borderRadius: { card: "16px" },
       boxShadow: { card: "0 1px 2px rgb(0 0 0 / 0.04), 0 1px 1px rgb(0 0 0 / 0.02)", lift: "0 8px 24px -8px rgb(0 0 0 / 0.18)" },
     },
   },

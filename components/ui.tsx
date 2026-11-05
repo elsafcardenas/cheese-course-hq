@@ -24,16 +24,16 @@ export function PageHeader({
   const item = href ? itemFor(href) : null;
   return (
     <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-      <div className="flex max-w-3xl items-start gap-3.5">
-        {g && <IconTile name={item?.icon ?? g.icon} tone={g.tone} size={44} />}
+      <div className="max-w-3xl">
+        {(g || eyebrow) && (
+          <p className="mb-1.5 flex items-center gap-1.5 text-[12.5px] font-semibold" style={g ? { color: `rgb(var(${g.tone}))` } : undefined}>
+            {g && <Icon name={item?.icon ?? g.icon} size={14} strokeWidth={2.2} />}
+            {eyebrow ?? g?.label}
+          </p>
+        )}
         <div>
-          {(g || eyebrow) && (
-            <p className="text-[12px] font-bold uppercase tracking-[0.08em]" style={g ? { color: `rgb(var(${g.tone}))` } : undefined}>
-              {eyebrow ?? g?.label}
-            </p>
-          )}
-          <h1 className="font-display text-[28px] leading-tight">{title}</h1>
-          {children && <div className="mt-1 text-[14px] text-muted">{children}</div>}
+          <h1 className="font-display text-[30px] leading-[1.1]">{title}</h1>
+          {children && <div className="mt-1.5 text-[14px] leading-relaxed text-muted">{children}</div>}
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-2">
@@ -53,7 +53,7 @@ export function Pill({ children, className, style, title }: { children: ReactNod
     <span
       title={title}
       style={style}
-      className={cx("inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-[11.5px] font-semibold", className ?? "bg-sunk text-muted")}
+      className={cx("inline-flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-[3px] text-[11.5px] font-semibold leading-none", className ?? "bg-sunk text-muted")}
     >
       {children}
     </span>
@@ -71,8 +71,8 @@ const GOOD = ["Done", "Approved", "Published", "Paid in full", "Picked up", "Fix
 const WARN = ["In review", "Waiting on someone", "Deposit", "Scheduled", "Sent", "In progress", "In prep", "Ready", "Negotiating", "Visited", "To visit", "On leave", "Seasonal", "In talks", "Quoted", "Needs Ricardo", "To confirm", "Escalated"];
 const BAD = ["Changes requested", "Cancelled", "Unpaid", "Blocked", "Rejected", "Left", "Closed", "Retired", "Not a fit", "Refunded"];
 export function statusTone(v: string) {
-  if (GOOD.includes(v)) return "bg-good/15 text-good";
-  if (WARN.includes(v)) return "bg-warn/15 text-warn";
+  if (GOOD.includes(v)) return "bg-good/10 text-good";
+  if (WARN.includes(v)) return "bg-warn/10 text-warn";
   if (BAD.includes(v)) return "bg-bad/10 text-bad";
   if (v === "New" || v === "Enquiry" || v === "Confirmed" || v === "Draft") return "bg-accent/10 text-accent";
   return "bg-sunk text-muted";
@@ -96,16 +96,12 @@ export function Stat({
   progress?: number;
 }) {
   return (
-    <div className="card relative overflow-hidden p-4">
-      <div className="flex items-start justify-between gap-2">
+    <div className="card relative overflow-hidden px-4 py-3.5">
+      <div className="flex items-center gap-1.5">
+        {icon && <Icon name={icon} size={14} strokeWidth={2.2} style={{ color: `rgb(var(${color ?? "--accent"}))` }} />}
         <div className="text-[12.5px] font-semibold text-muted">{label}</div>
-        {icon && (
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg" style={{ background: `rgb(var(${color ?? "--accent"}) / 0.12)`, color: `rgb(var(${color ?? "--accent"}))` }}>
-            <Icon name={icon} size={15} strokeWidth={2.2} />
-          </span>
-        )}
       </div>
-      <div className={cx("font-display mt-1 text-[30px] leading-none", tone === "good" && "text-good", tone === "warn" && "text-warn", tone === "bad" && "text-bad")}>{value}</div>
+      <div className={cx("font-display mt-2 text-[28px] leading-none", tone === "good" && "text-good", tone === "warn" && "text-warn", tone === "bad" && "text-bad")}>{value}</div>
       {sub && <div className="mt-1.5 text-[12.5px] text-muted">{sub}</div>}
       {progress !== undefined && (
         <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-sunk">
@@ -120,10 +116,10 @@ export function Section({ title, children, actions, className, sub, icon, tone }
   return (
     <section className={cx("card", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-3">
-        <div className="flex items-center gap-2.5">
-          {icon && <IconTile name={icon} tone={tone ?? "--accent"} size={28} />}
+        <div className="flex items-center gap-2">
+          {icon && <Icon name={icon} size={15} strokeWidth={2.2} style={{ color: `rgb(var(${tone ?? "--accent"}))` }} />}
           <div>
-            <h2 className="text-[14.5px] font-bold">{title}</h2>
+            <h2 className="text-[14.5px] font-bold tracking-tight">{title}</h2>
             {sub && <p className="text-[12.5px] text-muted">{sub}</p>}
           </div>
         </div>

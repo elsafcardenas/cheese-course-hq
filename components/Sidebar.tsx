@@ -42,7 +42,7 @@ export function Sidebar({
   useEffect(() => setMobileOpen(false), [path]);
 
   return (
-    <aside className="sticky top-0 z-30 flex shrink-0 flex-col border-b border-line bg-surface md:h-screen md:w-[248px] md:border-b-0 md:border-r">
+    <aside className="sidebar-dark sticky top-0 z-30 flex shrink-0 flex-col md:h-screen md:w-[248px]">
       <div className="flex items-center gap-2.5 px-4 py-3 md:px-5 md:pb-3 md:pt-5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/icon.svg" alt="" className="h-8 w-8 rounded-lg" />
@@ -57,7 +57,7 @@ export function Sidebar({
 
       {workspaces.length > 1 && (
         <div className="px-3 pb-2">
-          <div className="grid grid-cols-2 gap-1 rounded-xl bg-sunk p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-xl border border-line p-1">
             {workspaces.map((w) => (
               <button
                 key={w}
@@ -69,7 +69,7 @@ export function Sidebar({
                     router.push("/");
                   })
                 }
-                className={cx("rounded-lg px-2 py-1.5 text-left transition", w === ws ? "bg-surface shadow-card" : "opacity-60 hover:opacity-100")}
+                className={cx("rounded-lg px-2 py-1.5 text-left transition", w === ws ? "bg-sunk" : "opacity-50 hover:opacity-90")}
                 data-no-translate
               >
                 <div className="text-[13px] font-bold">
@@ -83,7 +83,7 @@ export function Sidebar({
       )}
 
       <div className="hidden px-3 pb-2 md:block">
-        <button onClick={onSearch} className="flex w-full items-center gap-2 rounded-lg border border-line bg-sunk/50 px-2.5 py-1.5 text-[13px] text-muted transition hover:border-accent/40 hover:text-ink">
+        <button onClick={onSearch} className="flex w-full items-center gap-2 rounded-lg bg-sunk px-2.5 py-1.5 text-[13px] text-muted transition hover:text-ink">
           <Search size={14} /> Search or jump to…
           <kbd className="ml-auto rounded border border-line bg-surface px-1.5 font-mono text-[10.5px]">⌘K</kbd>
         </button>
@@ -101,7 +101,7 @@ export function Sidebar({
                 href={i.href}
                 className={cx(
                   "mt-0.5 flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13.5px] font-semibold transition",
-                  active(i.href) ? "bg-sunk text-ink" : "text-ink/80 hover:bg-sunk/70",
+                  active(i.href) ? "bg-sunk text-ink" : "text-ink/75 hover:bg-sunk/70 hover:text-ink",
                 )}
               >
                 <span className="flex h-6 w-6 items-center justify-center rounded-md" style={{ background: `rgb(var(${g.tone}) / 0.14)`, color: `rgb(var(${g.tone}))` }}>
@@ -116,7 +116,7 @@ export function Sidebar({
             <div key={g.id} className="mt-3">
               <button
                 onClick={() => setClosed((c) => ({ ...c, [g.id]: !c[g.id] }))}
-                className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1 text-[13.5px] font-semibold text-ink/80 hover:bg-sunk/70"
+                className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1 text-[13.5px] font-semibold text-ink/75 hover:bg-sunk/70 hover:text-ink"
               >
                 <span className="flex h-6 w-6 items-center justify-center rounded-md" style={{ background: `rgb(var(${g.tone}) / 0.14)`, color: `rgb(var(${g.tone}))` }}>
                   <Icon name={g.icon} size={14} strokeWidth={2.2} />
@@ -125,7 +125,7 @@ export function Sidebar({
                 <ChevronDown size={14} className={cx("ml-auto text-muted transition", isClosed && "-rotate-90")} />
               </button>
               {!isClosed && (
-                <div className="ml-[19px] mt-0.5 border-l border-line pl-2">
+                <div className="ml-[19px] mt-0.5 border-l border-line/70 pl-2">
                   {g.items.map((i) => (
                     <Link
                       key={i.href}
