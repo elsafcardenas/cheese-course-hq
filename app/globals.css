@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 246 245 242;
+  --surface: 255 255 255;
+  --sunk: 239 237 232;
+  --ink: 27 28 26;
+  --muted: 108 106 100;
+  --line: 225 222 215;
+  --accent: 31 61 54;
+  --accent-ink: 255 255 255;
+  --rind: 176 124 42;
+  --miami: 140 47 57;
+  --spain: 104 138 116;
+  --good: 44 122 78;
+  --warn: 184 120 20;
+  --bad: 176 48 48;
+
+  --pillar-food: 176 124 42;
+  --pillar-101: 31 61 54;
+  --pillar-gift: 140 47 57;
+  --pillar-bts: 76 101 138;
+  --pillar-community: 104 138 116;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: 19 20 19;
+    --surface: 28 29 28;
+    --sunk: 23 24 23;
+    --ink: 235 233 227;
+    --muted: 158 155 148;
+    --line: 50 51 49;
+    --accent: 132 186 168;
+    --accent-ink: 14 24 21;
+    --rind: 214 168 88;
+    --miami: 222 120 130;
+    --spain: 150 190 165;
+    --good: 108 190 140;
+    --warn: 230 180 80;
+    --bad: 232 112 112;
+
+    --pillar-food: 214 168 88;
+    --pillar-101: 132 186 168;
+    --pillar-gift: 222 120 130;
+    --pillar-bts: 140 166 210;
+    --pillar-community: 150 190 165;
+    color-scheme: dark;
+  }
+}
+
+html,
+body {
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
+}
+
+body {
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .card {
+    @apply rounded-card border border-line bg-surface;
+  }
+  .btn {
+    @apply inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-3 py-1.5 text-[13px] font-medium text-ink transition hover:bg-sunk disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply inline-flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-[13px] font-medium text-accent-ink transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] text-muted transition hover:bg-sunk hover:text-ink;
+  }
+  .input {
+    @apply w-full rounded-md border border-line bg-surface px-2.5 py-1.5 text-[13px] text-ink outline-none placeholder:text-muted/70 focus:border-accent focus:ring-2 focus:ring-accent/15;
+  }
+  .label {
+    @apply mb-1 block text-[11px] font-medium uppercase tracking-wide text-muted;
+  }
+  .th {
+    @apply border-b border-line px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wide text-muted;
+  }
+  .td {
+    @apply border-b border-line px-3 py-2 align-top;
+  }
+  .eyebrow {
+    @apply text-[11px] font-medium uppercase tracking-[0.08em] text-muted;
+  }
+}
+
+/* Recharts: inherit the theme */
+.recharts-cartesian-grid line {
+  stroke: rgb(var(--line));
+}
+.recharts-text {
+  fill: rgb(var(--muted));
+  font-size: 11px;
+}
+.recharts-default-tooltip {
+  background: rgb(var(--surface)) !important;
+  border: 1px solid rgb(var(--line)) !important;
+  border-radius: 8px;
+  font-size: 12px;
+}
+.recharts-legend-item-text {
+  color: rgb(var(--muted)) !important;
+  font-size: 12px;
+}
+
+::selection {
+  background: rgb(var(--accent) / 0.2);
+}

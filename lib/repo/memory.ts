@@ -1,0 +1,103 @@
+import { cookies } from "next/headers";
+import * as seed from "@/data/seed";
+import type { ItemSale, MetricPoint, Profile, ProviderId } from "@/lib/types";
+import type { Collections, CollectionName, Repo, StoredIntegration } from "./types";
+
+export const DEMO_PROFILES: Profile[] = [
+  { id: "u-elsa", email: "elsa@thecheesecourse.com", name: "Elsa", role: "admin", store: null },
+  { id: "u-luis", email: "luis@thecheesecourse.com", name: "Luis", role: "editor", store: null },
+  { id: "u-dad", email: "dad@thecheesecourse.com", name: "Dad", role: "viewer", store: null },
+  { id: "u-weston", email: "weston@thecheesecourse.com", name: "Weston manager", role: "store_manager", store: "Weston" },
+  { id: "u-pinecrest", email: "pinecrest@thecheesecourse.com", name: "Pinecrest manager", role: "store_manager", store: "Pinecrest" },
+];
+
+type Db = { [K in CollectionName]: Collections[K][] } & {
+  profiles: Profile[];
+  metrics: MetricPoint[];
+  itemSales: ItemSale[];
+  integrations: StoredIntegration[];
+};
+
+const clone = <T,>(v: T): T => structuredClone(v);
+
+function fresh(): Db {
+  return {
+    tasks: clone(seed.tasks),
+    posts: clone(seed.posts),
+    platforms: clone(seed.platforms),
+    decisions: clone(seed.decisions),
+    meetings: clone(seed.meetings),
+    campaigns: clone(seed.campaigns),
+    kpis: clone(seed.kpis),
+    kpi_entries: [],
+    video_log: clone(seed.videoLog),
+    assets: clone(seed.assets),
+    profiles: clone(DEMO_PROFILES),
+    metrics: [],
+    itemSales: [],
+    integrations: [],
+  };
+}
+
+// Kept on globalThis so edits survive hot reloads during development.
+const g = globalThis as unknown as { __cheeseDb?: Db };
+const db = (): Db => (g.__cheeseDb ??= fresh());
+
+export const DEMO_AS_COOKIE = "demo_as";
+
+export class MemoryRepo implements Repo {
+  readonly mode = "demo" as const;
+
+  async me() {
+    const store = await cookies();
+    const id = store.get(DEMO_AS_COOKIE)?.value ?? "u-elsa";
+    return db().profiles.find((p) => p.id === id) ?? db().profiles[0];
+  }
+
+  async list<K extends CollectionName>(name: K) {
+    return clone(db()[name]) as Collections[K][];
+  }
+
+  async upsert<K extends CollectionName>(name: K, row: Collections[K]) {
+    const rows = db()[name] as Collections[K][];
+    const i = rows.findIndex((r) => r.id === row.id);
+    if (i >= 0) rows[i] = clone(row);
+    else rows.push(clone(row));
+  }
+
+  async remove(name: CollectionName, id: string) {
+    const rows = db()[name] as { id: string }[];
+    const i = rows.findIndex((r) => r.id === id);
+    if (i >= 0) rows.splice(i, 1);
+  }
+
+  async setDadComment(postId: string, text: string) {
+    const post = db().posts.find((p) => p.id === postId);
+    if (post) post.dadComments = text;
+  }
+
+  async sales() {
+    return clone(seed.sales);
+  }
+  async itemSales() {
+    return clone(db().itemSales);
+  }
+  async metrics(provider?: ProviderId) {
+    return db().metrics.filter((m) => !provider || m.provider === provider);
+  }
+  async integrations() {
+    return clone(db().integrations);
+  }
+  async profiles() {
+    return clone(db().profiles);
+  }
+  async updateProfile(id: string, patch: Partial<Pick<Profile, "name" | "role" | "store">>) {
+    const p = db().profiles.find((x) => x.id === id);
+    if (p) Object.assign(p, patch);
+  }
+
+  /** Demo-only: add someone to the team list (live mode sends a real invite email instead). */
+  addDemoProfile(p: Profile) {
+    db().profiles.push(p);
+  }
+}
