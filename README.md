@@ -51,7 +51,7 @@ You can put it online in demo mode first: deploy on Vercel with just `SITE_PASSW
 ### 1. Supabase (database, sign-in, file storage)
 
 1. Create a project at [supabase.com](https://supabase.com) (region: US East is closest to Miami).
-2. **SQL Editor → New query**, paste and run `supabase/migrations/0001_init.sql`, then `0002_operations.sql`.
+2. **SQL Editor → New query**, paste and run `supabase/migrations/0001_init.sql`, then `0002_operations.sql`, then `0003_team_access.sql`.
 3. **Authentication → Sign In / Providers**: keep Email on; turn **off** "Allow new users to sign up" (only people you invite can get in).
 4. **Authentication → URL Configuration**: set Site URL to your app's address (from step 2) and add `https://YOUR-APP.vercel.app/auth/callback` to Redirect URLs.
 5. **Project Settings → API**: copy the Project URL, the `anon` key and the `service_role` key.

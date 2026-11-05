@@ -1,8 +1,8 @@
 import { fromRow, recordFromRow, recordToRow, toRow, columnFor } from "@/lib/case";
 import { SCHEMAS, type Rec, type RecordName } from "@/lib/schema";
-import { supabaseServer } from "@/lib/supabase";
+import { supabaseAdmin, supabaseServer } from "@/lib/supabase";
 import type { ItemSale, MetricPoint, Profile, ProviderId, SalesRow } from "@/lib/types";
-import type { Collections, CollectionName, Repo, StoredIntegration } from "./types";
+import type { Collections, CollectionName, ProfilePatch, Repo, StoredIntegration } from "./types";
 
 const ORDER: Partial<Record<CollectionName, string>> = {
   tasks: "deadline",
@@ -124,9 +124,15 @@ export class SupabaseRepo implements Repo {
     return (data ?? []).map((r) => fromRow<Profile>(r));
   }
 
-  async updateProfile(id: string, patch: Partial<Pick<Profile, "name" | "role" | "store">>) {
+  async updateProfile(id: string, patch: ProfilePatch) {
     const sb = await supabaseServer();
     const { error } = await sb.from("profiles").update(toRow(patch)).eq("id", id);
     check(error);
+  }
+
+  /** Deletes their sign-in; their profile goes with it. Things they made stay. */
+  async removeProfile(id: string) {
+    const { error } = await supabaseAdmin().auth.admin.deleteUser(id);
+    if (error) throw new Error(error.message);
   }
 }

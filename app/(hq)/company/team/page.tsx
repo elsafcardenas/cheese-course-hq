@@ -12,7 +12,7 @@ export default async function TeamPage() {
   return (
     <>
       <PageHeader href="/company/team" title="Team">
-        Who can sign in and what they can do. Invites arrive by email; no passwords.
+        Everyone who can use HQ: their name, whether they're active, what they can change and which pages they can open.
       </PageHeader>
       <TeamView people={people} meId={user!.id} live={repo.mode === "live"} />
     </>

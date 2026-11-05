@@ -3,14 +3,14 @@ import * as seed from "@/data/seed";
 import { OPS_SEED } from "@/data/seed-ops";
 import { RECORD_NAMES, type Rec, type RecordName } from "@/lib/schema";
 import type { ItemSale, MetricPoint, Profile, ProviderId } from "@/lib/types";
-import type { Collections, CollectionName, Repo, StoredIntegration } from "./types";
+import type { Collections, CollectionName, ProfilePatch, Repo, StoredIntegration } from "./types";
 
 export const DEMO_PROFILES: Profile[] = [
-  { id: "u-elsa", email: "elsa@thecheesecourse.com", name: "Elsa", role: "admin", store: null },
-  { id: "u-luis", email: "luis@thecheesecourse.com", name: "Luis", role: "editor", store: null },
-  { id: "u-dad", email: "ricardo@thecheesecourse.com", name: "Ricardo", role: "viewer", store: null },
-  { id: "u-weston", email: "weston@thecheesecourse.com", name: "Weston manager", role: "store_manager", store: "Weston" },
-  { id: "u-pinecrest", email: "pinecrest@thecheesecourse.com", name: "Pinecrest manager", role: "store_manager", store: "Pinecrest" },
+  { id: "u-elsa", email: "elsa@thecheesecourse.com", name: "Elsa", role: "admin", store: null, title: "Marketing & operations", status: "active" },
+  { id: "u-luis", email: "luis@thecheesecourse.com", name: "Luis", role: "editor", store: null, title: "Designer", status: "active" },
+  { id: "u-dad", email: "ricardo@thecheesecourse.com", name: "Ricardo", role: "viewer", store: null, title: "Owner", status: "active" },
+  { id: "u-weston", email: "weston@thecheesecourse.com", name: "Weston manager", role: "store_manager", store: "Weston", title: "Store manager", status: "active" },
+  { id: "u-pinecrest", email: "pinecrest@thecheesecourse.com", name: "Pinecrest manager", role: "store_manager", store: "Pinecrest", title: "Store manager", status: "active" },
 ];
 
 type Db = { [K in CollectionName]: Collections[K][] } & {
@@ -112,9 +112,13 @@ export class MemoryRepo implements Repo {
   async profiles() {
     return clone(db().profiles);
   }
-  async updateProfile(id: string, patch: Partial<Pick<Profile, "name" | "role" | "store">>) {
+  async updateProfile(id: string, patch: ProfilePatch) {
     const p = db().profiles.find((x) => x.id === id);
     if (p) Object.assign(p, patch);
+  }
+
+  async removeProfile(id: string) {
+    db().profiles = db().profiles.filter((p) => p.id !== id);
   }
 
   /** Demo-only: add someone to the team list (live mode sends a real invite email instead). */

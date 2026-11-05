@@ -9,6 +9,6 @@ export async function pageUser(href: string) {
   const user = await repo.me();
   if (!user) redirect("/");
   const ws = await getWorkspace(user);
-  if (!canOpen(user.role, href, ws)) redirect("/");
+  if (!canOpen(user, href, ws)) redirect("/");
   return { repo, user, ws, market: WS_MARKET[ws] };
 }

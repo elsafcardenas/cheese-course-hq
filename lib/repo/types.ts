@@ -18,6 +18,9 @@ import type {
   VideoLog,
 } from "@/lib/types";
 
+/** What an admin can change about a team member. */
+export type ProfilePatch = Partial<Pick<Profile, "name" | "role" | "store" | "title" | "status" | "workspaces" | "access">>;
+
 /** Tables the app reads and writes through the generic list / upsert / remove calls. */
 export type Collections = {
   tasks: Task;
@@ -61,5 +64,6 @@ export interface Repo {
   removeRecord(name: RecordName, id: string): Promise<void>;
 
   profiles(): Promise<Profile[]>;
-  updateProfile(id: string, patch: Partial<Pick<Profile, "name" | "role" | "store">>): Promise<void>;
+  updateProfile(id: string, patch: ProfilePatch): Promise<void>;
+  removeProfile(id: string): Promise<void>;
 }

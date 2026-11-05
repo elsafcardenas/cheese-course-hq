@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import type { Result } from "@/app/actions";
 import { getRepo } from "@/lib/repo";
 import {
-  canReadRecords,
+  canReadFor,
   canWriteRecords,
   isRecordName,
   SCHEMAS,
@@ -31,7 +31,7 @@ async function writer(name: string) {
   if (!isRecordName(name)) throw new Error("Unknown list.");
   const repo = getRepo();
   const user = await repo.me();
-  if (!canWriteRecords(user?.role, name)) throw new Error("You don't have permission to change this.");
+  if (user?.status === "paused" || !canWriteRecords(user?.role, name)) throw new Error("You don't have permission to change this.");
   return { repo, user: user as Profile, def: SCHEMAS[name], name };
 }
 
@@ -160,7 +160,7 @@ export async function reviewAction(input: { id: string; action: "approve" | "cha
   return run(async () => {
     const repo = getRepo();
     const user = await repo.me();
-    if (!user || !canReadRecords(user.role, "content_reviews")) throw new Error("You don't have access to reviews.");
+    if (!user || !canReadFor(user, "content_reviews")) throw new Error("You don't have access to reviews.");
     const piece = (await repo.listRecords("content_reviews")).find((r) => r.id === input.id);
     if (!piece) throw new Error("That piece no longer exists.");
 
@@ -249,7 +249,7 @@ export async function uploadReviewFile(form: FormData): Promise<{ ok: true; url:
   try {
     const repo = getRepo();
     const user = await repo.me();
-    if (!canWriteRecords(user?.role, "content_reviews")) throw new Error("You can't upload review files.");
+    if (user?.status === "paused" || !canWriteRecords(user?.role, "content_reviews")) throw new Error("You can't upload review files.");
     if (repo.mode !== "live") throw new Error("Uploads switch on once the database is connected. Paste a Drive or Canva link for now.");
     const file = form.get("file");
     if (!(file instanceof File) || !file.size) throw new Error("Choose a file first.");

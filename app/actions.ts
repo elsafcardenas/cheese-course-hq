@@ -5,6 +5,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { can, type Action } from "@/lib/auth";
+import { toRow } from "@/lib/case";
+import { ALL_ACCESS_KEYS, WORKSPACES } from "@/lib/nav";
 import { getRepo, type CollectionName, type Collections } from "@/lib/repo";
 import { DEMO_AS_COOKIE, MemoryRepo } from "@/lib/repo/memory";
 import { isLive, supabaseAdmin, supabaseServer } from "@/lib/supabase";
@@ -355,37 +357,71 @@ export async function deleteAsset(id: string) {
 // Team and session
 // ---------------------------------------------------------------------------
 const MemberInput = z.object({
-  email: z.string().trim().email(),
-  name: z.string().trim().min(1).max(100),
+  id: z.string().optional(),
+  email: z.string().trim().email("Add a valid email.").optional().or(z.literal("")),
+  name: z.string().trim().min(1, "Add their name.").max(100),
+  title: z.string().trim().max(80).default(""),
+  status: z.enum(["active", "paused"]).default("active"),
   role: z.enum(ROLES),
   store: z.enum(["Weston", "Pinecrest"]).nullable(),
+  workspaces: z.array(z.enum(WORKSPACES)).nullable(),
+  access: z.array(z.string()).nullable(),
 });
 
-export async function inviteMember(input: z.input<typeof MemberInput>) {
+/** Adds a new person (with an invite email once the database is live) or saves changes to someone. */
+export async function saveMember(input: z.input<typeof MemberInput>) {
   return run(async () => {
-    const { repo } = await guard("manage:team");
+    const { repo, user } = await guard("manage:team");
     const m = MemberInput.parse(input);
     if (m.role === "store_manager" && !m.store) throw new Error("Pick the store this manager runs.");
+    if (m.role !== "admin" && m.workspaces && m.workspaces.length === 0) throw new Error("Tick Miami, Spain or both.");
+    const valid = new Set(ALL_ACCESS_KEYS);
+    const patch = {
+      name: m.name,
+      title: m.title,
+      status: m.status,
+      role: m.role,
+      store: m.role === "store_manager" ? m.store : null,
+      workspaces: m.role === "admin" ? null : m.workspaces,
+      access: m.role === "admin" || !m.access ? null : m.access.filter((k) => valid.has(k)),
+    };
+
+    if (m.id) {
+      if (m.id === user.id && (m.role !== "admin" || m.status !== "active")) throw new Error("You can't take away your own admin access or pause yourself.");
+      const people = await repo.profiles();
+      const otherAdmins = people.filter((p) => p.id !== m.id && p.role === "admin" && p.status !== "paused");
+      const was = people.find((p) => p.id === m.id);
+      if (was?.role === "admin" && (m.role !== "admin" || m.status === "paused") && !otherAdmins.length) throw new Error("There has to be at least one active admin.");
+      await repo.updateProfile(m.id, patch);
+      return;
+    }
+
+    if (!m.email) throw new Error("Add their email so they can sign in.");
+    if ((await repo.profiles()).some((p) => p.email.toLowerCase() === m.email!.toLowerCase())) throw new Error("Someone with that email is already on the team.");
     if (repo instanceof MemoryRepo) {
-      repo.addDemoProfile({ id: newId(), email: m.email, name: m.name, role: m.role, store: m.role === "store_manager" ? m.store : null });
+      repo.addDemoProfile({ id: newId(), email: m.email, ...patch });
       return;
     }
     const redirectTo = `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/auth/callback`;
-    const { error } = await supabaseAdmin().auth.admin.inviteUserByEmail(m.email, {
-      data: { name: m.name, role: m.role, store: m.role === "store_manager" ? m.store : "" },
+    const { data, error } = await supabaseAdmin().auth.admin.inviteUserByEmail(m.email, {
+      data: { name: m.name, role: m.role, store: patch.store ?? "" },
       redirectTo,
     });
     if (error) throw new Error(error.message);
+    // The sign-up trigger creates their profile; add the rest (title, sides, pages).
+    if (data.user) {
+      const { error: e2 } = await supabaseAdmin().from("profiles").update(toRow(patch)).eq("id", data.user.id);
+      if (e2) throw new Error(e2.message);
+    }
   });
 }
 
-export async function updateMember(id: string, patch: { role: string; store: string | null; name?: string }) {
+/** Takes someone off the team. Things they made (tasks, posts, comments) stay. */
+export async function removeMember(id: string) {
   return run(async () => {
     const { repo, user } = await guard("manage:team");
-    const role = z.enum(ROLES).parse(patch.role);
-    const store = z.enum(["Weston", "Pinecrest"]).nullable().parse(patch.store);
-    if (id === user.id && role !== "admin") throw new Error("You can't remove your own admin role.");
-    await repo.updateProfile(id, { role, store: role === "store_manager" ? store : null, ...(patch.name ? { name: patch.name } : {}) });
+    if (id === user.id) throw new Error("You can't remove yourself.");
+    await repo.removeProfile(id);
   });
 }
 

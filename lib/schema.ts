@@ -1,6 +1,6 @@
 // Operations data model. Each collection is described once here and that description drives
 // the database columns, the forms, the tables, CSV import/export, validation and permissions.
-import type { Role } from "@/lib/types";
+import type { Profile, Role } from "@/lib/types";
 
 export type FieldType =
   | "text"
@@ -611,6 +611,29 @@ export const isRecordName = (v: string): v is RecordName => (RECORD_NAMES as rea
 export const canReadRecords = (role: Role | undefined, name: RecordName) => !!role && SCHEMAS[name].read.includes(role);
 
 /** Can this role add or edit rows (store managers: only for their store)? */
+/** The data each page shows, so giving someone a page also lets them see what's on it. */
+export const PAGE_DATA: Record<string, RecordName[]> = {
+  "/ops/stores": ["stores", "staff", "maintenance", "catering_orders", "checklists", "checklist_runs", "inventory_items", "reviews"],
+  "/ops/catering": ["catering_orders"],
+  "/ops/staff": ["staff", "shifts", "stores"],
+  "/ops/checklists": ["checklists", "checklist_runs"],
+  "/ops/inventory": ["inventory_items", "purchase_orders", "suppliers", "waste_log"],
+  "/ops/maintenance": ["maintenance"],
+  "/finance": ["sales_monthly", "expenses", "budget_lines"],
+  "/madrid": ["madrid_milestones", "madrid_locations", "madrid_budget", "madrid_contacts"],
+  "/customers": ["reviews"],
+  "/menu": ["menu_items"],
+  "/company/docs": ["docs"],
+  "/marketing/review": ["content_reviews", "review_comments"],
+};
+
+/** Paused people see nothing; extra pages an admin switched on bring their data with them (view only). */
+export function canReadFor(user: Pick<Profile, "role"> & Partial<Pick<Profile, "status" | "access">>, name: RecordName) {
+  if (user.status === "paused") return false;
+  if (canReadRecords(user.role, name)) return true;
+  return (user.access ?? []).some((k) => (PAGE_DATA[k.slice(k.indexOf(":") + 1)] ?? []).includes(name));
+}
+
 export const canWriteRecords = (role: Role | undefined, name: RecordName) =>
   !!role && (SCHEMAS[name].write.includes(role) || (role === "store_manager" && !!SCHEMAS[name].managerWrite));
 

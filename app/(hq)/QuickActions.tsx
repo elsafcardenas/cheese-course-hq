@@ -38,8 +38,9 @@ const FOR: Record<Workspace, Partial<Record<Role, Action[]>>> = {
 };
 
 /** Big, plain buttons for the things people do most, so nobody has to hunt through menus. */
-export function QuickActions({ role, ws }: { role: Role; ws: Workspace }) {
-  const list = FOR[ws][role] ?? [A.help];
+export function QuickActions({ role, ws, canOpen }: { role: Role; ws: Workspace; canOpen: string[] }) {
+  // Only show buttons for pages this person can actually open (the admin can switch pages off on the Team page).
+  const list = (FOR[ws][role] ?? [A.help]).filter((a) => canOpen.includes(a.href.split("?")[0]));
   return (
     <section className="mt-5">
       <h2 className="mb-2.5 text-[13px] font-bold text-muted">What do you want to do?</h2>

@@ -21,6 +21,7 @@ export function SpainHome({
   contacts,
   reviews,
   canSeeProject,
+  opens,
 }: {
   user: Profile;
   today: string;
@@ -33,6 +34,7 @@ export function SpainHome({
   contacts: Rec[];
   reviews: Rec[];
   canSeeProject: boolean;
+  opens: string[];
 }) {
   const done = milestones.filter((m) => m.status === "Done").length;
   const next = milestones
@@ -51,7 +53,7 @@ export function SpainHome({
         {signed ? `Venue signed: ${signed.area}.` : "Venue not signed yet: Spain accounts stay private until it is."} {tasks.length} open tasks.
       </PageHeader>
 
-      <QuickActions role={user.role} ws="spain" />
+      <QuickActions role={user.role} ws="spain" canOpen={opens} />
 
       <h2 className="mb-2.5 mt-8 text-[13px] font-bold text-muted">At a glance</h2>
       <div className="grid gap-3 lg:grid-cols-[auto_1fr_1fr_1fr]">

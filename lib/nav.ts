@@ -1,4 +1,4 @@
-import type { Role } from "@/lib/types";
+import type { Profile, Role } from "@/lib/types";
 
 const ALL: Role[] = ["admin", "editor", "viewer", "store_manager"];
 const MGMT: Role[] = ["admin", "viewer"];
@@ -117,11 +117,50 @@ const SETTINGS: NavGroup = {
 
 export const NAV: Record<Workspace, NavGroup[]> = { miami: [...MIAMI, SETTINGS], spain: [...SPAIN, SETTINGS] };
 
-/** Store managers only work in Miami. */
-export const workspacesFor = (role: Role): Workspace[] => (role === "store_manager" ? ["miami"] : ["miami", "spain"]);
+/** Someone whose access we're checking. */
+export type Who = Pick<Profile, "role"> & Partial<Pick<Profile, "status" | "workspaces" | "access">>;
 
-export const navFor = (role: Role, ws: Workspace) =>
-  NAV[ws].map((g) => ({ ...g, items: g.items.filter((i) => i.roles.includes(role)) })).filter((g) => g.items.length);
+/** Only admins ever see these, whatever their page list says. */
+export const ADMIN_ONLY = ["/company/team", "/company/integrations"];
+/** Everyone always has Home and the guide. */
+export const ALWAYS = ["/", "/help"];
+
+export const accessKey = (ws: Workspace, href: string) => `${ws}:${href}`;
+
+/** Store managers only work in Miami by default; everyone else sees both sides. */
+export const roleWorkspaces = (role: Role): Workspace[] => (role === "store_manager" ? ["miami"] : ["miami", "spain"]);
+
+export function workspacesFor(who: Who | null | undefined): Workspace[] {
+  if (!who) return ["miami"];
+  if (who.role === "admin") return ["miami", "spain"];
+  const chosen = who.workspaces?.length ? who.workspaces : roleWorkspaces(who.role);
+  return WORKSPACES.filter((w) => chosen.includes(w));
+}
+
+/** Pages an admin can switch on or off for someone, per side, grouped by area. */
+export const grantable = (ws: Workspace) =>
+  NAV[ws]
+    .map((g) => ({ ...g, items: g.items.filter((i) => !ADMIN_ONLY.includes(i.href) && !ALWAYS.includes(i.href)) }))
+    .filter((g) => g.items.length);
+
+/** The pages an access level opens by default on one side. */
+export const roleDefaults = (role: Role, ws: Workspace) => grantable(ws).flatMap((g) => g.items.filter((i) => i.roles.includes(role)).map((i) => accessKey(ws, i.href)));
+
+export const ALL_ACCESS_KEYS = WORKSPACES.flatMap((ws) => grantable(ws).flatMap((g) => g.items.map((i) => accessKey(ws, i.href))));
+
+export function canOpen(who: Who | null | undefined, href: string, ws: Workspace): boolean {
+  if (!who || who.status === "paused") return false;
+  if (!itemFor(href, ws)) return false;
+  if (who.role === "admin") return true;
+  if (ADMIN_ONLY.includes(href)) return false;
+  if (!workspacesFor(who).includes(ws)) return false;
+  if (ALWAYS.includes(href)) return true;
+  if (who.access) return who.access.includes(accessKey(ws, href));
+  return !!itemFor(href, ws)?.roles.includes(who.role);
+}
+
+export const navFor = (who: Who, ws: Workspace) =>
+  NAV[ws].map((g) => ({ ...g, items: g.items.filter((i) => canOpen(who, i.href, ws)) })).filter((g) => g.items.length);
 
 const allGroups = [...MIAMI, ...SPAIN, SETTINGS];
 
@@ -132,4 +171,3 @@ export const groupFor = (href: string, ws: Workspace = "miami") =>
 
 export const itemFor = (href: string, ws: Workspace = "miami") => NAV[ws].flatMap((g) => g.items).find((i) => i.href === href);
 
-export const canOpen = (role: Role | undefined, href: string, ws: Workspace) => !!role && !!itemFor(href, ws)?.roles.includes(role);

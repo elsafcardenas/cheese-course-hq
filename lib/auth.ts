@@ -23,7 +23,7 @@ const MATRIX: Record<Role, Action[] | "all"> = {
 };
 
 export function can(user: Profile | null, action: Action): boolean {
-  if (!user) return false;
+  if (!user || user.status === "paused") return false;
   const allowed = MATRIX[user.role];
   return allowed === "all" || allowed.includes(action);
 }
@@ -36,10 +36,10 @@ export const ROLE_LABEL: Record<Role, string> = {
 };
 
 export const ROLE_HELP: Record<Role, string> = {
-  admin: "Everything, including integrations and the team.",
-  editor: "Edits posts, tasks, assets and the video log.",
-  viewer: "Sees everything; comments on posts and answers decisions.",
-  store_manager: "Sees their store's tasks and posts; updates their tasks; uploads footage.",
+  admin: "Can see and change everything, including the team and settings.",
+  editor: "Can change marketing: posts, reviews, tasks and footage.",
+  viewer: "Can look at everything and comment, and answer decisions. Can't change things.",
+  store_manager: "Can do their store's checklists, catering orders, problems and footage.",
 };
 
 /** Store managers only see rows for their store (or both stores). Everyone else sees everything. */

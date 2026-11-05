@@ -1,4 +1,4 @@
-import { signOut } from "@/app/actions";
+import { setDemoAs, signOut } from "@/app/actions";
 import type { SearchEntry } from "@/components/CommandPalette";
 import { Shell } from "@/components/Shell";
 import { visibleToUser } from "@/lib/auth";
@@ -6,7 +6,7 @@ import { navFor, workspacesFor, WS_MARKET } from "@/lib/nav";
 import { getWorkspace, inWorkspace } from "@/lib/workspace";
 import { cookies } from "next/headers";
 import { getRepo } from "@/lib/repo";
-import { canReadRecords, SCHEMAS, storeVisible, type Rec, type RecordName } from "@/lib/schema";
+import { canReadFor, SCHEMAS, storeVisible, type Rec, type RecordName } from "@/lib/schema";
 import { todayISO } from "@/lib/ui";
 
 export const dynamic = "force-dynamic";
@@ -32,14 +32,36 @@ export default async function HqLayout({ children }: { children: React.ReactNode
     );
   }
 
+  if (user.status === "paused") {
+    const admin = (await repo.profiles()).find((p) => p.role === "admin" && p.status !== "paused");
+    return (
+      <main className="flex min-h-screen items-center justify-center px-4">
+        <div className="card max-w-md p-8">
+          <p className="eyebrow">The Cheese Course HQ</p>
+          <h1 className="font-display mt-1 text-3xl">Your access is paused</h1>
+          <p className="mt-3 text-muted">Hi {user.name}. Your account is paused for now, so you can&apos;t open HQ. Nothing has been deleted. Ask Elsa if you think this is a mistake.</p>
+          {repo.mode === "demo" && admin ? (
+            <form action={setDemoAs.bind(null, admin.id)} className="mt-5">
+              <button className="btn-primary">Back to {admin.name}</button>
+            </form>
+          ) : (
+            <form action={signOut} className="mt-5">
+              <button className="btn">Sign out</button>
+            </form>
+          )}
+        </div>
+      </main>
+    );
+  }
+
   const ws = await getWorkspace(user);
   const market = WS_MARKET[ws];
   const jar = await cookies();
   const lang = jar.get("lang")?.value === "es" ? "es" : "en";
   const theme = jar.get("theme")?.value === "dark" ? "dark" : "light";
-  const groups = navFor(user.role, ws);
+  const groups = navFor(user, ws);
   const load = async (name: RecordName): Promise<Rec[]> =>
-    canReadRecords(user.role, name) ? (await repo.listRecords(name)).filter((r) => user.role !== "store_manager" || storeVisible(SCHEMAS[name], r, user.store)) : [];
+    canReadFor(user, name) ? (await repo.listRecords(name)).filter((r) => user.role !== "store_manager" || storeVisible(SCHEMAS[name], r, user.store)) : [];
 
   const [tasks, posts, decisions, people, orders, reviews, maint, pieces, menu, staff, suppliers, docs] = await Promise.all([
     repo.list("tasks"),
@@ -89,7 +111,7 @@ export default async function HqLayout({ children }: { children: React.ReactNode
   ].filter((e) => e.label);
 
   return (
-    <Shell groups={groups} user={user} mode={repo.mode} people={people} badges={badges} entries={entries} ws={ws} workspaces={workspacesFor(user.role)} lang={lang} theme={theme}>
+    <Shell groups={groups} user={user} mode={repo.mode} people={people} badges={badges} entries={entries} ws={ws} workspaces={workspacesFor(user)} lang={lang} theme={theme}>
       {children}
     </Shell>
   );

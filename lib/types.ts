@@ -247,6 +247,14 @@ export type Profile = {
   name: string;
   role: Role;
   store: "Weston" | "Pinecrest" | null;
+  /** Job title shown on the Team page, e.g. "Designer". */
+  title?: string;
+  /** Paused people can't sign in or change anything; nothing they made is deleted. */
+  status?: "active" | "paused";
+  /** Which sides they work on. Empty/null = the default for their access level. */
+  workspaces?: ("miami" | "spain")[] | null;
+  /** Pages they can open, as "miami:/ops/catering". Null = the default for their access level. */
+  access?: string[] | null;
 };
 
 export type ProviderId = "square" | "meta" | "google" | "tiktok";

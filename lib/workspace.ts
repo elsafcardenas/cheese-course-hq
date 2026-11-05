@@ -8,8 +8,8 @@ export const WS_COOKIE = "ws";
 export async function getWorkspace(user: Profile | null): Promise<Workspace> {
   const store = await cookies();
   const v = store.get(WS_COOKIE)?.value as Workspace | undefined;
-  const allowed = user ? workspacesFor(user.role) : ["miami"];
-  return v && (WORKSPACES as readonly string[]).includes(v) && allowed.includes(v) ? v : "miami";
+  const allowed = workspacesFor(user);
+  return v && (WORKSPACES as readonly string[]).includes(v) && allowed.includes(v) ? v : (allowed[0] ?? "miami");
 }
 
 /** True when a row tagged with a market belongs in this workspace ("Both" shows in each). */

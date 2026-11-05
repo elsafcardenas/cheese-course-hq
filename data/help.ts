@@ -54,7 +54,7 @@ export const ROLES: { who: L; does: L; steps: L[] }[] = [
     steps: [
       t("Monday: check Overview, plan the week in the Content calendar, and brief Luis from Toolkit → Brief for Luis.", "Lunes: mira el Resumen, planifica la semana en el Calendario de contenido y manda el brief a Luis desde Toolkit → Brief for Luis."),
       t("Through the week: approve or send back pieces in Review & approval; approved pieces move their post to Ready to post.", "Durante la semana: aprueba o devuelve piezas en Review & approval; lo aprobado pasa su post a Ready to post."),
-      t("Invite people in Team & access and choose their role.", "Invita a la gente en Team & access y elige su rol."),
+      t("Add people in Team & access. Click anyone to rename them, pause them, change their level, or switch pages on and off.", "Añade gente en Equipo y acceso. Pulsa a cualquiera para cambiarle el nombre, pausarle, cambiar su nivel o activar y desactivar páginas."),
       t("First Friday of the month: log KPIs in Performance and check Finance.", "Primer viernes de mes: registra los KPI en Performance y revisa Finanzas."),
     ],
   },
@@ -111,7 +111,7 @@ export const PAGES: { href: string; title: L; body: L }[] = [
   { href: "/company/decisions", title: t("Decisions & meetings", "Decisiones y reuniones"), body: t("What's decided, what's waiting on Ricardo, and a log of every meeting.", "Lo decidido, lo que espera a Ricardo y un registro de cada reunión.") },
   { href: "/company/docs", title: t("SOPs & documents", "Procedimientos y documentos"), body: t("Write a how-to right here (one step per line) or link a Drive, Notion or PDF file.", "Escribe un procedimiento aquí mismo (un paso por línea) o enlaza un archivo de Drive, Notion o PDF.") },
   { href: "/company/integrations", title: t("Integrations", "Integraciones"), body: t("Connect Square, Instagram and Facebook, Google Business Profile and TikTok. Each card shows the steps; once connected they sync every morning.", "Conecta Square, Instagram y Facebook, Google Business Profile y TikTok. Cada tarjeta muestra los pasos; una vez conectadas se sincronizan cada mañana.") },
-  { href: "/company/team", title: t("Team & access", "Equipo y acceso"), body: t("Invite someone by email and choose their role. Store managers also get a store.", "Invita a alguien por email y elige su rol. Los encargados también tienen una tienda.") },
+  { href: "/company/team", title: t("Team & access", "Equipo y acceso"), body: t("Click Add a person, or click anyone to edit them. Five steps: name and job title; Active or Paused (paused people can't sign in, nothing is deleted); what they can change (Admin, Editor, Viewer or Store manager); Miami, Spain or both; and which pages they can open. Use Back to usual to undo page changes. Check the result with Preview as.", "Pulsa Añadir una persona, o pulsa a cualquiera para editarle. Cinco pasos: nombre y puesto; Activo o En pausa (en pausa no puede entrar, no se borra nada); qué puede cambiar (Admin, Editor, Lector o Encargado); Miami, España o ambos; y qué páginas puede abrir. Usa Volver a lo habitual para deshacer cambios de páginas. Compruébalo con Ver como.") },
 ];
 
 export const FAQ: { q: L; a: L }[] = [

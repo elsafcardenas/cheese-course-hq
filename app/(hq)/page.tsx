@@ -4,6 +4,7 @@ import { getRepo } from "@/lib/repo";
 import { loadMany } from "@/lib/records-server";
 import { WORKSTREAMS } from "@/lib/types";
 import { addDays, todayISO } from "@/lib/ui";
+import { canOpen, NAV } from "@/lib/nav";
 import { getWorkspace, inWorkspace } from "@/lib/workspace";
 import { OpsStrip, type OpsTile } from "./OpsStrip";
 import { QuickActions } from "./QuickActions";
@@ -23,6 +24,7 @@ export default async function HomePage() {
   const myPosts = visibleToUser(user, posts).filter((p) => p.market === market);
   const open = myTasks.filter((t) => isOpen(t.status));
   const wsDecisions = decisions.filter((d) => inWorkspace(ws, d.market));
+  const opens = NAV[ws].flatMap((g) => g.items.map((i) => i.href)).filter((h) => canOpen(user, h, ws));
 
   if (ws === "spain") {
     const rec = await loadMany(repo, user, ["madrid_milestones", "madrid_locations", "madrid_budget", "madrid_contacts", "content_reviews"]);
@@ -38,7 +40,8 @@ export default async function HomePage() {
         budget={rec.madrid_budget}
         contacts={rec.madrid_contacts}
         reviews={rec.content_reviews.filter((r) => r.market === "Spain")}
-        canSeeProject={user.role === "admin" || user.role === "viewer"}
+        canSeeProject={opens.includes("/madrid")}
+        opens={opens}
       />
     );
   }
@@ -58,7 +61,7 @@ export default async function HomePage() {
 
   // Operations tiles (Miami only, and only for people who can see operations).
   const ops = await loadMany(repo, user, ["catering_orders", "inventory_items", "maintenance", "reviews", "checklists", "checklist_runs", "content_reviews"]);
-  const seesOps = user.role !== "editor";
+  const seesOps = opens.includes("/ops/checklists");
   const pickups = ops.catering_orders.filter((o) => o.eventDate === today && !["Cancelled", "Picked up"].includes(String(o.status)));
   const low = ops.inventory_items.filter((i) => i.par != null && i.onHand != null && Number(i.onHand) < Number(i.par));
   const issues = ops.maintenance.filter((m) => m.status !== "Fixed");
@@ -77,6 +80,7 @@ export default async function HomePage() {
       ? [{ href: "/marketing/review", icon: "check-circle", tone: "--dept-marketing", label: "Waiting for review", value: inReview.length, sub: inReview.length ? String(inReview[0].title) : "Nothing waiting" }]
       : []),
   ];
+  const shownTiles = tiles.filter((t) => opens.includes(t.href));
   const stores = user.role === "store_manager" && user.store ? [user.store] : ["Weston", "Pinecrest"];
   const daily = ops.checklists.filter((c) => String(c.frequency).startsWith("Daily"));
   const checklistPct = stores.map((store) => {
@@ -102,7 +106,7 @@ export default async function HomePage() {
       comingUp={comingUp}
       waiting={open.filter((t) => t.status === "Waiting on someone")}
       upcoming={upcoming}
-      needsDad={user.role === "store_manager" ? [] : wsDecisions.filter((d) => d.status === "Needs Ricardo")}
+      needsDad={!opens.includes("/company/decisions") ? [] : wsDecisions.filter((d) => d.status === "Needs Ricardo")}
       stats={{
         medianViews: medianViews(reels),
         reelCount: reels.length,
@@ -114,9 +118,9 @@ export default async function HomePage() {
       }}
       byWorkstream={WORKSTREAMS.map((w) => ({ name: w, value: open.filter((t) => t.workstream === w).length })).filter((d) => d.value > 0)}
       mix={pillarMix(myPosts, "Miami")}
-      glance={<OpsStrip tiles={tiles} checklists={seesOps ? checklistPct : []} />}
+      glance={<OpsStrip tiles={shownTiles} checklists={seesOps ? checklistPct : []} />}
     >
-      <QuickActions role={user.role} ws="miami" />
+      <QuickActions role={user.role} ws="miami" canOpen={opens} />
     </TodayView>
   );
 }

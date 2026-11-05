@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Eye,
   BookOpen,
   Boxes,
   Building2,
@@ -39,6 +40,7 @@ const ICONS: Record<string, LucideIcon> = {
   share: Share2,
   chart: ChartLine,
   wand: WandSparkles,
+  eye: Eye,
   route: Route,
   film: Film,
   store: Store,
