@@ -752,6 +752,7 @@ export const ES_PATTERNS: [RegExp, (m: RegExpMatchArray) => string][] = [
   [/^Overdue · (.+)$/, (m) => `Vencida · ${date(m[1]) ?? m[1]}`],
   [/^due (.+)$/, (m) => (date(m[1]) ? `vence ${date(m[1])}` : m[0])],
   [/^Good morning, (.+)$/, (m) => `Buenos días, ${m[1]}`],
+  [/^Hello, (.+)$/, (m) => `Hola, ${m[1]}`],
   [/^Good afternoon, (.+)$/, (m) => `Buenas tardes, ${m[1]}`],
   [/^Good evening, (.+)$/, (m) => `Buenas noches, ${m[1]}`],
   [/^(\d+) due this week$/, (m) => `${m[1]} vencen esta semana`],

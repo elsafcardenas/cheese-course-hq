@@ -2,7 +2,7 @@
 
 import { ArrowUpRight, Check } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { answerDecision, setTaskStatus } from "@/app/actions";
 import { HBar, PillarMix } from "@/components/charts";
 import { Clocks } from "@/components/Clocks";
@@ -33,9 +33,21 @@ type Props = {
   glance?: React.ReactNode;
 };
 
-function greeting(name: string) {
-  const h = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Madrid", hour: "2-digit", hourCycle: "h23" }).format(new Date()));
-  return `${h < 12 ? "Good morning" : h < 19 ? "Good afternoon" : "Good evening"}, ${name}`;
+/** Greets by the time on the viewer's own device: morning 5–12, afternoon 12–19, evening after that. */
+function greetingFor(d: Date, name: string) {
+  const h = d.getHours();
+  return `${h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 19 ? "Good afternoon" : "Good evening"}, ${name}`;
+}
+
+/** The viewer's local time, refreshed every minute (null until the page is in the browser). */
+function useNow() {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    setNow(new Date());
+    const t = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(t);
+  }, []);
+  return now;
 }
 
 export function TodayView(p: Props) {
@@ -43,10 +55,14 @@ export function TodayView(p: Props) {
   const [post, setPost] = useState<Post | null>(null);
   const { run, pending } = useRun();
   const s = p.stats;
+  const now = useNow();
 
   return (
     <>
-      <PageHeader eyebrow={fmtDate(p.today, { weekday: "long", month: "long", day: "numeric" })} title={greeting(p.user.name)}>
+      <PageHeader
+        eyebrow={now ? now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) : fmtDate(p.today, { weekday: "long", month: "long", day: "numeric" })}
+        title={now ? greetingFor(now, p.user.name) : `Hello, ${p.user.name}`}
+      >
         {s.overdue > 0 ? `${s.overdue} overdue task${s.overdue > 1 ? "s" : ""}, ` : ""}
         {p.comingUp ? 0 : p.thisWeek.length} due this week{p.needsDad.length ? `, ${p.needsDad.length} decisions waiting on Ricardo` : ""}.
       </PageHeader>
