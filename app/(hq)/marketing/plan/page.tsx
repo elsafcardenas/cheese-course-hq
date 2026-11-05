@@ -44,7 +44,7 @@ export default async function PlanPage() {
         ))}
       </div>
 
-      <Section title="Timeline (Balanced)" sub="Team starts Mon Nov 30 (green line) · red line is today" className="mt-6">
+      <Section title="Timeline (Balanced)" sub="Team starts Mon Nov 30 (black line) · red line is today" className="mt-6">
         <div className="overflow-x-auto">
           <div className="min-w-[860px] p-4">
             <div className="ml-[300px] grid border-b border-line pb-1.5" style={{ gridTemplateColumns: `repeat(${months.length}, 1fr)` }}>
