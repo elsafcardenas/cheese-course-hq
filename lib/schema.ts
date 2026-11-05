@@ -33,6 +33,8 @@ export type Field = {
   wide?: boolean;
   /** Choices that depend on another field (e.g. a menu category depends on its section). */
   optionsBy?: { key: string; map: Record<string, readonly string[]> };
+  /** Offer the team's names as suggestions while typing. */
+  suggestTeam?: boolean;
   /** Only shown in the form when another field has one of these values. */
   showWhen?: { key: string; in: readonly string[] };
 };
@@ -84,6 +86,8 @@ export const RECORD_NAMES = [
   "madrid_budget",
   "madrid_contacts",
   "docs",
+  "initiatives",
+  "initiative_steps",
   "content_reviews",
   "review_comments",
 ] as const;
@@ -118,7 +122,7 @@ export const MENU_CATEGORIES_BY: Record<(typeof MENU_SECTIONS)[number], readonly
 export const MENU_CATEGORIES = [...new Set(Object.values(MENU_CATEGORIES_BY).flat())];
 export const EXPENSE_CATEGORIES = ["Rent", "Payroll", "Food & supplies", "Packaging", "Utilities", "Marketing", "Repairs & maintenance", "Software", "Insurance", "Fees & taxes", "Other"] as const;
 
-const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comments"> = {
+const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comments" | "initiatives" | "initiative_steps"> = {
   stores: {
     name: "stores",
     label: "Stores",
@@ -581,6 +585,61 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
   },
 };
 
+export const INITIATIVE_KINDS = ["Strategy goal", "Campaign"] as const;
+export const INITIATIVE_STATUSES = ["Idea", "Planning", "In progress", "Done", "Paused"] as const;
+export const STEP_STATUSES = ["To do", "In progress", "Waiting", "Done"] as const;
+
+// Strategy goals and campaigns, each with steps and substeps. Only admins edit; marketing and Ricardo can see them.
+const INITIATIVES: RecordDef = {
+  name: "initiatives",
+  label: "Strategy & campaigns",
+  singular: "Campaign or goal",
+  titleKey: "name",
+  subtitleKey: "kind",
+  read: ["admin", "editor", "viewer"],
+  write: ADMIN,
+  defaults: { kind: "Campaign", status: "Planning", market: "Miami" },
+  sort: { key: "start", dir: "asc" },
+  fields: [
+    { key: "name", label: "Name", type: "text", required: true, table: true, wide: true },
+    { key: "kind", label: "Type", type: "select", options: INITIATIVE_KINDS, required: true, table: true, filter: true, help: "Strategy goal = a big aim for months · Campaign = a push with a start and an end" },
+    { key: "status", label: "Status", type: "select", options: INITIATIVE_STATUSES, table: true, filter: true },
+    { key: "owner", label: "In charge", type: "text", suggestTeam: true, table: true },
+    { key: "start", label: "Starts", type: "date", table: true },
+    { key: "end", label: "Ends", type: "date", table: true },
+    { key: "market", label: "Market", type: "select", options: ["Miami", "Spain"], required: true },
+    { key: "goal", label: "Goal (what success looks like)", type: "textarea", wide: true },
+    { key: "audience", label: "Who it's for", type: "text", wide: true },
+    { key: "channels", label: "Channels", type: "text", wide: true, placeholder: "e.g. Instagram, Google, email, in store" },
+    { key: "measure", label: "How we'll measure it", type: "text", wide: true },
+    { key: "budget", label: "Budget", type: "money" },
+    { key: "notes", label: "Notes", type: "textarea", wide: true },
+  ],
+};
+
+const INITIATIVE_STEPS: RecordDef = {
+  name: "initiative_steps",
+  label: "Steps",
+  singular: "Step",
+  titleKey: "title",
+  subtitleKey: "owner",
+  read: ["admin", "editor", "viewer"],
+  write: ADMIN,
+  defaults: { status: "To do" },
+  sort: { key: "sortOrder", dir: "asc" },
+  fields: [
+    { key: "title", label: "Step", type: "text", required: true, table: true, wide: true },
+    { key: "initiative", label: "Campaign or goal", type: "ref", ref: "initiatives", required: true },
+    { key: "parent", label: "Part of step", type: "ref", ref: "initiative_steps", help: "Leave empty for a main step; pick a step to make this a substep." },
+    { key: "owner", label: "In charge", type: "text", suggestTeam: true, table: true },
+    { key: "status", label: "Status", type: "select", options: STEP_STATUSES, table: true },
+    { key: "start", label: "Starts", type: "date", table: true },
+    { key: "end", label: "Due", type: "date", table: true },
+    { key: "sortOrder", label: "Order", type: "number" },
+    { key: "notes", label: "Notes", type: "textarea", wide: true },
+  ],
+};
+
 // Content review lives alongside the rest so it gets the same storage, import and permissions.
 const CONTENT_REVIEWS: RecordDef = {
   name: "content_reviews",
@@ -624,7 +683,7 @@ const REVIEW_COMMENTS: RecordDef = {
   ],
 };
 
-export const SCHEMAS: Record<RecordName, RecordDef> = { ...BASE, content_reviews: CONTENT_REVIEWS, review_comments: REVIEW_COMMENTS };
+export const SCHEMAS: Record<RecordName, RecordDef> = { ...BASE, content_reviews: CONTENT_REVIEWS, review_comments: REVIEW_COMMENTS, initiatives: INITIATIVES, initiative_steps: INITIATIVE_STEPS };
 
 export const isRecordName = (v: string): v is RecordName => (RECORD_NAMES as readonly string[]).includes(v);
 
@@ -646,6 +705,7 @@ export const PAGE_DATA: Record<string, RecordName[]> = {
   "/menu": ["menu_items"],
   "/company/docs": ["docs"],
   "/marketing/review": ["content_reviews", "review_comments"],
+  "/marketing/strategy": ["initiatives", "initiative_steps"],
 };
 
 /** Paused people see nothing; extra pages an admin switched on bring their data with them (view only). */

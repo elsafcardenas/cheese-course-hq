@@ -137,6 +137,16 @@ create policy "granted read docs" on public.docs for select using (
   and (public.my_role() <> 'store_manager' or store is null or store = 'Both stores' or store = public.my_store())
 );
 
+drop policy if exists "granted read initiatives" on public.initiatives;
+create policy "granted read initiatives" on public.initiatives for select using (
+  public.my_access() && array['miami:/marketing/strategy', 'spain:/marketing/strategy']
+);
+
+drop policy if exists "granted read initiative_steps" on public.initiative_steps;
+create policy "granted read initiative_steps" on public.initiative_steps for select using (
+  public.my_access() && array['miami:/marketing/strategy', 'spain:/marketing/strategy']
+);
+
 drop policy if exists "granted read content_reviews" on public.content_reviews;
 create policy "granted read content_reviews" on public.content_reviews for select using (
   public.my_access() && array['miami:/marketing/review', 'spain:/marketing/review']

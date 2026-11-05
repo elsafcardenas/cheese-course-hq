@@ -411,6 +411,48 @@ create policy "read docs" on public.docs for select using (
 );
 create policy "write docs" on public.docs for all using (public.my_role() in ('admin', 'editor')) with check (public.my_role() in ('admin', 'editor'));
 
+create table if not exists public.initiatives (
+  id text primary key default gen_random_uuid()::text,
+  name text,
+  kind text,
+  status text,
+  owner text,
+  start_date date,
+  end_date date,
+  market text,
+  goal text,
+  audience text,
+  channels text,
+  measure text,
+  budget numeric(12,2),
+  notes text,
+  created_at timestamptz not null default now()
+);
+alter table public.initiatives enable row level security;
+create policy "read initiatives" on public.initiatives for select using (
+  public.my_role() in ('admin', 'editor', 'viewer')
+);
+create policy "write initiatives" on public.initiatives for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+
+create table if not exists public.initiative_steps (
+  id text primary key default gen_random_uuid()::text,
+  title text,
+  initiative text,
+  parent text,
+  owner text,
+  status text,
+  start_date date,
+  end_date date,
+  sort_order numeric,
+  notes text,
+  created_at timestamptz not null default now()
+);
+alter table public.initiative_steps enable row level security;
+create policy "read initiative_steps" on public.initiative_steps for select using (
+  public.my_role() in ('admin', 'editor', 'viewer')
+);
+create policy "write initiative_steps" on public.initiative_steps for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+
 create table if not exists public.content_reviews (
   id text primary key default gen_random_uuid()::text,
   title text,

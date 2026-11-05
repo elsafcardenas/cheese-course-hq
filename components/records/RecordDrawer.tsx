@@ -74,6 +74,7 @@ export function FieldInput({
       value={String(v)}
       readOnly={readOnly}
       placeholder={f.placeholder}
+      list={f.suggestTeam ? "team-names" : undefined}
       onChange={(e) => onChange(f.type === "number" || f.type === "money" ? (e.target.value === "" ? null : Number(e.target.value)) : e.target.value)}
     />
   );
@@ -105,7 +106,10 @@ export function RecordDrawer({
   lockStore,
   hidden = [],
   footerExtra,
+  team = [],
 }: {
+  /** Names offered while typing in "In charge" style fields. */
+  team?: string[];
   name: RecordName;
   record: Rec | null;
   onClose: () => void;
@@ -152,6 +156,11 @@ export function RecordDrawer({
         </>
       }
     >
+      <datalist id="team-names">
+        {team.map((n) => (
+          <option key={n} value={n} />
+        ))}
+      </datalist>
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
         {def.fields
           .filter((f) => !hidden.includes(f.key) && (!f.showWhen || f.showWhen.in.includes(String(r[f.showWhen.key] ?? ""))))

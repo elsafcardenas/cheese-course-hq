@@ -27,6 +27,7 @@ const MIAMI: NavGroup[] = [
     tone: "--dept-marketing",
     items: [
       { href: "/marketing/calendar", label: "Content calendar", icon: "calendar", roles: ALL },
+      { href: "/marketing/strategy", label: "Strategy & campaigns", icon: "flag", roles: MKT, hint: "Goals, campaigns, steps, owners and timelines" },
       { href: "/marketing/review", label: "Review & approval", icon: "check-circle", roles: MKT, hint: "Graphics, videos and copy" },
       { href: "/marketing/platforms", label: "Platforms", icon: "share", roles: MKT },
       { href: "/marketing/performance", label: "Performance", icon: "chart", roles: MKT, hint: "KPIs and the video log" },
@@ -81,6 +82,7 @@ const SPAIN: NavGroup[] = [
     tone: "--dept-marketing",
     items: [
       { href: "/marketing/calendar", label: "Content bank", icon: "calendar", roles: TEAM, hint: "Posts waiting for each milestone" },
+      { href: "/marketing/strategy", label: "Strategy & campaigns", icon: "flag", roles: MKT, hint: "Goals, campaigns, steps, owners and timelines" },
       { href: "/marketing/review", label: "Review & approval", icon: "check-circle", roles: MKT },
       { href: "/marketing/platforms", label: "Platforms", icon: "share", roles: MKT },
       { href: "/marketing/plan", label: "Plan", icon: "route", roles: MKT },
