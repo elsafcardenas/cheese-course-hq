@@ -66,7 +66,7 @@ export const WORKFLOW = [
   { who: "Luis", when: "His day in CDMX", what: "Designs covers, carousels and Stories in the templates; drops finals in Drive; pastes the link in the post; sets Ready to post." },
   { who: "Elsa", when: "Tuesday to Thursday", what: "Edits Reels from Drive footage in Edits or Canva; sets In edit, then Ready to post." },
   { who: "Elsa", when: "Weekly", what: "Schedules in Meta Business Suite for Miami lunch (11:00–12:30 ET) or evening (18:00–20:00 ET) and sets Scheduled. Test and adjust." },
-  { who: "Dad", when: "Fridays", what: "Looks at Calendar > For Dad and leaves comments. His opinion, not an approval step." },
+  { who: "Ricardo", when: "Fridays", what: "Looks at Calendar > For Ricardo and leaves comments. His opinion, not an approval step." },
   { who: "Elsa", when: "First Friday of the month", what: "Logs the KPIs, checks the video log median, and sends the monthly report." },
 ];
 

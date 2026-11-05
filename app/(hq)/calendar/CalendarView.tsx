@@ -104,7 +104,7 @@ export function CalendarView({
           ))}
         </select>
         <button onClick={() => setForDad((v) => !v)} className={cx("btn", forDad && "border-accent bg-accent/10 text-accent")} title="Posts that are finished or close, plus any with comments">
-          <MessageSquare size={14} /> For Dad
+          <MessageSquare size={14} /> For Ricardo
         </button>
         <div className="ml-auto flex items-center gap-2">
           {error && <span className="text-[12.5px] text-bad">{error}</span>}
@@ -270,7 +270,7 @@ export function CalendarView({
                 <th className="th">Pillar</th>
                 <th className="th">Owner</th>
                 <th className="th">Status</th>
-                <th className="th">Dad</th>
+                <th className="th">Ricardo</th>
               </tr>
             </thead>
             <tbody>

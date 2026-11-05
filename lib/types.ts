@@ -6,7 +6,7 @@ export type Market = (typeof MARKETS)[number];
 export const STORES = ["Weston", "Pinecrest", "Both stores"] as const;
 export type Store = (typeof STORES)[number];
 
-export const OWNERS = ["Elsa", "Luis", "Elsa + Luis", "Dad", "María", "Juan", "Store manager"] as const;
+export const OWNERS = ["Elsa", "Luis", "Elsa + Luis", "Ricardo", "María", "Juan", "Store manager"] as const;
 export type Owner = (typeof OWNERS)[number];
 
 export const WORKSTREAMS = [
@@ -146,7 +146,7 @@ export type PlatformRow = {
   checklist: string;
 };
 
-export const DECISION_STATUSES = ["Decided", "Needs Dad", "Open", "Reversed"] as const;
+export const DECISION_STATUSES = ["Decided", "Needs Ricardo", "Open", "Reversed"] as const;
 export type DecisionStatus = (typeof DECISION_STATUSES)[number];
 
 export type Decision = {

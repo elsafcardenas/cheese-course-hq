@@ -202,7 +202,7 @@ export async function saveDecision(input: z.input<typeof DecisionInput>) {
   });
 }
 
-/** Dad (or Elsa) answers a decision that was waiting on him. */
+/** Ricardo (or Elsa) answers a decision that was waiting on him. */
 export async function answerDecision(id: string, answer: string) {
   return run(async () => {
     const repo = getRepo();
@@ -389,7 +389,7 @@ export async function updateMember(id: string, patch: { role: string; store: str
   });
 }
 
-/** Demo mode only: preview the app as Luis, Dad or a store manager. */
+/** Demo mode only: preview the app as Luis, Ricardo or a store manager. */
 export async function setDemoAs(profileId: string) {
   if (isLive()) return;
   const store = await cookies();

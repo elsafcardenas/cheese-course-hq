@@ -304,11 +304,11 @@ create policy "store managers update their tasks" on public.tasks for update
 create policy "store managers add assets" on public.assets for insert
   with check (public.my_role() = 'store_manager' and store = public.my_store());
 
--- Dad (viewer) answers open decisions.
+-- Ricardo (viewer) answers open decisions.
 create policy "viewers answer decisions" on public.decisions for update
   using (public.my_role() = 'viewer') with check (public.my_role() = 'viewer');
 
--- Viewers may write one field on a post: Dad's comments. Done through a function so the
+-- Viewers may write one field on a post: Ricardo's comments. Done through a function so the
 -- rest of the post stays read-only for them.
 create or replace function public.set_dad_comment(post_id text, body text) returns void
 language plpgsql security definer set search_path = public as $$

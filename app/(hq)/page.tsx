@@ -47,7 +47,7 @@ export default async function TodayPage() {
       thisWeek={thisWeek}
       waiting={waiting}
       upcoming={upcoming}
-      needsDad={user.role === "store_manager" ? [] : decisions.filter((d) => d.status === "Needs Dad")}
+      needsDad={user.role === "store_manager" ? [] : decisions.filter((d) => d.status === "Needs Ricardo")}
       stats={{
         medianViews: medianViews(reels),
         reelCount: reels.length,

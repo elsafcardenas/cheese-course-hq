@@ -8,13 +8,13 @@ It replaces the Notion workspace as the day-to-day tool. Notion keeps the long w
 
 | Tab | What it's for |
 | --- | --- |
-| **Today** | Clocks for Madrid, Miami and Mexico City; what's due this week; next posts; decisions waiting on Dad; open work by workstream; Miami pillar mix vs target. |
-| **Calendar** | Month view (drag a post to another day), board by status (drag to move it along), list view, a "For Dad" filter, and the Spain post bank. |
+| **Today** | Clocks for Madrid, Miami and Mexico City; what's due this week; next posts; decisions waiting on Ricardo; open work by workstream; Miami pillar mix vs target. |
+| **Calendar** | Month view (drag a post to another day), board by status (drag to move it along), list view, a "For Ricardo" filter, and the Spain post bank. |
 | **Tasks** | List, board and by-owner views; filters; inline status changes; edit drawer. |
 | **Platforms** | Every Miami and Spain account in opening order, with status and a tickable setup checklist. |
 | **KPIs** | Baselines and 3/6-month targets, a monthly log with charts, the video log (median views, engagement), sales by store, Google Business numbers, and the Square menu-engineering matrix. |
 | **Plan** | The two tracks, the Balanced timeline as a Gantt, pillars, the weekly Elsa ↔ Luis workflow, links to Notion. |
-| **Decisions** | Decisions by status; Dad can answer the ones waiting on him; meeting log. |
+| **Decisions** | Decisions by status; Ricardo can answer the ones waiting on him; meeting log. |
 | **Toolkit** | Hook library, caption builder, shoot-list generator, brief for Luis, time-zone helper, hashtag sets. |
 | **Assets** | Drive folders and links; store managers upload footage. |
 | **Integrations** | Connect, sync and check each data source. |
@@ -26,7 +26,7 @@ It replaces the Notion workspace as the day-to-day tool. Notion keeps the long w
 | --- | --- | --- |
 | Admin | Elsa | Everything, including integrations and the team. |
 | Editor | Luis | Edit posts, tasks, assets and the video log. |
-| Viewer | Dad | See everything; comment on posts; answer decisions. |
+| Viewer | Ricardo | See everything; comment on posts; answer decisions. |
 | Store manager | Weston, Pinecrest | See their store's tasks and posts; update their tasks; upload footage. |
 
 Roles are enforced twice: in the app, and in the database with row level security, so nobody can read or write more than their role allows even outside the app. Integration tokens are only readable by the server.
@@ -42,7 +42,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. With no database configured the app runs in **demo mode** on a copy of the Notion data (52 tasks, 25 posts, 20 platforms, 15 decisions, KPIs, sales). Changes are kept until the server restarts. Use **Preview as** at the bottom of the sidebar to see what Luis, Dad or a store manager sees.
+Open http://localhost:3000. With no database configured the app runs in **demo mode** on a copy of the Notion data (52 tasks, 25 posts, 20 platforms, 15 decisions, KPIs, sales). Changes are kept until the server restarts. Use **Preview as** at the bottom of the sidebar to see what Luis, Ricardo or a store manager sees.
 
 ## Put it online (about 30 minutes, free tiers)
 

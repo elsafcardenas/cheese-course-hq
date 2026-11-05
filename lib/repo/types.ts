@@ -46,7 +46,7 @@ export interface Repo {
   upsert<K extends CollectionName>(name: K, row: Collections[K]): Promise<void>;
   remove(name: CollectionName, id: string): Promise<void>;
 
-  /** Dad's review notes: viewers may write this one field on a post and nothing else. */
+  /** Ricardo's review notes: viewers may write this one field on a post and nothing else. */
   setDadComment(postId: string, text: string): Promise<void>;
 
   sales(): Promise<SalesRow[]>;

@@ -191,7 +191,7 @@ export function PostDrawer({
           </div>
         </Field>
         <div className="rounded-card border border-line bg-sunk p-3">
-          <Field label="Dad's comments (his opinion, not an approval step)">
+          <Field label="Ricardo's comments (his opinion, not an approval step)">
             <textarea
               className="input min-h-[70px]"
               value={p.dadComments}

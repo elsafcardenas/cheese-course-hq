@@ -45,7 +45,7 @@ export function TodayView(p: Props) {
     <>
       <PageHeader eyebrow={fmtDate(p.today, { weekday: "long", month: "long", day: "numeric" })} title={greeting(p.user.name)}>
         {s.overdue > 0 ? `${s.overdue} overdue task${s.overdue > 1 ? "s" : ""}, ` : ""}
-        {p.thisWeek.length} due this week{p.needsDad.length ? `, ${p.needsDad.length} decisions waiting on Dad` : ""}.
+        {p.thisWeek.length} due this week{p.needsDad.length ? `, ${p.needsDad.length} decisions waiting on Ricardo` : ""}.
       </PageHeader>
 
       <Clocks />
@@ -140,7 +140,7 @@ export function TodayView(p: Props) {
           </Section>
 
           {p.needsDad.length > 0 && (
-            <Section title="Waiting on Dad" sub={p.canAnswer && p.user.role === "viewer" ? "Write your answer and press Decide" : "Bring these to the next call"}>
+            <Section title="Waiting on Ricardo" sub={p.canAnswer && p.user.role === "viewer" ? "Write your answer and press Decide" : "Bring these to the next call"}>
               <ul>
                 {p.needsDad.map((d) => (
                   <DecisionRow key={d.id} d={d} canAnswer={p.canAnswer} />

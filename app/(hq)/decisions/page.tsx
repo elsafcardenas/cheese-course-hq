@@ -11,7 +11,7 @@ export default async function DecisionsPage() {
   return (
     <>
       <PageHeader eyebrow="Record" title="Decisions and meetings">
-        What has been decided, what is waiting on Dad, and what came out of each meeting.
+        What has been decided, what is waiting on Ricardo, and what came out of each meeting.
       </PageHeader>
       <DecisionsView
         decisions={decisions}

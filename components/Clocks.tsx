@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 export const ZONES = [
   { city: "Madrid", tz: "Europe/Madrid", who: "Elsa", work: [9, 19] },
-  { city: "Miami", tz: "America/New_York", who: "Stores, Dad", work: [8, 18] },
+  { city: "Miami", tz: "America/New_York", who: "Stores, Ricardo", work: [8, 18] },
   { city: "Mexico City", tz: "America/Mexico_City", who: "Luis", work: [9, 18] },
 ] as const;
 

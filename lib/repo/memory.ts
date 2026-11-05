@@ -6,7 +6,7 @@ import type { Collections, CollectionName, Repo, StoredIntegration } from "./typ
 export const DEMO_PROFILES: Profile[] = [
   { id: "u-elsa", email: "elsa@thecheesecourse.com", name: "Elsa", role: "admin", store: null },
   { id: "u-luis", email: "luis@thecheesecourse.com", name: "Luis", role: "editor", store: null },
-  { id: "u-dad", email: "dad@thecheesecourse.com", name: "Dad", role: "viewer", store: null },
+  { id: "u-dad", email: "ricardo@thecheesecourse.com", name: "Ricardo", role: "viewer", store: null },
   { id: "u-weston", email: "weston@thecheesecourse.com", name: "Weston manager", role: "store_manager", store: "Weston" },
   { id: "u-pinecrest", email: "pinecrest@thecheesecourse.com", name: "Pinecrest manager", role: "store_manager", store: "Pinecrest" },
 ];

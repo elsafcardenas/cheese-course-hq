@@ -11,11 +11,11 @@ import { cx, fmtDate, MARKET_TONE } from "@/lib/ui";
 
 const STATUS_TONE: Record<DecisionStatus, string> = {
   Decided: "bg-good/15 text-good",
-  "Needs Dad": "bg-warn/15 text-warn",
+  "Needs Ricardo": "bg-warn/15 text-warn",
   Open: "bg-sunk text-ink",
   Reversed: "bg-bad/10 text-bad",
 };
-const ORDER: DecisionStatus[] = ["Needs Dad", "Open", "Decided", "Reversed"];
+const ORDER: DecisionStatus[] = ["Needs Ricardo", "Open", "Decided", "Reversed"];
 
 export function DecisionsView({
   decisions,
@@ -58,7 +58,7 @@ export function DecisionsView({
           const rows = list.filter((d) => d.status === status);
           if (!rows.length) return null;
           return (
-            <Section key={status} title={status} sub={status === "Needs Dad" ? "Answer here; the answer is saved with your name and today's date" : undefined}>
+            <Section key={status} title={status} sub={status === "Needs Ricardo" ? "Answer here; the answer is saved with your name and today's date" : undefined}>
               <ul>
                 {rows.map((d) => (
                   <DecisionItem key={d.id} d={d} canAnswer={canAnswer && status !== "Decided"} canEdit={canEdit} onEdit={() => setEdit(d)} />
@@ -73,7 +73,7 @@ export function DecisionsView({
         title="Meetings"
         actions={
           canMeetings && (
-            <button className="btn" onClick={() => setMeeting({ id: "", title: "", date: today, attendees: ["Elsa", "Dad"], type: "Check-in", market: "Both", keyDecisions: "", notes: "" })}>
+            <button className="btn" onClick={() => setMeeting({ id: "", title: "", date: today, attendees: ["Elsa", "Ricardo"], type: "Check-in", market: "Both", keyDecisions: "", notes: "" })}>
               <Plus size={14} /> Log a meeting
             </button>
           )

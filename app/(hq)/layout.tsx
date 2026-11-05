@@ -31,7 +31,7 @@ export default async function HqLayout({ children }: { children: React.ReactNode
   const today = todayISO();
   const mine = visibleToUser(user, tasks);
   const overdue = mine.filter((t) => t.deadline && t.deadline < today && t.status !== "Done" && t.status !== "Cancelled").length;
-  const needsDad = decisions.filter((d) => d.status === "Needs Dad").length;
+  const needsDad = decisions.filter((d) => d.status === "Needs Ricardo").length;
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">

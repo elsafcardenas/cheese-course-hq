@@ -118,7 +118,7 @@ export default function PlanPage() {
           </ul>
         </Section>
 
-        <Section title="Weekly workflow" sub="Elsa in Madrid, Luis in CDMX, the stores and Dad in Miami">
+        <Section title="Weekly workflow" sub="Elsa in Madrid, Luis in CDMX, the stores and Ricardo in Miami">
           <ol>
             {WORKFLOW.map((w, i) => (
               <li key={i} className="flex gap-3 border-b border-line px-4 py-3 last:border-0">
