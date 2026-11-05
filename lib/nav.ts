@@ -1,10 +1,10 @@
 import type { Profile, Role } from "@/lib/types";
 
-const ALL: Role[] = ["admin", "editor", "viewer", "store_manager"];
-const MGMT: Role[] = ["admin", "viewer"];
-const OPS: Role[] = ["admin", "viewer", "store_manager"];
-const MKT: Role[] = ["admin", "editor", "viewer"];
-const TEAM: Role[] = ["admin", "editor", "viewer"];
+const ALL: Role[] = ["admin", "ops_manager", "editor", "viewer", "store_manager"];
+const MGMT: Role[] = ["admin", "ops_manager", "viewer"];
+const OPS: Role[] = ["admin", "ops_manager", "viewer", "store_manager"];
+const MKT: Role[] = ["admin", "ops_manager", "editor", "viewer"];
+const TEAM: Role[] = ["admin", "ops_manager", "editor", "viewer"];
 
 /** Miami and Spain are kept completely separate: each has its own workspace and sidebar. */
 export const WORKSPACES = ["miami", "spain"] as const;

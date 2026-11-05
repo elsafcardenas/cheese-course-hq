@@ -1,4 +1,4 @@
-import { OWNERS, type Post, type Profile, type Role, type Task } from "@/lib/types";
+import { OWNERS, ROLES, type Post, type Profile, type Role, type Task } from "@/lib/types";
 
 export type Action =
   | "edit:tasks"
@@ -17,6 +17,7 @@ export type Action =
 
 const MATRIX: Record<Role, Action[] | "all"> = {
   admin: "all",
+  ops_manager: ["edit:tasks", "comment", "answer:decisions", "update:store-tasks", "upload:footage", "edit:assets"],
   editor: ["edit:tasks", "edit:posts", "edit:assets", "upload:footage", "edit:kpis"],
   viewer: ["comment", "answer:decisions"],
   store_manager: ["update:store-tasks", "upload:footage"],
@@ -30,6 +31,7 @@ export function can(user: Profile | null, action: Action): boolean {
 
 export const ROLE_LABEL: Record<Role, string> = {
   admin: "Admin",
+  ops_manager: "Operations manager",
   editor: "Editor",
   viewer: "Viewer (comments)",
   store_manager: "Store manager",
@@ -37,13 +39,14 @@ export const ROLE_LABEL: Record<Role, string> = {
 
 export const ROLE_HELP: Record<Role, string> = {
   admin: "Can see and change everything, including the team and settings.",
+  ops_manager: "Runs the business day to day: stores, staff, menu, suppliers, catering and finance. Sees marketing. Can't change the team or settings.",
   editor: "Can change marketing: posts, reviews, tasks and footage.",
   viewer: "Can look at everything and comment, and answer decisions. Can't change things.",
   store_manager: "Can do their store's checklists, catering orders, problems and footage.",
 };
 
 /** Admins and viewers (Ricardo) see every task; everyone else only the tasks assigned to them. */
-export const seesAllTasks = (user: Profile | null) => !!user && (user.role === "admin" || user.role === "viewer");
+export const seesAllTasks = (user: Profile | null) => !!user && (user.role === "admin" || user.role === "ops_manager" || user.role === "viewer");
 
 /** True when this person is one of a task's owners ("Elsa + Luis" belongs to both; store managers own "Store manager" tasks). */
 export function ownsTask(user: Profile, owner: string) {
@@ -60,7 +63,7 @@ export function tasksFor<T extends Pick<Task, "owner" | "store">>(user: Profile 
 
 /** Names to offer in a task's Owner list: the team first, then the usual extras. */
 export const ownerOptions = (people: Profile[], current?: string) =>
-  [...new Set([...people.filter((p) => p.status !== "paused").map((p) => (p.role === "store_manager" ? "Store manager" : p.name)), ...OWNERS, ...(current ? [current] : [])])];
+  [...new Set([...people.filter((p) => p.status !== "paused").sort((a, b) => ROLES.indexOf(a.role) - ROLES.indexOf(b.role)).map((p) => (p.role === "store_manager" ? "Store manager" : p.name)), ...OWNERS, ...(current ? [current] : [])])];
 
 /** Store managers only see rows for their store (or both stores). Everyone else sees everything. */
 export function visibleToUser<T extends Pick<Task | Post, "store">>(user: Profile | null, rows: T[]): T[] {

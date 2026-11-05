@@ -18,10 +18,10 @@ create table if not exists public.stores (
 );
 alter table public.stores enable row level security;
 create policy "read stores" on public.stores for select using (
-  public.my_role() in ('admin', 'editor', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
   or (public.my_role() = 'store_manager' and (name is null or name = 'Both stores' or name = public.my_store()))
 );
-create policy "write stores" on public.stores for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write stores" on public.stores for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 create policy "managers write stores" on public.stores for all using (public.my_role() = 'store_manager' and name = public.my_store()) with check (public.my_role() = 'store_manager' and name = public.my_store());
 
 create table if not exists public.staff (
@@ -40,10 +40,10 @@ create table if not exists public.staff (
 );
 alter table public.staff enable row level security;
 create policy "read staff" on public.staff for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
   or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
 );
-create policy "write staff" on public.staff for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write staff" on public.staff for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 create policy "managers write staff" on public.staff for all using (public.my_role() = 'store_manager' and store = public.my_store()) with check (public.my_role() = 'store_manager' and store = public.my_store());
 
 create table if not exists public.shifts (
@@ -58,10 +58,10 @@ create table if not exists public.shifts (
 );
 alter table public.shifts enable row level security;
 create policy "read shifts" on public.shifts for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
   or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
 );
-create policy "write shifts" on public.shifts for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write shifts" on public.shifts for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 create policy "managers write shifts" on public.shifts for all using (public.my_role() = 'store_manager' and store = public.my_store()) with check (public.my_role() = 'store_manager' and store = public.my_store());
 
 create table if not exists public.checklists (
@@ -75,10 +75,10 @@ create table if not exists public.checklists (
 );
 alter table public.checklists enable row level security;
 create policy "read checklists" on public.checklists for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
   or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
 );
-create policy "write checklists" on public.checklists for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write checklists" on public.checklists for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 
 create table if not exists public.checklist_runs (
   id text primary key default gen_random_uuid()::text,
@@ -92,10 +92,10 @@ create table if not exists public.checklist_runs (
 );
 alter table public.checklist_runs enable row level security;
 create policy "read checklist_runs" on public.checklist_runs for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
   or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
 );
-create policy "write checklist_runs" on public.checklist_runs for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write checklist_runs" on public.checklist_runs for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 create policy "managers write checklist_runs" on public.checklist_runs for all using (public.my_role() = 'store_manager' and store = public.my_store()) with check (public.my_role() = 'store_manager' and store = public.my_store());
 
 create table if not exists public.maintenance (
@@ -114,10 +114,10 @@ create table if not exists public.maintenance (
 );
 alter table public.maintenance enable row level security;
 create policy "read maintenance" on public.maintenance for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
   or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
 );
-create policy "write maintenance" on public.maintenance for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write maintenance" on public.maintenance for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 create policy "managers write maintenance" on public.maintenance for all using (public.my_role() = 'store_manager' and store = public.my_store()) with check (public.my_role() = 'store_manager' and store = public.my_store());
 
 create table if not exists public.catering_orders (
@@ -140,10 +140,10 @@ create table if not exists public.catering_orders (
 );
 alter table public.catering_orders enable row level security;
 create policy "read catering_orders" on public.catering_orders for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
   or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
 );
-create policy "write catering_orders" on public.catering_orders for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write catering_orders" on public.catering_orders for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 create policy "managers write catering_orders" on public.catering_orders for all using (public.my_role() = 'store_manager' and store = public.my_store()) with check (public.my_role() = 'store_manager' and store = public.my_store());
 
 create table if not exists public.suppliers (
@@ -163,10 +163,10 @@ create table if not exists public.suppliers (
 );
 alter table public.suppliers enable row level security;
 create policy "read suppliers" on public.suppliers for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
   or (public.my_role() = 'store_manager' and true)
 );
-create policy "write suppliers" on public.suppliers for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write suppliers" on public.suppliers for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 
 create table if not exists public.inventory_items (
   id text primary key default gen_random_uuid()::text,
@@ -185,10 +185,10 @@ create table if not exists public.inventory_items (
 );
 alter table public.inventory_items enable row level security;
 create policy "read inventory_items" on public.inventory_items for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
   or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
 );
-create policy "write inventory_items" on public.inventory_items for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write inventory_items" on public.inventory_items for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 create policy "managers write inventory_items" on public.inventory_items for all using (public.my_role() = 'store_manager' and store = public.my_store()) with check (public.my_role() = 'store_manager' and store = public.my_store());
 
 create table if not exists public.purchase_orders (
@@ -206,10 +206,10 @@ create table if not exists public.purchase_orders (
 );
 alter table public.purchase_orders enable row level security;
 create policy "read purchase_orders" on public.purchase_orders for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
   or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
 );
-create policy "write purchase_orders" on public.purchase_orders for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write purchase_orders" on public.purchase_orders for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 create policy "managers write purchase_orders" on public.purchase_orders for all using (public.my_role() = 'store_manager' and store = public.my_store()) with check (public.my_role() = 'store_manager' and store = public.my_store());
 
 create table if not exists public.waste_log (
@@ -225,10 +225,10 @@ create table if not exists public.waste_log (
 );
 alter table public.waste_log enable row level security;
 create policy "read waste_log" on public.waste_log for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
   or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
 );
-create policy "write waste_log" on public.waste_log for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write waste_log" on public.waste_log for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 create policy "managers write waste_log" on public.waste_log for all using (public.my_role() = 'store_manager' and store = public.my_store()) with check (public.my_role() = 'store_manager' and store = public.my_store());
 
 create table if not exists public.menu_items (
@@ -252,10 +252,10 @@ create table if not exists public.menu_items (
 );
 alter table public.menu_items enable row level security;
 create policy "read menu_items" on public.menu_items for select using (
-  public.my_role() in ('admin', 'editor', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
   or (public.my_role() = 'store_manager' and true)
 );
-create policy "write menu_items" on public.menu_items for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write menu_items" on public.menu_items for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 
 create table if not exists public.expenses (
   id text primary key default gen_random_uuid()::text,
@@ -270,9 +270,9 @@ create table if not exists public.expenses (
 );
 alter table public.expenses enable row level security;
 create policy "read expenses" on public.expenses for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
 );
-create policy "write expenses" on public.expenses for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write expenses" on public.expenses for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 
 create table if not exists public.budget_lines (
   id text primary key default gen_random_uuid()::text,
@@ -284,9 +284,9 @@ create table if not exists public.budget_lines (
 );
 alter table public.budget_lines enable row level security;
 create policy "read budget_lines" on public.budget_lines for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
 );
-create policy "write budget_lines" on public.budget_lines for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write budget_lines" on public.budget_lines for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 
 create table if not exists public.sales_monthly (
   id text primary key default gen_random_uuid()::text,
@@ -299,9 +299,9 @@ create table if not exists public.sales_monthly (
 );
 alter table public.sales_monthly enable row level security;
 create policy "read sales_monthly" on public.sales_monthly for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
 );
-create policy "write sales_monthly" on public.sales_monthly for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write sales_monthly" on public.sales_monthly for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 
 create table if not exists public.reviews (
   id text primary key default gen_random_uuid()::text,
@@ -318,10 +318,10 @@ create table if not exists public.reviews (
 );
 alter table public.reviews enable row level security;
 create policy "read reviews" on public.reviews for select using (
-  public.my_role() in ('admin', 'editor', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
   or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
 );
-create policy "write reviews" on public.reviews for all using (public.my_role() in ('admin', 'editor')) with check (public.my_role() in ('admin', 'editor'));
+create policy "write reviews" on public.reviews for all using (public.my_role() in ('admin', 'ops_manager', 'editor')) with check (public.my_role() in ('admin', 'ops_manager', 'editor'));
 create policy "managers write reviews" on public.reviews for all using (public.my_role() = 'store_manager' and store = public.my_store()) with check (public.my_role() = 'store_manager' and store = public.my_store());
 
 create table if not exists public.madrid_locations (
@@ -340,9 +340,9 @@ create table if not exists public.madrid_locations (
 );
 alter table public.madrid_locations enable row level security;
 create policy "read madrid_locations" on public.madrid_locations for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
 );
-create policy "write madrid_locations" on public.madrid_locations for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write madrid_locations" on public.madrid_locations for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 
 create table if not exists public.madrid_milestones (
   id text primary key default gen_random_uuid()::text,
@@ -356,9 +356,9 @@ create table if not exists public.madrid_milestones (
 );
 alter table public.madrid_milestones enable row level security;
 create policy "read madrid_milestones" on public.madrid_milestones for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
 );
-create policy "write madrid_milestones" on public.madrid_milestones for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write madrid_milestones" on public.madrid_milestones for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 
 create table if not exists public.madrid_budget (
   id text primary key default gen_random_uuid()::text,
@@ -371,9 +371,9 @@ create table if not exists public.madrid_budget (
 );
 alter table public.madrid_budget enable row level security;
 create policy "read madrid_budget" on public.madrid_budget for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
 );
-create policy "write madrid_budget" on public.madrid_budget for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write madrid_budget" on public.madrid_budget for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 
 create table if not exists public.madrid_contacts (
   id text primary key default gen_random_uuid()::text,
@@ -388,9 +388,9 @@ create table if not exists public.madrid_contacts (
 );
 alter table public.madrid_contacts enable row level security;
 create policy "read madrid_contacts" on public.madrid_contacts for select using (
-  public.my_role() in ('admin', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'viewer')
 );
-create policy "write madrid_contacts" on public.madrid_contacts for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
+create policy "write madrid_contacts" on public.madrid_contacts for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 
 create table if not exists public.docs (
   id text primary key default gen_random_uuid()::text,
@@ -406,10 +406,10 @@ create table if not exists public.docs (
 );
 alter table public.docs enable row level security;
 create policy "read docs" on public.docs for select using (
-  public.my_role() in ('admin', 'editor', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
   or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
 );
-create policy "write docs" on public.docs for all using (public.my_role() in ('admin', 'editor')) with check (public.my_role() in ('admin', 'editor'));
+create policy "write docs" on public.docs for all using (public.my_role() in ('admin', 'ops_manager', 'editor')) with check (public.my_role() in ('admin', 'ops_manager', 'editor'));
 
 create table if not exists public.initiatives (
   id text primary key default gen_random_uuid()::text,
@@ -430,7 +430,7 @@ create table if not exists public.initiatives (
 );
 alter table public.initiatives enable row level security;
 create policy "read initiatives" on public.initiatives for select using (
-  public.my_role() in ('admin', 'editor', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
 );
 create policy "write initiatives" on public.initiatives for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
 
@@ -449,7 +449,7 @@ create table if not exists public.initiative_steps (
 );
 alter table public.initiative_steps enable row level security;
 create policy "read initiative_steps" on public.initiative_steps for select using (
-  public.my_role() in ('admin', 'editor', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
 );
 create policy "write initiative_steps" on public.initiative_steps for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
 
@@ -471,7 +471,7 @@ create table if not exists public.content_reviews (
 );
 alter table public.content_reviews enable row level security;
 create policy "read content_reviews" on public.content_reviews for select using (
-  public.my_role() in ('admin', 'editor', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
 );
 create policy "write content_reviews" on public.content_reviews for all using (public.my_role() in ('admin', 'editor')) with check (public.my_role() in ('admin', 'editor'));
 
@@ -486,7 +486,7 @@ create table if not exists public.review_comments (
 );
 alter table public.review_comments enable row level security;
 create policy "read review_comments" on public.review_comments for select using (
-  public.my_role() in ('admin', 'editor', 'viewer')
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
 );
 create policy "write review_comments" on public.review_comments for all using (public.my_role() in ('admin', 'editor', 'viewer')) with check (public.my_role() in ('admin', 'editor', 'viewer'));
 

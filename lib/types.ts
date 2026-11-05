@@ -238,7 +238,8 @@ export type Asset = {
   createdAt: string;
 };
 
-export const ROLES = ["admin", "editor", "viewer", "store_manager"] as const;
+/** Also the order people are listed in: Elsa (admin), Ricardo (viewer), María (operations), Luis (editor), store managers. */
+export const ROLES = ["admin", "viewer", "ops_manager", "editor", "store_manager"] as const;
 export type Role = (typeof ROLES)[number];
 
 export type Profile = {

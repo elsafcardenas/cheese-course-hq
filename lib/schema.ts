@@ -59,10 +59,12 @@ export type RecordDef = {
 export const OPS_STORES = ["Weston", "Pinecrest", "Both stores"] as const;
 export const COST_CENTRES = ["Weston", "Pinecrest", "Both stores", "Corporate"] as const;
 
-const ALL: Role[] = ["admin", "editor", "viewer", "store_manager"];
-const OPS_READ: Role[] = ["admin", "viewer", "store_manager"];
-const MGMT: Role[] = ["admin", "viewer"];
+const ALL: Role[] = ["admin", "ops_manager", "editor", "viewer", "store_manager"];
+const OPS_READ: Role[] = ["admin", "ops_manager", "viewer", "store_manager"];
+const MGMT: Role[] = ["admin", "ops_manager", "viewer"];
 const ADMIN: Role[] = ["admin"];
+/** Operations, menu, finance and Madrid: Elsa and the operations manager (María) can change them. */
+const OPS_WRITE: Role[] = ["admin", "ops_manager"];
 
 export const RECORD_NAMES = [
   "stores",
@@ -130,7 +132,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "name",
     subtitleKey: "address",
     read: ALL,
-    write: ADMIN,
+    write: OPS_WRITE,
     storeKey: "name",
     managerWrite: true,
     sort: { key: "sortOrder", dir: "asc" },
@@ -155,7 +157,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "name",
     subtitleKey: "role",
     read: OPS_READ,
-    write: ADMIN,
+    write: OPS_WRITE,
     storeKey: "store",
     managerWrite: true,
     defaults: { status: "Active", store: "Weston" },
@@ -179,7 +181,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     singular: "Shift",
     titleKey: "date",
     read: OPS_READ,
-    write: ADMIN,
+    write: OPS_WRITE,
     storeKey: "store",
     managerWrite: true,
     sort: { key: "date", dir: "asc" },
@@ -199,7 +201,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "name",
     subtitleKey: "frequency",
     read: OPS_READ,
-    write: ADMIN,
+    write: OPS_WRITE,
     storeKey: "store",
     defaults: { store: "Both stores", frequency: "Daily (opening)" },
     sort: { key: "sortOrder", dir: "asc" },
@@ -217,7 +219,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     singular: "Checklist run",
     titleKey: "date",
     read: OPS_READ,
-    write: ADMIN,
+    write: OPS_WRITE,
     storeKey: "store",
     managerWrite: true,
     fields: [
@@ -236,7 +238,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "title",
     subtitleKey: "area",
     read: OPS_READ,
-    write: ADMIN,
+    write: OPS_WRITE,
     storeKey: "store",
     managerWrite: true,
     defaults: { status: "Open", priority: "Medium", area: "Equipment" },
@@ -261,7 +263,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "customer",
     subtitleKey: "items",
     read: OPS_READ,
-    write: ADMIN,
+    write: OPS_WRITE,
     storeKey: "store",
     managerWrite: true,
     defaults: { status: "Enquiry", payment: "Unpaid", store: "Weston", source: "Phone" },
@@ -290,7 +292,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "name",
     subtitleKey: "category",
     read: OPS_READ,
-    write: ADMIN,
+    write: OPS_WRITE,
     sort: { key: "name", dir: "asc" },
     fields: [
       { key: "name", label: "Supplier", type: "text", required: true, table: true },
@@ -313,7 +315,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "name",
     subtitleKey: "category",
     read: OPS_READ,
-    write: ADMIN,
+    write: OPS_WRITE,
     storeKey: "store",
     managerWrite: true,
     defaults: { store: "Weston", unit: "kg" },
@@ -339,7 +341,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "reference",
     subtitleKey: "items",
     read: OPS_READ,
-    write: ADMIN,
+    write: OPS_WRITE,
     storeKey: "store",
     managerWrite: true,
     defaults: { status: "Draft", store: "Weston" },
@@ -363,7 +365,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "item",
     subtitleKey: "reason",
     read: OPS_READ,
-    write: ADMIN,
+    write: OPS_WRITE,
     storeKey: "store",
     managerWrite: true,
     defaults: { reason: "Expired", store: "Weston" },
@@ -385,7 +387,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "name",
     subtitleKey: "category",
     read: ALL,
-    write: ADMIN,
+    write: OPS_WRITE,
     defaults: { status: "Active", availability: "Both stores", market: "Miami", section: "Menu" },
     sort: { key: "name", dir: "asc" },
     fields: [
@@ -413,7 +415,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "vendor",
     subtitleKey: "category",
     read: MGMT,
-    write: ADMIN,
+    write: OPS_WRITE,
     defaults: { store: "Both stores", category: "Food & supplies" },
     sort: { key: "date", dir: "desc" },
     fields: [
@@ -432,7 +434,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     singular: "Budget line",
     titleKey: "category",
     read: MGMT,
-    write: ADMIN,
+    write: OPS_WRITE,
     defaults: { store: "Both stores" },
     sort: { key: "month", dir: "desc" },
     fields: [
@@ -448,7 +450,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     singular: "Monthly sales",
     titleKey: "store",
     read: MGMT,
-    write: ADMIN,
+    write: OPS_WRITE,
     sort: { key: "month", dir: "desc" },
     fields: [
       { key: "month", label: "Month", type: "date", required: true, table: true, help: "Any day in the month" },
@@ -465,7 +467,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "author",
     subtitleKey: "text",
     read: ALL,
-    write: ["admin", "editor"],
+    write: ["admin", "ops_manager", "editor"],
     storeKey: "store",
     managerWrite: true,
     defaults: { status: "New", type: "Review", source: "Google", store: "Weston" },
@@ -489,7 +491,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "area",
     subtitleKey: "address",
     read: MGMT,
-    write: ADMIN,
+    write: OPS_WRITE,
     defaults: { status: "Shortlisted" },
     sort: { key: "sortOrder", dir: "asc" },
     fields: [
@@ -512,7 +514,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "title",
     subtitleKey: "phase",
     read: MGMT,
-    write: ADMIN,
+    write: OPS_WRITE,
     defaults: { status: "Not started", owner: "Elsa" },
     sort: { key: "due", dir: "asc" },
     fields: [
@@ -531,7 +533,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "item",
     subtitleKey: "category",
     read: MGMT,
-    write: ADMIN,
+    write: OPS_WRITE,
     sort: { key: "category", dir: "asc" },
     fields: [
       { key: "item", label: "Item", type: "text", required: true, table: true },
@@ -548,7 +550,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "name",
     subtitleKey: "role",
     read: MGMT,
-    write: ADMIN,
+    write: OPS_WRITE,
     defaults: { status: "To contact" },
     sort: { key: "name", dir: "asc" },
     fields: [
@@ -568,7 +570,7 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     titleKey: "title",
     subtitleKey: "category",
     read: ALL,
-    write: ["admin", "editor"],
+    write: ["admin", "ops_manager", "editor"],
     storeKey: "store",
     defaults: { category: "SOP", market: "Miami" },
     sort: { key: "title", dir: "asc" },
@@ -596,7 +598,7 @@ const INITIATIVES: RecordDef = {
   singular: "Campaign or goal",
   titleKey: "name",
   subtitleKey: "kind",
-  read: ["admin", "editor", "viewer"],
+  read: ["admin", "ops_manager", "editor", "viewer"],
   write: ADMIN,
   defaults: { kind: "Campaign", status: "Planning", market: "Miami" },
   sort: { key: "start", dir: "asc" },
@@ -623,7 +625,7 @@ const INITIATIVE_STEPS: RecordDef = {
   singular: "Step",
   titleKey: "title",
   subtitleKey: "owner",
-  read: ["admin", "editor", "viewer"],
+  read: ["admin", "ops_manager", "editor", "viewer"],
   write: ADMIN,
   defaults: { status: "To do" },
   sort: { key: "sortOrder", dir: "asc" },
@@ -647,7 +649,7 @@ const CONTENT_REVIEWS: RecordDef = {
   singular: "Piece",
   titleKey: "title",
   subtitleKey: "format",
-  read: ["admin", "editor", "viewer"],
+  read: ["admin", "ops_manager", "editor", "viewer"],
   write: ["admin", "editor"],
   defaults: { kind: "Graphic", format: "Carousel", status: "In review", version: 1, market: "Miami", submittedBy: "Luis" },
   sort: { key: "due", dir: "asc" },
@@ -671,7 +673,7 @@ const REVIEW_COMMENTS: RecordDef = {
   label: "Review comments",
   singular: "Comment",
   titleKey: "body",
-  read: ["admin", "editor", "viewer"],
+  read: ["admin", "ops_manager", "editor", "viewer"],
   write: ["admin", "editor", "viewer"],
   sort: { key: "createdAt", dir: "asc" },
   fields: [

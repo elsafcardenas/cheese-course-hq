@@ -11,7 +11,7 @@ export default async function HelpPage() {
   const { user, ws } = await pageUser("/help");
   const es = (await cookies()).get("lang")?.value === "es";
   const L = (x: { en: string; es: string }) => (es ? x.es : x.en);
-  const mine = ROLES[{ admin: 0, editor: 1, viewer: 2, store_manager: 3 }[user.role]];
+  const mine = ROLES[{ admin: 0, viewer: 1, ops_manager: 2, editor: 3, store_manager: 4 }[user.role]];
   const visible = PAGES.filter((p) => p.href === "/" || itemFor(p.href, ws) || itemFor(p.href, ws === "miami" ? "spain" : "miami"));
   const link = appUrl();
 

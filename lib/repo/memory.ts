@@ -7,8 +7,9 @@ import type { Collections, CollectionName, ProfilePatch, Repo, StoredIntegration
 
 export const DEMO_PROFILES: Profile[] = [
   { id: "u-elsa", email: "elsa@thecheesecourse.com", name: "Elsa", role: "admin", store: null, title: "Marketing & operations", status: "active" },
-  { id: "u-luis", email: "luis@thecheesecourse.com", name: "Luis", role: "editor", store: null, title: "Designer", status: "active" },
   { id: "u-dad", email: "ricardo@thecheesecourse.com", name: "Ricardo", role: "viewer", store: null, title: "Owner", status: "active" },
+  { id: "u-maria", email: "maria@thecheesecourse.com", name: "María", role: "ops_manager", store: null, title: "Operations manager", status: "active" },
+  { id: "u-luis", email: "luis@thecheesecourse.com", name: "Luis", role: "editor", store: null, title: "Designer", status: "active" },
   { id: "u-weston", email: "weston@thecheesecourse.com", name: "Weston manager", role: "store_manager", store: "Weston", title: "Store manager", status: "active" },
   { id: "u-pinecrest", email: "pinecrest@thecheesecourse.com", name: "Pinecrest manager", role: "store_manager", store: "Pinecrest", title: "Store manager", status: "active" },
 ];

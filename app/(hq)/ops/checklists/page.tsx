@@ -19,7 +19,7 @@ export default async function ChecklistsPage() {
         today={todayISO()}
         me={user.name}
         canTick={canWriteRecords(user.role, "checklist_runs")}
-        canEditTemplates={canWriteRecords(user.role, "checklists") && user.role === "admin"}
+        canEditTemplates={canWriteRecords(user.role, "checklists") && (user.role === "admin" || user.role === "ops_manager")}
         lockStore={lockStoreFor(user)}
       />
     </>

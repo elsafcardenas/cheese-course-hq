@@ -20,18 +20,22 @@ const A = {
   numbers: { href: "/finance", icon: "wallet", tone: "--dept-finance", label: "See the numbers", sub: "Sales, spending, budget" },
   milestone: { href: "/madrid?tab=milestones", icon: "flag", tone: "--dept-madrid", label: "Update a milestone", sub: "Mark progress on the opening" },
   contact: { href: "/madrid?tab=contacts&new=1", icon: "users", tone: "--dept-madrid", label: "Add a contact", sub: "Partner, lawyer, architect…" },
+  prices: { href: "/menu", icon: "utensils", tone: "--dept-menu", label: "Update menu prices", sub: "Type the new price, press Enter" },
+  staff: { href: "/ops/staff", icon: "users", tone: "--dept-ops", label: "Add a staff member", sub: "Servers, baristas, cooks…" },
   help: { href: "/help", icon: "help", tone: "--dept-company", label: "How to use HQ", sub: "Short guide for your role" },
 } satisfies Record<string, Action>;
 
 const FOR: Record<Workspace, Partial<Record<Role, Action[]>>> = {
   miami: {
     admin: [A.task, A.post, A.review, A.catering, A.issue, A.feedback],
+    ops_manager: [A.catering, A.issue, A.task, A.prices, A.staff, A.numbers],
     editor: [A.review, A.post, A.task, A.help],
     viewer: [A.decide, A.forRicardo, A.numbers, A.help],
     store_manager: [A.checklist, A.catering, A.issue, A.waste, A.footage, A.help],
   },
   spain: {
     admin: [A.task, A.milestone, A.contact, A.post, A.review, A.help],
+    ops_manager: [A.milestone, A.contact, A.task, A.decide, A.help],
     editor: [A.review, A.post, A.task, A.help],
     viewer: [A.decide, A.milestone, A.help],
   },

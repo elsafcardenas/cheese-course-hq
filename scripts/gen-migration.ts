@@ -66,6 +66,20 @@ $$;
 
 -- Only admins change the new columns (the existing admin policy on profiles already covers updates).
 
+-- A fifth access level: the operations manager (María) runs stores, staff, menu, suppliers and finance.
+alter table public.profiles drop constraint if exists profiles_role_check;
+alter table public.profiles add constraint profiles_role_check check (role in ('admin', 'ops_manager', 'editor', 'viewer', 'store_manager'));
+drop policy if exists "ops managers read tasks" on public.tasks;
+create policy "ops managers read tasks" on public.tasks for select using (public.my_role() = 'ops_manager');
+drop policy if exists "ops managers read posts" on public.posts;
+create policy "ops managers read posts" on public.posts for select using (public.my_role() = 'ops_manager');
+drop policy if exists "ops managers write tasks" on public.tasks;
+create policy "ops managers write tasks" on public.tasks for all using (public.my_role() = 'ops_manager') with check (public.my_role() = 'ops_manager');
+drop policy if exists "ops managers add assets" on public.assets;
+create policy "ops managers add assets" on public.assets for insert with check (public.my_role() = 'ops_manager');
+drop policy if exists "ops managers answer decisions" on public.decisions;
+create policy "ops managers answer decisions" on public.decisions for update using (public.my_role() = 'ops_manager') with check (public.my_role() = 'ops_manager');
+
 `;
 
 const keysFor = (name: string) =>

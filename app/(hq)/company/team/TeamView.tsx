@@ -13,6 +13,7 @@ import { ROLES, type Profile, type Role } from "@/lib/types";
 
 const LEVEL: Record<Role, { name: string; icon: string; tone: string }> = {
   admin: { name: "Admin", icon: "user-cog", tone: "--dept-company" },
+  ops_manager: { name: "Operations manager", icon: "building", tone: "--dept-ops" },
   editor: { name: "Editor", icon: "wand", tone: "--dept-marketing" },
   viewer: { name: "Viewer", icon: "eye", tone: "--dept-finance" },
   store_manager: { name: "Store manager", icon: "store", tone: "--dept-ops" },

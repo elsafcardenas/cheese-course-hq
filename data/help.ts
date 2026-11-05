@@ -57,17 +57,7 @@ export const ROLES: { who: L; does: L; steps: L[] }[] = [
       t("Add people in Team & access. Click anyone to rename them, pause them, change their level, or switch pages on and off.", "Añade gente en Equipo y acceso. Pulsa a cualquiera para cambiarle el nombre, pausarle, cambiar su nivel o activar y desactivar páginas."),
       t("First Friday of the month: log KPIs in Performance and check Finance.", "Primer viernes de mes: registra los KPI en Performance y revisa Finanzas."),
     ],
-  },
-  {
-    who: t("Luis (designer)", "Luis (diseñador)"),
-    does: t("Makes the graphics and uploads them for review.", "Hace los gráficos y los sube para revisión."),
-    steps: [
-      t("Open Review & approval to see what's waiting and any changes requested.", "Abre Review & approval para ver qué está pendiente y los cambios pedidos."),
-      t("Open a piece, read the comments, and press “New version” with the Drive or Canva link (share it as “anyone with the link” so the preview shows).", "Abre una pieza, lee los comentarios y pulsa «New version» con el enlace de Drive o Canva (compártelo como «cualquier persona con el enlace» para que se vea la vista previa)."),
-      t("The Content calendar shows what's coming and the brief for each post.", "El Calendario de contenido muestra lo que viene y el brief de cada post."),
-    ],
-  },
-  {
+  },  {
     who: t("Ricardo (viewer)", "Ricardo (lector)"),
     does: t("Sees everything, comments on content and answers decisions.", "Ve todo, comenta el contenido y responde decisiones."),
     steps: [
@@ -75,8 +65,24 @@ export const ROLES: { who: L; does: L; steps: L[] }[] = [
       t("Content calendar → “For Ricardo” shows finished posts; leave your opinion in Ricardo's comments (it's an opinion, not an approval step).", "Calendario de contenido → «For Ricardo» muestra los posts terminados; deja tu opinión en Ricardo's comments (es una opinión, no un paso de aprobación)."),
       t("Finance, Stores and the Madrid opening are there to read at any time.", "Finanzas, Tiendas y la apertura de Madrid están para consultar cuando quieras."),
     ],
-  },
-  {
+  },  {
+    who: t("María (operations manager)", "María (directora de operaciones)"),
+    does: t("Runs the business day to day: both stores, staff, menu and prices, suppliers, catering and finance. Sees marketing; can't change the team or settings.", "Lleva el negocio en el día a día: las dos tiendas, el equipo, el menú y los precios, proveedores, catering y finanzas. Ve marketing; no puede cambiar el equipo ni los ajustes."),
+    steps: [
+      t("Every morning: Overview shows pickups, low stock, open issues and both stores' checklists.", "Cada mañana: el Resumen muestra recogidas, stock bajo, incidencias y las checklists de las dos tiendas."),
+      t("Keep Staff & schedule, Suppliers and the Menu prices up to date; type a new price straight into the box and press Enter.", "Mantén al día Equipo y horarios, Proveedores y los precios del Menú; escribe el precio nuevo en la casilla y pulsa Enter."),
+      t("Log expenses and monthly sales in Finance, and check the budget against actuals.", "Apunta gastos y ventas mensuales en Finanzas y compara el presupuesto con lo real."),
+      t("Tasks shows every task for the team; answer decisions on Overview when they need you.", "Tareas muestra todas las tareas del equipo; responde decisiones en el Resumen cuando te necesiten."),
+    ],
+  },  {
+    who: t("Luis (designer)", "Luis (diseñador)"),
+    does: t("Makes the graphics and uploads them for review.", "Hace los gráficos y los sube para revisión."),
+    steps: [
+      t("Open Review & approval to see what's waiting and any changes requested.", "Abre Review & approval para ver qué está pendiente y los cambios pedidos."),
+      t("Open a piece, read the comments, and press “New version” with the Drive or Canva link (share it as “anyone with the link” so the preview shows).", "Abre una pieza, lee los comentarios y pulsa «New version» con el enlace de Drive o Canva (compártelo como «cualquier persona con el enlace» para que se vea la vista previa)."),
+      t("The Content calendar shows what's coming and the brief for each post.", "El Calendario de contenido muestra lo que viene y el brief de cada post."),
+    ],
+  },  {
     who: t("Store managers", "Encargados de tienda"),
     does: t("Run their store's day: checklists, orders, stock, issues and footage. They only see their own store.", "Llevan el día de su tienda: checklists, pedidos, stock, incidencias y vídeos. Solo ven su propia tienda."),
     steps: [
