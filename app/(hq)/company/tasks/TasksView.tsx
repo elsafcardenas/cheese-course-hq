@@ -13,7 +13,7 @@ import { addDays, cx, fmtDate, MARKET_TONE, PRIORITY_TONE, TASK_STATUS_TONE } fr
 type View = "list" | "board" | "owner";
 const PRIORITY_RANK = { High: 0, Medium: 1, Low: 2 } as const;
 
-export function TasksView({ tasks: initial, today, canEdit, canStatus }: { tasks: Task[]; today: string; canEdit: boolean; canStatus: boolean }) {
+export function TasksView({ tasks: initial, today, canEdit, canStatus, owners = [...OWNERS] }: { tasks: Task[]; today: string; canEdit: boolean; canStatus: boolean; owners?: string[] }) {
   const [tasks, setTasks] = useState(initial);
   useEffect(() => setTasks(initial), [initial]);
   const [view, setView] = useState<View>("list");
@@ -110,13 +110,13 @@ export function TasksView({ tasks: initial, today, canEdit, canStatus }: { tasks
             <option key={s}>{s}</option>
           ))}
         </select>
-        {sel(owner, setOwner, OWNERS, "All owners")}
+        {sel(owner, setOwner, [...new Set(tasks.map((t) => t.owner))].sort(), "All owners")}
         {sel(workstream, setWorkstream, WORKSTREAMS, "All workstreams")}
         {sel(priority, setPriority, PRIORITIES, "All priorities")}
         <div className="ml-auto flex items-center gap-2">
           {error && <span className="text-[12.5px] text-bad">{error}</span>}
           {canEdit && (
-            <button className="btn-primary" onClick={() => setOpen(blankTask({ owner: owner !== "All" ? (owner as Task["owner"]) : "Elsa" }))}>
+            <button className="btn-primary" onClick={() => setOpen(blankTask({ owner: owner !== "All" ? owner : owners[0] ?? "Elsa" }))}>
               <Plus size={14} /> New task
             </button>
           )}
@@ -205,7 +205,7 @@ export function TasksView({ tasks: initial, today, canEdit, canStatus }: { tasks
 
       {view === "owner" && (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {OWNERS.map((o) => {
+          {[...new Set(tasks.map((t) => t.owner))].sort().map((o) => {
             const col = filtered.filter((t) => t.owner === o);
             if (!col.length) return null;
             return (
@@ -226,7 +226,7 @@ export function TasksView({ tasks: initial, today, canEdit, canStatus }: { tasks
         </div>
       )}
 
-      <TaskDrawer task={open} onClose={() => setOpen(null)} canEdit={canEdit} canStatus={canStatus} />
+      <TaskDrawer task={open} onClose={() => setOpen(null)} canEdit={canEdit} canStatus={canStatus} owners={owners} />
     </>
   );
 }

@@ -3,11 +3,12 @@
 import { Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { deleteVideo, logKpi, saveVideo } from "@/app/actions";
 import { GroupedBars, TrendLine, ViewsBars } from "@/components/charts";
 import { Empty, Note, Pill, Section, Stat } from "@/components/ui";
 import { useRun } from "@/components/useRun";
-import { latestMetric, medianViews, PILLAR_SHORT, recentReels } from "@/lib/derive";
+import { autoKpiValues, latestMetric, medianViews, PILLAR_SHORT, PLATFORM_LABEL, platformKey, recentReels } from "@/lib/derive";
 import { PILLARS, type ItemSale, type Kpi, type KpiEntry, type MetricPoint, type Pillar, type SalesRow, type VideoLog } from "@/lib/types";
 import { addDays, cx, fmtDate, fmtNum, median } from "@/lib/ui";
 
@@ -27,25 +28,54 @@ const monthLabel = (iso: string) => fmtDate(iso, { month: "short", year: "2-digi
 
 export function KpisView(p: Props) {
   const market = p.market;
-  const [selected, setSelected] = useState<string>(p.kpis[0]?.id ?? "");
+  const params = useSearchParams();
+  const router = useRouter();
+  const [plat, setPlat] = useState(params.get("platform") ?? "all-platforms");
+  const pickPlat = (k: string) => {
+    setPlat(k);
+    const q = new URLSearchParams(params.toString());
+    if (k === "all-platforms") q.delete("platform");
+    else q.set("platform", k);
+    router.replace(`?${q.toString()}`, { scroll: false });
+  };
   const reels = recentReels(p.videos);
   const reelMedian = medianViews(reels);
   const followers = latestMetric(p.metrics, "instagram", "followers");
 
   /** Values the app can work out on its own, so Elsa doesn't have to type them. */
-  const auto = (k: Kpi): { value: number; source: string } | null => {
-    if (k.metric === "Median Reel views") return { value: Math.round(reelMedian), source: `last ${reels.length} Reels` };
-    if (k.metric === "Followers" && followers) return { value: followers.value, source: "Meta" };
-    return null;
-  };
+  const autoMap = useMemo(() => autoKpiValues(p.kpis, p.videos, p.metrics), [p.kpis, p.videos, p.metrics]);
+  const auto = (k: Kpi): { value: number; source: string } | null => autoMap[k.id] ?? null;
 
-  const rows = p.kpis.filter((k) => k.market === market);
+  const marketRows = p.kpis.filter((k) => k.market === market);
+  const keys = [...new Set(marketRows.map((k) => platformKey(k.platform)))];
+  const rows = plat === "all-platforms" ? marketRows : marketRows.filter((k) => platformKey(k.platform) === plat);
+  const showAll = plat === "all-platforms";
+  const [picked, setSelected] = useState<string>("");
+  const selected = rows.some((k) => k.id === picked) ? picked : rows[0]?.id ?? "";
+  const chips = (
+    <div className="flex flex-wrap gap-1.5">
+      {["all-platforms", ...keys].map((k) => (
+        <button
+          key={k}
+          onClick={() => pickPlat(k)}
+          className={cx("rounded-full border px-3 py-1 text-[12.5px] font-semibold transition", plat === k ? "border-ink bg-ink text-surface" : "border-line text-muted hover:border-ink/30")}
+        >
+          {k === "all-platforms" ? "All platforms" : PLATFORM_LABEL[k] ?? marketRows.find((x) => platformKey(x.platform) === k)?.platform ?? k}
+          <span className="ml-1 opacity-60">{k === "all-platforms" ? marketRows.length : marketRows.filter((x) => platformKey(x.platform) === k).length}</span>
+        </button>
+      ))}
+      <Link href="/marketing/platforms" className="ml-auto self-center text-[12.5px] font-semibold text-muted hover:text-ink">
+        Add a number to track on Platforms →
+      </Link>
+    </div>
+  );
   const sel = p.kpis.find((k) => k.id === selected);
   const selEntries = p.entries.filter((e) => e.kpiId === selected).sort((a, b) => a.month.localeCompare(b.month));
 
   if (market === "Spain") {
     return (
       <div className="space-y-6">
+        {chips}
         <TargetsTable rows={rows} entries={p.entries} auto={auto} selected={selected} setSelected={setSelected} />
         {sel && <KpiDetail k={sel} entries={selEntries} canEdit={p.canEdit} today={p.today} />}
       </div>
@@ -54,19 +84,23 @@ export function KpisView(p: Props) {
 
   return (
     <div className="space-y-6">
+      {chips}
+      {(showAll || plat === "instagram") && (
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Median Reel views" value={fmtNum(Math.round(reelMedian))} sub={`Last ${reels.length} · month-3 target 2,000`} tone={reelMedian >= 2000 ? "good" : "warn"} />
         <Stat label="Reach vs followers" value={`${((reelMedian / (followers?.value ?? 73100)) * 100).toFixed(1)}%`} sub="Median Reel views ÷ followers · aim for ~5%" tone="warn" />
         <Stat label="Instagram followers" value={fmtNum(followers?.value ?? 73100)} sub={followers ? `Synced ${fmtDate(followers.date)}` : "Baseline Nov 5"} />
         <Stat label="Weston share of sales" value="73%" sub="2026 Jan–Aug, of the stores still open" />
       </div>
+      )}
 
       <TargetsTable rows={rows} entries={p.entries} auto={auto} selected={selected} setSelected={setSelected} />
 
       {sel && <KpiDetail k={sel} entries={selEntries} canEdit={p.canEdit} today={p.today} />}
 
-      <VideoSection videos={p.videos} canEdit={p.canEdit} reelMedian={reelMedian} />
+      {(showAll || plat === "instagram" || plat === "tiktok") && <VideoSection videos={p.videos} canEdit={p.canEdit} reelMedian={reelMedian} />}
 
+      {(showAll || plat === "google") && (
       <div className="grid gap-5 lg:grid-cols-2">
         <Section title="Net sales by store ($K)" sub="2026 is January to August only. Plantation, Doral and Pembroke are closed.">
           <div className="p-3">
@@ -75,8 +109,9 @@ export function KpisView(p: Props) {
         </Section>
         <GoogleSection metrics={p.metrics} today={p.today} />
       </div>
+      )}
 
-      <SquareSection metrics={p.metrics} items={p.items} today={p.today} />
+      {showAll && <SquareSection metrics={p.metrics} items={p.items} today={p.today} />}
     </div>
   );
 }

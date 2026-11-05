@@ -36,7 +36,7 @@ export type TaskStatus = (typeof TASK_STATUSES)[number];
 export type Task = {
   id: string;
   title: string;
-  owner: Owner;
+  owner: string;
   market: Market;
   workstream: Workstream;
   priority: Priority;

@@ -1,12 +1,12 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Mail, Phone, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Mail, Phone, Plus, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { Bars } from "@/components/charts";
 import { RecordDrawer } from "@/components/records/RecordDrawer";
 import { RecordTable } from "@/components/records/RecordTable";
 import { Tabs } from "@/components/Tabs";
-import { Empty, Section, Stat, StatusPill } from "@/components/ui";
+import { Empty, Note, Section, Stat, StatusPill } from "@/components/ui";
 import { blankRecord, SCHEMAS, type Rec } from "@/lib/schema";
 import { addDays, cx, fmtDate } from "@/lib/ui";
 
@@ -25,11 +25,16 @@ const mondayOf = (iso: string) => {
 
 const ROLE_TONE: Record<string, string> = {
   "Store manager": "--dept-home",
+  "Assistant manager": "--dept-home",
+  "Server / waiter": "--dept-marketing",
+  Host: "--dept-marketing",
   Cheesemonger: "--dept-ops",
-  Kitchen: "--dept-madrid",
+  Cook: "--dept-madrid",
+  "Kitchen prep": "--dept-madrid",
+  Dishwasher: "--dept-madrid",
   Barista: "--dept-finance",
   Cashier: "--dept-customers",
-  Catering: "--dept-marketing",
+  Catering: "--dept-menu",
 };
 
 export function StaffView({
@@ -48,6 +53,8 @@ export function StaffView({
   lockStore: string | null;
 }) {
   const active = staff.filter((s) => s.status !== "Left");
+  const [adding, setAdding] = useState<Rec | null>(null);
+  const add = () => setAdding({ ...blankRecord(SCHEMAS.staff), store: lockStore ?? "Weston", role: "" });
   const byStore = (st: string) => active.filter((s) => s.store === st || s.store === "Both stores").length;
 
   const card = (s: Rec, open: () => void) => (
@@ -88,6 +95,16 @@ export function StaffView({
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap items-center gap-3">
+        <p className="flex-1 text-[13px] text-muted">
+          Everyone who works in the stores: servers, baristas, cooks and so on. Being on this list does <b>not</b> give anyone a login to HQ.
+        </p>
+        {canWriteStaff && (
+          <button className="btn-primary" onClick={add}>
+            <UserPlus size={16} /> Add a team member
+          </button>
+        )}
+      </div>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Active team" value={active.length} icon="users" color="--dept-ops" />
         <Stat label="Weston" value={byStore("Weston")} icon="store" color="--dept-marketing" />
@@ -103,13 +120,8 @@ export function StaffView({
         tone="--dept-ops"
         tabs={[
           {
-            id: "schedule",
-            label: "Weekly schedule",
-            content: <Schedule staff={active} shifts={shifts} today={today} canWrite={canWriteShifts} lockStore={lockStore} />,
-          },
-          {
             id: "people",
-            label: "People",
+            label: "Team list",
             count: staff.length,
             content: (
               <RecordTable
@@ -119,12 +131,19 @@ export function StaffView({
                 lockStore={lockStore}
                 card={card}
                 emptyIcon="users"
-                emptyText="No team members yet. Add each person (or paste the list from your payroll or a spreadsheet) so the schedule and checklists can use their names."
+                emptyText="No team members yet. Click “Add a team member” for each person, or import a spreadsheet. Then build the weekly schedule."
               />
             ),
           },
+          {
+            id: "schedule",
+            label: "Weekly schedule",
+            content: <Schedule staff={active} shifts={shifts} today={today} canWrite={canWriteShifts} lockStore={lockStore} />,
+          },
         ]}
       />
+      <RecordDrawer name="staff" record={adding} onClose={() => setAdding(null)} canWrite={canWriteStaff} refs={{}} lockStore={lockStore} />
+      {!canWriteStaff && <Note>Only Elsa and store managers can add people here.</Note>}
     </div>
   );
 }
@@ -169,7 +188,7 @@ function Schedule({ staff, shifts, today, canWrite, lockStore }: { staff: Rec[];
 
       {people.length === 0 ? (
         <div className="card">
-          <Empty icon="users">Add {store}&apos;s team on the People tab first, then build the rota here.</Empty>
+          <Empty icon="users">Add {store}&apos;s team on the Team list tab first, then build the schedule here.</Empty>
         </div>
       ) : (
         <div className="card overflow-x-auto">

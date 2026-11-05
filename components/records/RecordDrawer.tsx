@@ -154,7 +154,7 @@ export function RecordDrawer({
     >
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
         {def.fields
-          .filter((f) => !hidden.includes(f.key))
+          .filter((f) => !hidden.includes(f.key) && (!f.showWhen || f.showWhen.in.includes(String(r[f.showWhen.key] ?? ""))))
           .map((f) => {
             const isStore = def.storeKey === f.key && !!lockStore;
             return (
@@ -164,7 +164,7 @@ export function RecordDrawer({
                   value={r[f.key]}
                   refs={refs}
                   readOnly={ro}
-                  lockOptions={isStore ? [lockStore!] : undefined}
+                  lockOptions={isStore ? [lockStore!] : f.optionsBy ? f.optionsBy.map[String(r[f.optionsBy.key] ?? "")] : undefined}
                   onChange={(v) => setR((x) => ({ ...x, [f.key]: v }))}
                 />
                 {f.help && <span className="mt-1 block text-[11.5px] text-muted">{f.help}</span>}

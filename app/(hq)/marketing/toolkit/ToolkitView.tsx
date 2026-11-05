@@ -1,40 +1,142 @@
 "use client";
 
+import { ArrowLeft, Search } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { BRAND_KIT_BRIEF, CTAS, HASHTAGS, HOOKS, LUIS_FORMATS, SHOT_RULES, SHOTS, type CtaKey } from "@/data/toolkit";
+import { BRAND_KIT_BRIEF, CTAS, HASHTAGS, HOOKS, KEY_DATES, LUIS_FORMATS, POST_IDEAS, REPLIES, SHOT_RULES, SHOTS, SIZES, STORY_IDEAS, VOICE, type CtaKey } from "@/data/toolkit";
 import { ZONES, hourIn } from "@/components/Clocks";
 import { CopyButton } from "@/components/CopyButton";
 import { Field } from "@/components/Drawer";
+import { IconTile } from "@/components/Icon";
 import { Pill, Section } from "@/components/ui";
 import { PILLARS, type Pillar } from "@/lib/types";
 import { cx, fmtDate, pillarColor } from "@/lib/ui";
 
-const TABS = ["Hooks", "Caption builder", "Shoot list", "Brief for Luis", "Time zones", "Hashtags"] as const;
-type Tab = (typeof TABS)[number];
+type ToolId = "hooks" | "captions" | "ideas" | "replies" | "shoot" | "brief" | "dates" | "hashtags" | "sizes" | "voice" | "zones";
+const TOOLS: { id: ToolId; title: string; sub: string; icon: string; tone: string }[] = [
+  { id: "hooks", title: "Hooks", sub: "First lines that stop the scroll", icon: "zap", tone: "--dept-marketing" },
+  { id: "captions", title: "Caption builder", sub: "Fill in 4 boxes, copy a finished caption", icon: "pen", tone: "--dept-marketing" },
+  { id: "ideas", title: "Post & Story ideas", sub: "What to post when you're stuck", icon: "idea", tone: "--dept-menu" },
+  { id: "replies", title: "Reply templates", sub: "Reviews, DMs, comments, creators", icon: "message", tone: "--dept-customers" },
+  { id: "shoot", title: "Shoot list", sub: "What to film today, store by store", icon: "camera", tone: "--dept-ops" },
+  { id: "brief", title: "Brief for Luis", sub: "Send a design request in one go", icon: "wand", tone: "--dept-marketing" },
+  { id: "dates", title: "Key dates", sub: "Holidays and days worth planning for", icon: "calendar", tone: "--dept-finance" },
+  { id: "hashtags", title: "Hashtags", sub: "Ready-made sets to paste", icon: "hash", tone: "--dept-company" },
+  { id: "sizes", title: "Sizes & specs", sub: "Image and video sizes per platform", icon: "ruler", tone: "--dept-company" },
+  { id: "voice", title: "Brand voice", sub: "How we sound, words to use and avoid", icon: "voice", tone: "--dept-home" },
+  { id: "zones", title: "Time zones", sub: "Madrid, Miami and Mexico City", icon: "clock", tone: "--dept-home" },
+];
 
 export function ToolkitView({ today, defaultStore, storeManager, market }: { today: string; defaultStore: string; storeManager: boolean; market: "Miami" | "Spain" }) {
-  const tabs = storeManager ? (["Shoot list", "Time zones"] as Tab[]) : market === "Spain" ? (["Hooks", "Brief for Luis", "Time zones", "Hashtags"] as Tab[]) : [...TABS];
-  const [tab, setTab] = useState<Tab>(storeManager ? "Shoot list" : "Hooks");
-  return (
-    <>
-      <div className="mb-5 flex flex-wrap gap-1 border-b border-line">
-        {tabs.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={cx("-mb-px border-b-2 px-3 py-2 text-[13.5px] transition", tab === t ? "border-accent font-medium text-accent" : "border-transparent text-muted hover:text-ink")}
-          >
-            {t}
+  const allowed: ToolId[] = storeManager
+    ? ["shoot", "replies", "dates", "voice", "zones"]
+    : market === "Spain"
+      ? ["hooks", "ideas", "brief", "hashtags", "sizes", "voice", "zones"]
+      : TOOLS.map((t) => t.id);
+  const tools = TOOLS.filter((t) => allowed.includes(t.id));
+  const params = useSearchParams();
+  const router = useRouter();
+  const fromUrl = params.get("tool") as ToolId | null;
+  const [tool, setToolState] = useState<ToolId | null>(fromUrl && allowed.includes(fromUrl) ? fromUrl : null);
+  const [q, setQ] = useState("");
+  const setTool = (t: ToolId | null) => {
+    setToolState(t);
+    const p = new URLSearchParams(params.toString());
+    if (t) p.set("tool", t);
+    else p.delete("tool");
+    router.replace(`?${p.toString()}`, { scroll: false });
+  };
+  const current = tools.find((t) => t.id === tool);
+
+  if (current)
+    return (
+      <div>
+        <div className="mb-5 flex flex-wrap items-center gap-3">
+          <button className="btn" onClick={() => setTool(null)}>
+            <ArrowLeft size={15} /> All tools
           </button>
-        ))}
+          <IconTile name={current.icon} tone={current.tone} size={32} />
+          <div>
+            <h2 className="text-[17px] font-bold leading-tight">{current.title}</h2>
+            <p className="text-[12.5px] text-muted">{current.sub}</p>
+          </div>
+          <div className="ml-auto flex flex-wrap gap-1">
+            {tools
+              .filter((t) => t.id !== current.id)
+              .slice(0, 5)
+              .map((t) => (
+                <button key={t.id} className="btn-ghost text-[12.5px]" onClick={() => setTool(t.id)}>
+                  {t.title}
+                </button>
+              ))}
+          </div>
+        </div>
+        {tool === "hooks" && <Hooks />}
+        {tool === "captions" && <Captions />}
+        {tool === "ideas" && <Ideas />}
+        {tool === "replies" && <Replies defaultStore={defaultStore} />}
+        {tool === "shoot" && <ShootList today={today} defaultStore={defaultStore} />}
+        {tool === "brief" && <Brief today={today} />}
+        {tool === "dates" && <KeyDates today={today} />}
+        {tool === "hashtags" && <Hashtags market={market} />}
+        {tool === "sizes" && <Sizes />}
+        {tool === "voice" && <Voice />}
+        {tool === "zones" && <TimeZones today={today} />}
       </div>
-      {tab === "Hooks" && <Hooks />}
-      {tab === "Caption builder" && <Captions />}
-      {tab === "Shoot list" && <ShootList today={today} defaultStore={defaultStore} />}
-      {tab === "Brief for Luis" && <Brief today={today} />}
-      {tab === "Time zones" && <TimeZones today={today} />}
-      {tab === "Hashtags" && <Hashtags market={market} />}
-    </>
+    );
+
+  return (
+    <div className="space-y-5">
+      <div className="relative max-w-xl">
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+        <input className="input h-11 pl-9 text-[14.5px]" placeholder="Search every hook, reply, idea and hashtag…" value={q} onChange={(e) => setQ(e.target.value)} />
+      </div>
+      {q.trim().length >= 2 ? (
+        <SearchResults q={q} allowed={allowed} onOpen={setTool} />
+      ) : (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+          {tools.map((t) => (
+            <button key={t.id} onClick={() => setTool(t.id)} className="card group flex flex-col gap-3 p-4 text-left transition hover:-translate-y-0.5 hover:shadow-lift">
+              <IconTile name={t.icon} tone={t.tone} size={40} />
+              <span>
+                <span className="block text-[15px] font-bold leading-tight">{t.title}</span>
+                <span className="mt-0.5 block text-[12.5px] text-muted">{t.sub}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** One search across the copyable things in the toolkit. */
+function SearchResults({ q, allowed, onOpen }: { q: string; allowed: ToolId[]; onOpen: (t: ToolId) => void }) {
+  const n = q.trim().toLowerCase();
+  const all: { tool: ToolId; where: string; text: string }[] = [
+    ...PILLARS.flatMap((p) => HOOKS[p].map((h) => ({ tool: "hooks" as ToolId, where: `Hook · ${p}`, text: h }))),
+    ...REPLIES.map((r) => ({ tool: "replies" as ToolId, where: `Reply · ${r.group} · ${r.title}`, text: r.text })),
+    ...PILLARS.flatMap((p) => POST_IDEAS[p].map((h) => ({ tool: "ideas" as ToolId, where: `Post idea · ${p}`, text: h }))),
+    ...STORY_IDEAS.map((s) => ({ tool: "ideas" as ToolId, where: "Story idea", text: s })),
+    ...HASHTAGS.map((h) => ({ tool: "hashtags" as ToolId, where: `Hashtags · ${h.name}`, text: h.tags.join(" ") })),
+    ...KEY_DATES.map((d) => ({ tool: "dates" as ToolId, where: `Key date · ${fmtDate(d.date)}`, text: `${d.name}: ${d.idea}` })),
+    ...SIZES.map((x) => ({ tool: "sizes" as ToolId, where: `Size · ${x.platform}`, text: `${x.format}: ${x.size}` })),
+  ].filter((r) => allowed.includes(r.tool) && (r.text.toLowerCase().includes(n) || r.where.toLowerCase().includes(n)));
+  if (!all.length) return <p className="text-muted">Nothing found for &ldquo;{q}&rdquo;.</p>;
+  return (
+    <ul className="card divide-y divide-line">
+      {all.slice(0, 40).map((r, i) => (
+        <li key={i} className="flex items-start gap-3 px-4 py-2.5">
+          <div className="min-w-0 flex-1">
+            <button className="text-[11.5px] font-semibold text-muted hover:text-ink" onClick={() => onOpen(r.tool)}>
+              {r.where}
+            </button>
+            <div className="text-[13.5px]">{r.text}</div>
+          </div>
+          <CopyButton text={r.text} label="Copy" className="btn-ghost text-[12px]" />
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -406,5 +508,174 @@ function Hashtags({ market }: { market: "Miami" | "Spain" }) {
         ))}
       </div>
     </>
+  );
+}
+
+function Ideas() {
+  return (
+    <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+      <div className="grid gap-4 md:grid-cols-2">
+        {PILLARS.map((p) => (
+          <Section key={p} title={p}>
+            <ul>
+              {POST_IDEAS[p].map((h) => (
+                <li key={h} className="group flex items-center gap-2 border-b border-line px-4 py-2 last:border-0" style={{ borderLeft: `3px solid ${pillarColor(p)}` }}>
+                  <span className="flex-1 text-[13.5px]">{h}</span>
+                  <CopyButton text={h} label="" className="btn-ghost opacity-0 group-hover:opacity-100" />
+                </li>
+              ))}
+            </ul>
+          </Section>
+        ))}
+      </div>
+      <Section title="Story ideas" sub="Each takes about a minute">
+        <ul>
+          {STORY_IDEAS.map((h) => (
+            <li key={h} className="group flex items-center gap-2 border-b border-line px-4 py-2 last:border-0">
+              <span className="flex-1 text-[13.5px]">{h}</span>
+              <CopyButton text={h} label="" className="btn-ghost opacity-0 group-hover:opacity-100" />
+            </li>
+          ))}
+        </ul>
+      </Section>
+    </div>
+  );
+}
+
+const STORE_HOURS: Record<string, string> = { Weston: "[hours]", Pinecrest: "[hours]" };
+
+function Replies({ defaultStore }: { defaultStore: string }) {
+  const [vals, setVals] = useState({ store: defaultStore === "Pinecrest" ? "Pinecrest" : "Weston", name: "", item: "", price: "", hours: "", link: "", email: "" });
+  const groups = [...new Set(REPLIES.map((r) => r.group))];
+  const [group, setGroup] = useState(groups[0]);
+  const fill = (t: string) =>
+    t
+      .replaceAll("[store]", vals.store)
+      .replaceAll("[name]", vals.name || "there")
+      .replaceAll("[item]", vals.item || "[item]")
+      .replaceAll("[price]", vals.price || "[price]")
+      .replaceAll("[hours]", vals.hours || STORE_HOURS[vals.store])
+      .replaceAll("[link]", vals.link || "[link]")
+      .replaceAll("[email]", vals.email || "[email]")
+      .replace("Hi there,", "Hi,")
+      .replace("Thank you, there!", "Thank you!")
+      .replace("Thanks for the kind words, there.", "Thanks for the kind words.");
+  const input = (k: keyof typeof vals, label: string, ph: string) => (
+    <Field label={label}>
+      <input className="input" value={vals[k]} placeholder={ph} onChange={(e) => setVals({ ...vals, [k]: e.target.value })} />
+    </Field>
+  );
+  return (
+    <div className="grid gap-5 lg:grid-cols-[280px_1fr]">
+      <div className="card h-fit space-y-3 p-4">
+        <p className="text-[12.5px] text-muted">Fill in what you know; the replies update as you type.</p>
+        <Field label="Store">
+          <select className="input" value={vals.store} onChange={(e) => setVals({ ...vals, store: e.target.value })}>
+            <option>Weston</option>
+            <option>Pinecrest</option>
+          </select>
+        </Field>
+        {input("name", "Their name", "e.g. Maria")}
+        {input("item", "Dish they mention", "e.g. tomato bisque")}
+        {input("price", "Price", "e.g. 19.20")}
+        {input("hours", "Opening hours", "e.g. 8am–8pm every day")}
+        {input("link", "Link", "e.g. ordering or catering page")}
+        {input("email", "Email for complaints", "e.g. hello@…")}
+      </div>
+      <div>
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          {groups.map((g) => (
+            <button key={g} onClick={() => setGroup(g)} className={cx("rounded-full border px-3 py-1 text-[12.5px] font-semibold", group === g ? "border-ink bg-ink text-surface" : "border-line text-muted hover:border-ink/30")}>
+              {g}
+            </button>
+          ))}
+        </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          {REPLIES.filter((r) => r.group === group).map((r) => (
+            <div key={r.title} className="card flex flex-col p-4">
+              <div className="mb-1.5 text-[13px] font-bold">{r.title}</div>
+              <p className="flex-1 whitespace-pre-wrap text-[13.5px] leading-relaxed">{fill(r.text)}</p>
+              <CopyButton text={fill(r.text)} label="Copy reply" className="btn mt-3 self-start" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function KeyDates({ today }: { today: string }) {
+  const upcoming = KEY_DATES.filter((d) => d.date >= today);
+  const days = (d: string) => Math.round((new Date(`${d}T12:00:00Z`).getTime() - new Date(`${today}T12:00:00Z`).getTime()) / 86400000);
+  return (
+    <ul className="card divide-y divide-line">
+      {upcoming.map((d) => {
+        const n = days(d.date);
+        return (
+          <li key={d.date} className="flex items-start gap-4 px-4 py-3">
+            <div className="w-16 shrink-0 text-center">
+              <div className="text-[11px] font-bold uppercase text-muted">{fmtDate(d.date, { month: "short" })}</div>
+              <div className="text-[22px] font-extrabold leading-none">{fmtDate(d.date, { day: "numeric" })}</div>
+            </div>
+            <div className="flex-1">
+              <div className="font-bold">{d.name}</div>
+              <div className="text-[13px] text-muted">{d.idea}</div>
+            </div>
+            <Pill className={n <= 21 ? "bg-warn/10 text-warn" : "bg-sunk text-muted"}>{n === 0 ? "Today" : `In ${n} days`}</Pill>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function Sizes() {
+  return (
+    <div className="card overflow-x-auto">
+      <table className="w-full border-collapse">
+        <thead>
+          <tr>
+            <th className="th">Platform</th>
+            <th className="th">Format</th>
+            <th className="th">Size</th>
+            <th className="th" />
+          </tr>
+        </thead>
+        <tbody>
+          {SIZES.map((x) => (
+            <tr key={x.platform + x.format}>
+              <td className="td font-semibold">{x.platform}</td>
+              <td className="td">{x.format}</td>
+              <td className="td tabular-nums">{x.size}</td>
+              <td className="td text-right">
+                <CopyButton text={x.size} label="" className="btn-ghost" />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function Voice() {
+  const list = (title: string, items: string[], tone: string) => (
+    <Section title={title}>
+      <ul className="space-y-1.5 p-4">
+        {items.map((i) => (
+          <li key={i} className={cx("text-[14px]", tone)}>
+            {i}
+          </li>
+        ))}
+      </ul>
+    </Section>
+  );
+  return (
+    <div className="grid gap-4 md:grid-cols-2">
+      {list("We are", VOICE.is, "")}
+      {list("We aren't", VOICE.isnt, "text-muted")}
+      {list("Say", VOICE.say, "text-good font-semibold")}
+      {list("Avoid", VOICE.avoid, "text-bad line-through")}
+    </div>
   );
 }

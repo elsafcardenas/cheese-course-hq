@@ -1,7 +1,7 @@
 import { setDemoAs, signOut } from "@/app/actions";
 import type { SearchEntry } from "@/components/CommandPalette";
 import { Shell } from "@/components/Shell";
-import { visibleToUser } from "@/lib/auth";
+import { tasksFor, visibleToUser } from "@/lib/auth";
 import { navFor, workspacesFor, WS_MARKET } from "@/lib/nav";
 import { getWorkspace, inWorkspace } from "@/lib/workspace";
 import { cookies } from "next/headers";
@@ -80,7 +80,7 @@ export default async function HqLayout({ children }: { children: React.ReactNode
 
   const today = todayISO();
   const inWs = (m: unknown) => inWorkspace(ws, m);
-  const myTasks = visibleToUser(user, tasks).filter((t) => inWs(t.market));
+  const myTasks = tasksFor(user, tasks).filter((t) => inWs(t.market));
   const wsPosts = visibleToUser(user, posts).filter((p) => p.market === market);
   const wsDecisions = decisions.filter((d) => inWs(d.market));
   const isMiami = ws === "miami";

@@ -1,6 +1,7 @@
 // Starting data for the operations side. Only things we actually know are filled in;
 // staff, suppliers, stock, catering orders, prices and expenses start empty for real data.
 import type { Rec, RecordName } from "@/lib/schema";
+import { MENU_SEED } from "./menu-seed";
 
 const rows = (prefix: string, list: Omit<Rec, "id">[]): Rec[] => list.map((r, i) => ({ id: `${prefix}${String(i + 1).padStart(2, "0")}`, ...r }));
 
@@ -79,22 +80,23 @@ const checklists = rows("cl", [
   },
 ]);
 
-const SEEN = "Seen in the Drive footage. Add the price and food cost, or connect Square to bring in the menu.";
-const menu_items = rows("mi", [
-  { name: "Mortadella sandwich", category: "Sandwiches" },
-  { name: "Chicken salad sandwich", category: "Sandwiches" },
-  { name: "Eggs and smoked salmon", category: "Brunch" },
-  { name: "Soup of the day", category: "Soups" },
-  { name: "Truffle and Parmesan fries", category: "Sides" },
-  { name: "Cheese fondue", category: "Boards & platters" },
-  { name: "Brownie", category: "Desserts" },
-  { name: "Cake slice", category: "Desserts" },
-  { name: "Cookies", category: "Desserts" },
-  { name: "Coffee and espresso drinks", category: "Coffee" },
-  { name: "Cheese and charcuterie platter", category: "Catering" },
-  { name: "Hummus platter", category: "Catering" },
-  { name: "Dessert platter", category: "Catering" },
-].map((m) => ({ ...m, market: "Miami", status: "To confirm", availability: "Both stores", price: null, foodCost: null, recipe: "", allergens: "", notes: SEEN })));
+const menu_items = rows(
+  "mi",
+  MENU_SEED.map(({ source, availability, ...m }) => ({
+    market: "Miami",
+    status: "Active",
+    availability: availability ?? "Both stores",
+    foodCost: null,
+    code: "",
+    description: "",
+    serves: "",
+    size: "",
+    recipe: "",
+    allergens: "",
+    ...m,
+    notes: source ?? "",
+  })),
+);
 
 const madrid_locations = rows("ml", [
   { area: "Eloy Gonzalo / Plaza de Olavide (Chamberí)", status: "Shortlisted", sortOrder: 1 },

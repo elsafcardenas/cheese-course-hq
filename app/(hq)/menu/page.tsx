@@ -15,7 +15,7 @@ export default async function MenuPage() {
       <PageHeader href="/menu" title={market === "Spain" ? "Madrid menu" : "Menu & pricing"}>
         {market === "Spain"
           ? "The dishes, drinks and boards planned for Madrid, with target prices and costs. Chosen from what works best in Miami."
-          : "Every item with its price, food cost and margin, and where it sits on the menu engineering matrix."}
+          : "Everything we sell, in three parts: Menu, Catering and Retail. Change a price right in the list, or add a new item to any category."}
       </PageHeader>
       <MenuView items={items.filter((i) => (i.market ?? "Miami") === market)} sold={sold} market={market} canWrite={canWriteRecords(user.role, "menu_items")} />
     </>

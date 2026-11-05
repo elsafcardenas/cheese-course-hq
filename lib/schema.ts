@@ -31,6 +31,10 @@ export type Field = {
   help?: string;
   /** Spans both columns in the form. */
   wide?: boolean;
+  /** Choices that depend on another field (e.g. a menu category depends on its section). */
+  optionsBy?: { key: string; map: Record<string, readonly string[]> };
+  /** Only shown in the form when another field has one of these values. */
+  showWhen?: { key: string; in: readonly string[] };
 };
 
 export type RecordDef = {
@@ -101,7 +105,17 @@ export const PO_STATUSES = ["Draft", "Sent", "Received", "Cancelled"] as const;
 export const REVIEW_STATUSES = ["New", "Replied", "Resolved", "Escalated"] as const;
 export const LOCATION_STATUSES = ["Shortlisted", "To visit", "Visited", "Negotiating", "Signed", "Rejected"] as const;
 export const MILESTONE_STATUSES = ["Not started", "In progress", "Done", "Blocked"] as const;
-export const MENU_CATEGORIES = ["Sandwiches", "Boards & platters", "Brunch", "Salads", "Soups", "Sides", "Desserts", "Coffee", "Drinks", "Retail cheese", "Catering"] as const;
+/** Jobs in the stores. Staff on this list don't sign in to HQ. */
+export const STAFF_ROLES = ["Store manager", "Assistant manager", "Server / waiter", "Barista", "Cashier", "Cheesemonger", "Cook", "Kitchen prep", "Dishwasher", "Host", "Catering", "Delivery driver", "Other"] as const;
+
+/** The three parts of what we sell, each with its own categories (in the order they appear on the menu). */
+export const MENU_SECTIONS = ["Menu", "Catering", "Retail"] as const;
+export const MENU_CATEGORIES_BY: Record<(typeof MENU_SECTIONS)[number], readonly string[]> = {
+  Menu: ["Breakfast", "Croissants & toasts", "Sandwiches", "Half sandwiches & pairings", "Salads", "Soups", "To share", "Cheese courses", "Kids & sides", "Desserts", "Coffee & tea", "Matcha", "Drinks", "Wine & beer"],
+  Catering: ["Cheese & appetizer platters", "Sandwich platters", "Breakfast platters", "Salad bowls", "Soups", "Dessert platters", "Extras"],
+  Retail: ["Cheese by weight", "Charcuterie", "Accompaniments", "Crackers & bread", "Spreads, jams & honey", "Oils, truffle & salts", "Chips & snacks", "Gifts & boxes"],
+};
+export const MENU_CATEGORIES = [...new Set(Object.values(MENU_CATEGORIES_BY).flat())];
 export const EXPENSE_CATEGORIES = ["Rent", "Payroll", "Food & supplies", "Packaging", "Utilities", "Marketing", "Repairs & maintenance", "Software", "Insurance", "Fees & taxes", "Other"] as const;
 
 const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comments"> = {
@@ -144,12 +158,14 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     sort: { key: "name", dir: "asc" },
     fields: [
       { key: "name", label: "Name", type: "text", required: true, table: true },
-      { key: "role", label: "Role", type: "select", options: ["Store manager", "Cheesemonger", "Kitchen", "Barista", "Cashier", "Catering", "Delivery", "Other"], table: true, filter: true },
+      { key: "role", label: "Job", type: "select", options: STAFF_ROLES, required: true, table: true, filter: true },
       { key: "store", label: "Store", type: "select", options: OPS_STORES, table: true, filter: true },
       { key: "status", label: "Status", type: "select", options: ["Active", "On leave", "Left"], table: true, filter: true },
       { key: "phone", label: "Phone", type: "phone", table: true },
       { key: "email", label: "Email", type: "email" },
       { key: "startDate", label: "Started", type: "date", table: true },
+      { key: "availability", label: "When they can work", type: "text", placeholder: "e.g. Weekdays, mornings only", wide: true },
+      { key: "emergencyContact", label: "Emergency contact", type: "text", placeholder: "Name and phone", wide: true },
       { key: "notes", label: "Notes", type: "textarea", wide: true },
     ],
   },
@@ -366,16 +382,21 @@ const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comm
     subtitleKey: "category",
     read: ALL,
     write: ADMIN,
-    defaults: { status: "Active", availability: "Both stores", market: "Miami" },
+    defaults: { status: "Active", availability: "Both stores", market: "Miami", section: "Menu" },
     sort: { key: "name", dir: "asc" },
     fields: [
       { key: "name", label: "Item", type: "text", required: true, table: true },
-      { key: "market", label: "Market", type: "select", options: ["Miami", "Spain"], required: true },
-      { key: "category", label: "Category", type: "select", options: MENU_CATEGORIES, table: true, filter: true },
+      { key: "section", label: "Part", type: "select", options: MENU_SECTIONS, required: true, filter: true, help: "Menu = in the café · Catering = platters and orders · Retail = things people take home" },
+      { key: "category", label: "Category", type: "select", options: MENU_CATEGORIES, optionsBy: { key: "section", map: MENU_CATEGORIES_BY }, table: true, filter: true },
+      { key: "price", label: "Price", type: "money", table: true },
+      { key: "foodCost", label: "Food cost per portion", type: "money", table: true, help: "What it costs us to make one. Used to work out the margin." },
+      { key: "serves", label: "Serves", type: "text", placeholder: "e.g. Serves 10", showWhen: { key: "section", in: ["Catering"] } },
+      { key: "size", label: "Size / unit", type: "text", placeholder: "e.g. 8 oz, per lb, 1 jar", showWhen: { key: "section", in: ["Retail"] } },
+      { key: "code", label: "Menu number", type: "text", placeholder: "e.g. 21" },
       { key: "status", label: "Status", type: "select", options: ["Active", "Seasonal", "To confirm", "Idea", "Retired"], table: true, filter: true },
       { key: "availability", label: "Where", type: "select", options: OPS_STORES, filter: true },
-      { key: "price", label: "Menu price", type: "money", table: true },
-      { key: "foodCost", label: "Food cost per portion", type: "money", table: true },
+      { key: "market", label: "Market", type: "select", options: ["Miami", "Spain"], required: true },
+      { key: "description", label: "Description (as on the menu)", type: "textarea", wide: true },
       { key: "recipe", label: "Recipe / build", type: "textarea", wide: true },
       { key: "allergens", label: "Allergens", type: "text", wide: true },
       { key: "notes", label: "Notes", type: "textarea", wide: true },

@@ -2,6 +2,15 @@
 
 import {
   Eye,
+  Camera,
+  Clock,
+  Hash,
+  Lightbulb,
+  MessageCircle,
+  Mic,
+  PenLine,
+  Ruler,
+  Zap,
   BookOpen,
   Boxes,
   Building2,
@@ -60,6 +69,15 @@ const ICONS: Record<string, LucideIcon> = {
   plug: Plug,
   "user-cog": UserCog,
   help: CircleHelp,
+  camera: Camera,
+  clock: Clock,
+  hash: Hash,
+  idea: Lightbulb,
+  message: MessageCircle,
+  voice: Mic,
+  pen: PenLine,
+  ruler: Ruler,
+  zap: Zap,
 };
 
 export function Icon({ name, ...props }: { name: string } & LucideProps) {

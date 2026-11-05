@@ -27,7 +27,9 @@ export function TaskDrawer({
   onClose,
   canEdit,
   canStatus,
+  owners = [...OWNERS],
 }: {
+  owners?: string[];
   task: Task | null;
   onClose: () => void;
   canEdit: boolean;
@@ -91,8 +93,8 @@ export function TaskDrawer({
             <input type="date" className="input" value={t.deadline ?? ""} readOnly={ro} onChange={(e) => set("deadline", e.target.value || null)} />
           </Field>
           <Field label="Owner">
-            <select className="input" value={t.owner} disabled={ro} onChange={(e) => set("owner", e.target.value as Task["owner"])}>
-              {OWNERS.map((s) => (
+            <select className="input" value={t.owner} disabled={ro} onChange={(e) => set("owner", e.target.value)}>
+              {[...new Set([...owners, t.owner])].map((s) => (
                 <option key={s}>{s}</option>
               ))}
             </select>

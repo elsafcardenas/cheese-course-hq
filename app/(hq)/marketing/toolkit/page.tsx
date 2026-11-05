@@ -8,7 +8,7 @@ export default async function ToolkitPage() {
   return (
     <>
       <PageHeader href="/marketing/toolkit" title="Toolkit">
-        Hooks, captions, shoot lists, briefs for Luis, time zones and hashtag sets. Everything copies with one click.
+        Everything you need to make posts and answer people. Pick a tool, or search across all of them. Everything copies with one click.
       </PageHeader>
       <ToolkitView today={todayISO()} defaultStore={user.store ?? "Weston"} storeManager={user.role === "store_manager"} market={market} />
     </>

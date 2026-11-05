@@ -14,7 +14,6 @@ import {
   DECISION_STATUSES,
   FORMATS,
   MARKETS,
-  OWNERS,
   PILLARS,
   PLATFORM_STATUSES,
   POST_PLATFORMS,
@@ -64,7 +63,7 @@ const text = z.string().max(20000).default("");
 const TaskInput = z.object({
   id: z.string().optional(),
   title: z.string().trim().min(1, "Give the task a title").max(500),
-  owner: z.enum(OWNERS),
+  owner: z.string().trim().min(1, "Pick who owns this task.").max(80),
   market: z.enum(MARKETS),
   workstream: z.enum(WORKSTREAMS),
   priority: z.enum(PRIORITIES),
@@ -253,6 +252,57 @@ export async function logKpi(input: { kpiId: string; month: string; value: numbe
     const month = `${v.month}-01`;
     const existing = (await repo.list("kpi_entries")).find((e) => e.kpiId === v.kpiId && e.month.slice(0, 10) === month);
     await repo.upsert("kpi_entries", { id: existing?.id ?? newId(), kpiId: v.kpiId, month, value: v.value, note: v.note });
+  });
+}
+
+/** Adds or edits a number to track for a platform, with its starting point and targets. */
+export async function saveKpi(input: {
+  id?: string;
+  market: string;
+  platform: string;
+  metric: string;
+  baseline?: string;
+  target3?: string;
+  target6?: string;
+  why?: string;
+}) {
+  return run(async () => {
+    const { repo } = await guard("edit:kpis");
+    const v = z
+      .object({
+        id: z.string().optional(),
+        market: z.enum(["Miami", "Spain"]),
+        platform: z.string().trim().min(1).max(80),
+        metric: z.string().trim().min(1, "Say what to measure.").max(120),
+        baseline: text,
+        target3: text,
+        target6: text,
+        why: text,
+      })
+      .parse(input);
+    // "2,000" or "2.0%" become numbers for the progress bar; "+25%" or "4-5" stay as words only.
+    const num = (s: string) => {
+      const t = s.trim();
+      if (!t || t.startsWith("+") || /\d\s*-\s*\d/.test(t)) return null;
+      const n = Number(t.replace(/[,%$€\s]/g, ""));
+      return Number.isFinite(n) ? n : null;
+    };
+    const all = await repo.list("kpis");
+    const was = all.find((k) => k.id === v.id);
+    await repo.upsert("kpis", {
+      id: was?.id ?? newId(),
+      market: v.market,
+      platform: v.platform,
+      metric: v.metric,
+      baseline: v.baseline || "Measure in month 1",
+      baselineValue: num(v.baseline),
+      target3: v.target3,
+      target3Value: num(v.target3),
+      target6: v.target6,
+      target6Value: num(v.target6),
+      why: v.why,
+      sort: was?.sort ?? all.length + 1,
+    });
   });
 }
 

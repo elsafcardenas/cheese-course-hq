@@ -1,12 +1,14 @@
 "use client";
 
-import { ExternalLink, Pencil, Plus } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Pencil, Plus } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { savePlatform } from "@/app/actions";
+import { logKpi, saveKpi, savePlatform } from "@/app/actions";
 import { Drawer, Field } from "@/components/Drawer";
 import { Pill } from "@/components/ui";
 import { useRun } from "@/components/useRun";
-import { PLATFORM_STATUSES, type PlatformRow, type PlatformStatus } from "@/lib/types";
+import { platformKey } from "@/lib/derive";
+import { PLATFORM_STATUSES, type Kpi, type KpiEntry, type PlatformRow, type PlatformStatus } from "@/lib/types";
 import { cx } from "@/lib/ui";
 
 const STATUS_TONE: Record<PlatformStatus, string> = {
@@ -27,7 +29,25 @@ const parseChecklist = (s: string) =>
     .map((x) => ({ done: x.startsWith(DONE.trim()), text: x.replace(/^✓\s*/, "") }));
 const joinChecklist = (items: { done: boolean; text: string }[]) => items.map((i) => (i.done ? DONE : "") + i.text).join("; ");
 
-export function PlatformsView({ platforms: initial, canEdit }: { platforms: PlatformRow[]; canEdit: boolean }) {
+type Auto = Record<string, { value: number; source: string }>;
+
+export function PlatformsView({
+  platforms: initial,
+  canEdit,
+  canLog,
+  kpis,
+  entries,
+  auto,
+  today,
+}: {
+  platforms: PlatformRow[];
+  canEdit: boolean;
+  canLog: boolean;
+  kpis: Kpi[];
+  entries: KpiEntry[];
+  auto: Auto;
+  today: string;
+}) {
   const [rows, setRows] = useState(initial);
   useEffect(() => setRows(initial), [initial]);
   const [edit, setEdit] = useState<PlatformRow | null>(null);
@@ -117,6 +137,8 @@ export function PlatformsView({ platforms: initial, canEdit }: { platforms: Plat
                           <dd>{r.cadence || "—"}</dd>
                         </div>
                       </dl>
+
+                      <PlatformNumbers platform={r} kpis={kpis.filter((k) => platformKey(k.platform) === platformKey(r.name))} entries={entries} auto={auto} canLog={canLog} today={today} />
 
                       {items.length > 0 && (
                         <div className="mt-3 border-t border-line pt-3">
@@ -215,5 +237,111 @@ function PlatformDrawer({ row, onClose }: { row: PlatformRow | null; onClose: ()
         {text("checklist", "Checklist (separate items with ;)", true)}
       </div>
     </Drawer>
+  );
+}
+
+const fmt = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 1 });
+
+/** The platform's own numbers: start, latest, 3-month target and progress, with a quick way to log this month. */
+function PlatformNumbers({ platform, kpis, entries, auto, canLog, today }: { platform: PlatformRow; kpis: Kpi[]; entries: KpiEntry[]; auto: Auto; canLog: boolean; today: string }) {
+  const [logging, setLogging] = useState<string | null>(null);
+  const [value, setValue] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState({ metric: "", baseline: "", target3: "", target6: "" });
+  const { run, pending, error } = useRun();
+  const month = today.slice(0, 7);
+
+  return (
+    <div className="mt-3 rounded-xl bg-sunk/60 p-3">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="eyebrow">Performance</span>
+        {kpis.length > 0 && (
+          <Link href={`/marketing/performance?platform=${platformKey(platform.name)}`} className="flex items-center gap-0.5 text-[12px] font-semibold text-muted hover:text-ink">
+            Charts <ArrowUpRight size={12} />
+          </Link>
+        )}
+      </div>
+      {kpis.length === 0 && !adding && <p className="text-[12.5px] text-muted">No numbers tracked for this platform yet.</p>}
+      <ul className="space-y-2.5">
+        {kpis.map((k) => {
+          const logged = entries.filter((e) => e.kpiId === k.id).sort((a, b) => b.month.localeCompare(a.month))[0];
+          const a = auto[k.id];
+          const latest = a?.value ?? logged?.value ?? null;
+          const start = k.baselineValue ?? 0;
+          const pct = latest != null && k.target3Value ? Math.max(0, Math.min(100, ((latest - start) / (k.target3Value - start || 1)) * 100)) : null;
+          return (
+            <li key={k.id}>
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-[13px] font-semibold">{k.metric}</span>
+                <span className="text-right text-[13px] tabular-nums">
+                  <b>{latest != null ? fmt(latest) : "—"}</b>
+                  <span className="text-muted"> / {k.target3 || "—"}</span>
+                </span>
+              </div>
+              {pct != null && (
+                <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-line">
+                  <div className={cx("h-full rounded-full", pct >= 100 ? "bg-good" : "bg-ink")} style={{ width: `${pct}%` }} />
+                </div>
+              )}
+              <div className="mt-0.5 flex items-center justify-between text-[11.5px] text-muted">
+                <span>
+                  Started at {k.baseline || "—"}
+                  {a ? ` · auto from ${a.source}` : logged ? ` · logged ${logged.month.slice(0, 7)}` : ""}
+                </span>
+                {canLog && !a && (
+                  <button className="font-semibold hover:text-ink" onClick={() => (setLogging(logging === k.id ? null : k.id), setValue(""))}>
+                    {logging === k.id ? "Cancel" : "Log this month"}
+                  </button>
+                )}
+              </div>
+              {logging === k.id && (
+                <div className="mt-1.5 flex gap-2">
+                  <input autoFocus type="number" step="any" className="input h-8" placeholder={`${k.metric}, ${month}`} value={value} onChange={(e) => setValue(e.target.value)} />
+                  <button className="btn-primary h-8" disabled={pending || value === ""} onClick={() => run(() => logKpi({ kpiId: k.id, month, value: Number(value) }), () => setLogging(null))}>
+                    Save
+                  </button>
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      {canLog &&
+        (adding ? (
+          <div className="mt-3 space-y-2 border-t border-line pt-3">
+            <input className="input h-8" placeholder="What to measure, e.g. Profile views per month" value={draft.metric} onChange={(e) => setDraft({ ...draft, metric: e.target.value })} />
+            <div className="grid grid-cols-3 gap-2">
+              <input className="input h-8" placeholder="Now" value={draft.baseline} onChange={(e) => setDraft({ ...draft, baseline: e.target.value })} />
+              <input className="input h-8" placeholder="In 3 months" value={draft.target3} onChange={(e) => setDraft({ ...draft, target3: e.target.value })} />
+              <input className="input h-8" placeholder="In 6 months" value={draft.target6} onChange={(e) => setDraft({ ...draft, target6: e.target.value })} />
+            </div>
+            <div className="flex justify-end gap-2">
+              <button className="btn h-8" onClick={() => setAdding(false)}>
+                Cancel
+              </button>
+              <button
+                className="btn-primary h-8"
+                disabled={pending || !draft.metric.trim()}
+                onClick={() =>
+                  run(
+                    () => saveKpi({ market: platform.market, platform: platform.name, ...draft }),
+                    () => {
+                      setAdding(false);
+                      setDraft({ metric: "", baseline: "", target3: "", target6: "" });
+                    },
+                  )
+                }
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button className="mt-2.5 flex items-center gap-1 text-[12px] font-semibold text-muted hover:text-ink" onClick={() => setAdding(true)}>
+            <Plus size={12} /> Track a number
+          </button>
+        ))}
+      {error && <p className="mt-1 text-[12px] text-bad">{error}</p>}
+    </div>
   );
 }

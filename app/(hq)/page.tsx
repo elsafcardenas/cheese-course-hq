@@ -1,4 +1,4 @@
-import { can, visibleToUser } from "@/lib/auth";
+import { can, tasksFor, visibleToUser } from "@/lib/auth";
 import { isOpen, latestMetric, medianViews, pillarMix, recentReels } from "@/lib/derive";
 import { getRepo } from "@/lib/repo";
 import { loadMany } from "@/lib/records-server";
@@ -20,7 +20,7 @@ export default async function HomePage() {
   const weekEnd = addDays(today, 7);
 
   const [tasks, posts, decisions, videos, metrics] = await Promise.all([repo.list("tasks"), repo.list("posts"), repo.list("decisions"), repo.list("video_log"), repo.metrics()]);
-  const myTasks = visibleToUser(user, tasks).filter((t) => inWorkspace(ws, t.market));
+  const myTasks = tasksFor(user, tasks).filter((t) => inWorkspace(ws, t.market));
   const myPosts = visibleToUser(user, posts).filter((p) => p.market === market);
   const open = myTasks.filter((t) => isOpen(t.status));
   const wsDecisions = decisions.filter((d) => inWorkspace(ws, d.market));
