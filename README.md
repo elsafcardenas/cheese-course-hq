@@ -46,6 +46,8 @@ Open http://localhost:3000. With no database configured the app runs in **demo m
 
 ## Put it online (about 30 minutes, free tiers)
 
+You can put it online in demo mode first: deploy on Vercel with just `SITE_PASSWORD` set, and the whole site asks for that password. Add Supabase afterwards to get real logins and saved changes; once Supabase is set, the password prompt is replaced by the sign-in page.
+
 ### 1. Supabase (database, sign-in, file storage)
 
 1. Create a project at [supabase.com](https://supabase.com) (region: US East is closest to Miami).
