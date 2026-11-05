@@ -29,7 +29,7 @@ export const POST_STATUS_TONE: Record<PostStatus, string> = {
   Posted: "bg-good/20 text-good",
 };
 
-export const PRIORITY_TONE = { High: "text-bad", Medium: "text-warn", Low: "text-muted" } as const;
+export const PRIORITY_TONE = { High: "font-bold text-ink", Medium: "text-ink", Low: "text-muted" } as const;
 
 export const MARKET_TONE = {
   Miami: "bg-miami/10 text-miami",

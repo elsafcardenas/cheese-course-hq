@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --bg: 249 249 247;
+  --bg: 255 255 255;
   --surface: 255 255 255;
-  --sunk: 243 243 240;
-  --ink: 22 23 21;
-  --muted: 112 112 106;
-  --line: 234 233 229;
-  --accent: 31 61 54;
+  --sunk: 245 245 245;
+  --ink: 10 10 10;
+  --muted: 70 70 70;
+  --line: 228 228 228;
+  --accent: 10 10 10;
   --accent-ink: 255 255 255;
   --rind: 176 124 42;
   --miami: 140 47 57;
@@ -24,7 +24,7 @@
   --pillar-bts: 76 101 138;
   --pillar-community: 104 138 116;
 
-  --dept-home: 31 61 54;
+  --dept-home: 40 40 40;
   --dept-marketing: 190 70 102;
   --dept-ops: 196 128 32;
   --dept-menu: 52 132 92;
@@ -42,8 +42,8 @@
     --ink: 235 233 227;
     --muted: 158 155 148;
     --line: 50 51 49;
-    --accent: 132 186 168;
-    --accent-ink: 14 24 21;
+    --accent: 245 245 245;
+    --accent-ink: 10 10 10;
     --rind: 214 168 88;
     --miami: 222 120 130;
     --spain: 150 190 165;
@@ -57,7 +57,7 @@
     --pillar-bts: 140 166 210;
     --pillar-community: 150 190 165;
 
-    --dept-home: 132 186 168;
+    --dept-home: 220 220 220;
     --dept-marketing: 236 128 158;
     --dept-ops: 232 172 88;
     --dept-menu: 112 196 148;
@@ -144,3 +144,14 @@ body {
   background: rgb(var(--accent) / 0.2);
 }
 
+
+/* Text is black everywhere (white in dark mode). Colour lives in icons, bars, charts and soft
+   backgrounds only; red is kept for errors and overdue dates. */
+.text-accent,
+.text-good,
+.text-warn,
+.text-miami,
+.text-spain,
+.text-rind {
+  color: rgb(var(--ink)) !important;
+}

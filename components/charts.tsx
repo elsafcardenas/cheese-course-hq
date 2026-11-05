@@ -47,7 +47,7 @@ const VARS = {
 } as const;
 type Palette = Record<keyof typeof VARS, string>;
 const FALLBACK: Palette = {
-  accent: "#1F3D36",
+  accent: "#0A0A0A",
   rind: "#B07C2A",
   miami: "#8C2F39",
   spain: "#688A74",

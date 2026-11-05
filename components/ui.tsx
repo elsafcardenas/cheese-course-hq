@@ -26,8 +26,8 @@ export function PageHeader({
     <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div className="max-w-3xl">
         {(g || eyebrow) && (
-          <p className="mb-1.5 flex items-center gap-1.5 text-[12.5px] font-semibold" style={g ? { color: `rgb(var(${g.tone}))` } : undefined}>
-            {g && <Icon name={item?.icon ?? g.icon} size={14} strokeWidth={2.2} />}
+          <p className="mb-1.5 flex items-center gap-1.5 text-[12.5px] font-semibold text-ink">
+            {g && <Icon name={item?.icon ?? g.icon} size={14} strokeWidth={2.2} style={{ color: `rgb(var(${g.tone}))` }} />}
             {eyebrow ?? g?.label}
           </p>
         )}
@@ -52,8 +52,8 @@ export function Pill({ children, className, style, title }: { children: ReactNod
   return (
     <span
       title={title}
-      style={style}
-      className={cx("inline-flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-[3px] text-[11.5px] font-semibold leading-none", className ?? "bg-sunk text-muted")}
+      style={{ ...style, color: "rgb(var(--ink))" }}
+      className={cx("inline-flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-[3px] text-[11.5px] font-semibold leading-none text-ink", className ?? "bg-sunk")}
     >
       {children}
     </span>
