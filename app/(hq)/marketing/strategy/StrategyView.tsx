@@ -10,15 +10,15 @@ import { useRun } from "@/components/useRun";
 import { blankRecord, SCHEMAS, STEP_STATUSES, type Rec } from "@/lib/schema";
 import { addDays, cx, fmtDate } from "@/lib/ui";
 
-const KIND_TONE: Record<string, string> = { "Strategy goal": "--dept-finance", Campaign: "--dept-marketing" };
+const KIND_TONE: Record<string, string> = { "Strategy goal": "--pillar-gift", Campaign: "--ink" };
 const STATUS_CLS: Record<string, string> = {
-  Idea: "bg-sunk text-muted",
-  Planning: "bg-warn/10 text-warn",
-  "In progress": "bg-accent/10 text-accent",
-  Done: "bg-good/10 text-good",
+  Idea: "bg-sunk text-ink",
+  Planning: "bg-sunk text-ink",
+  "In progress": "bg-ink/[0.08] text-ink",
+  Done: "bg-ink text-surface",
   Paused: "bg-sunk text-muted",
-  "To do": "bg-sunk text-muted",
-  Waiting: "bg-warn/10 text-warn",
+  "To do": "bg-sunk text-ink",
+  Waiting: "bg-sunk text-ink",
 };
 
 const s = (v: unknown) => (v == null ? "" : String(v));

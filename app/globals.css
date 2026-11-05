@@ -11,27 +11,27 @@
   --line: 228 228 228;
   --accent: 10 10 10;
   --accent-ink: 255 255 255;
-  --rind: 176 124 42;
-  --miami: 140 47 57;
-  --spain: 104 138 116;
-  --good: 44 122 78;
-  --warn: 184 120 20;
+  --rind: 60 60 60;
+  --miami: 40 40 40;
+  --spain: 110 110 110;
+  --good: 10 10 10;
+  --warn: 110 110 110;
   --bad: 176 48 48;
 
-  --pillar-food: 176 124 42;
-  --pillar-101: 31 61 54;
-  --pillar-gift: 140 47 57;
-  --pillar-bts: 76 101 138;
-  --pillar-community: 104 138 116;
+  --pillar-food: 10 10 10;
+  --pillar-101: 85 85 85;
+  --pillar-gift: 140 140 140;
+  --pillar-bts: 185 185 185;
+  --pillar-community: 115 115 115;
 
-  --dept-home: 40 40 40;
-  --dept-marketing: 190 70 102;
-  --dept-ops: 196 128 32;
-  --dept-menu: 52 132 92;
-  --dept-finance: 56 104 178;
-  --dept-customers: 214 150 24;
-  --dept-madrid: 196 74 54;
-  --dept-company: 108 106 100;
+  --dept-home: 10 10 10;
+  --dept-marketing: 10 10 10;
+  --dept-ops: 10 10 10;
+  --dept-menu: 10 10 10;
+  --dept-finance: 10 10 10;
+  --dept-customers: 10 10 10;
+  --dept-madrid: 10 10 10;
+  --dept-company: 10 10 10;
   color-scheme: light;
 }
 
@@ -44,27 +44,27 @@
     --line: 50 51 49;
     --accent: 245 245 245;
     --accent-ink: 10 10 10;
-    --rind: 214 168 88;
-    --miami: 222 120 130;
-    --spain: 150 190 165;
-    --good: 108 190 140;
-    --warn: 230 180 80;
+    --rind: 200 200 200;
+    --miami: 230 230 230;
+    --spain: 160 160 160;
+    --good: 245 245 245;
+    --warn: 160 160 160;
     --bad: 232 112 112;
 
-    --pillar-food: 214 168 88;
-    --pillar-101: 132 186 168;
-    --pillar-gift: 222 120 130;
-    --pillar-bts: 140 166 210;
-    --pillar-community: 150 190 165;
+    --pillar-food: 245 245 245;
+    --pillar-101: 185 185 185;
+    --pillar-gift: 140 140 140;
+    --pillar-bts: 100 100 100;
+    --pillar-community: 165 165 165;
 
-    --dept-home: 220 220 220;
-    --dept-marketing: 236 128 158;
-    --dept-ops: 232 172 88;
-    --dept-menu: 112 196 148;
-    --dept-finance: 128 168 236;
-    --dept-customers: 240 196 92;
-    --dept-madrid: 236 128 108;
-    --dept-company: 170 168 160;
+    --dept-home: 240 240 240;
+    --dept-marketing: 240 240 240;
+    --dept-ops: 240 240 240;
+    --dept-menu: 240 240 240;
+    --dept-finance: 240 240 240;
+    --dept-customers: 240 240 240;
+    --dept-madrid: 240 240 240;
+    --dept-company: 240 240 240;
     color-scheme: dark;
 }
 
@@ -145,8 +145,8 @@ body {
 }
 
 
-/* Text is black everywhere (white in dark mode). Colour lives in icons, bars, charts and soft
-   backgrounds only; red is kept for errors and overdue dates. */
+/* Black and white throughout (white on dark in dark mode). The only colour left is red, for
+   errors, overdue dates and counts that need attention. */
 .text-accent,
 .text-good,
 .text-warn,

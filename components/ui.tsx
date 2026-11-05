@@ -52,7 +52,7 @@ export function Pill({ children, className, style, title }: { children: ReactNod
   return (
     <span
       title={title}
-      style={{ ...style, color: "rgb(var(--ink))" }}
+      style={style ? { ...style, color: "rgb(var(--ink))" } : undefined}
       className={cx("inline-flex items-center gap-1 whitespace-nowrap rounded-md px-1.5 py-[3px] text-[11.5px] font-semibold leading-none text-ink", className ?? "bg-sunk")}
     >
       {children}
@@ -71,11 +71,10 @@ const GOOD = ["Done", "Approved", "Published", "Paid in full", "Picked up", "Fix
 const WARN = ["In review", "Waiting on someone", "Deposit", "Scheduled", "Sent", "In progress", "In prep", "Ready", "Negotiating", "Visited", "To visit", "On leave", "Seasonal", "In talks", "Quoted", "Needs Ricardo", "To confirm", "Escalated"];
 const BAD = ["Changes requested", "Cancelled", "Unpaid", "Blocked", "Rejected", "Left", "Closed", "Retired", "Not a fit", "Refunded"];
 export function statusTone(v: string) {
-  if (GOOD.includes(v)) return "bg-good/10 text-good";
-  if (WARN.includes(v)) return "bg-warn/10 text-warn";
+  if (GOOD.includes(v)) return "bg-ink/[0.08] text-ink";
+  if (WARN.includes(v)) return "bg-sunk text-ink";
   if (BAD.includes(v)) return "bg-bad/10 text-bad";
-  if (v === "New" || v === "Enquiry" || v === "Confirmed" || v === "Draft") return "bg-accent/10 text-accent";
-  return "bg-sunk text-muted";
+  return "bg-sunk text-ink";
 }
 
 export function Stat({
