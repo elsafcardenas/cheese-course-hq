@@ -14,7 +14,7 @@ const A = {
   feedback: { href: "/customers?tab=all&new=1", icon: "star", tone: "--dept-customers", label: "Log a review", sub: "Or a complaint or compliment" },
   checklist: { href: "/ops/checklists", icon: "list-check", tone: "--dept-ops", label: "Do today's checklist", sub: "Opening or closing" },
   waste: { href: "/ops/inventory?tab=Waste&new=1", icon: "boxes", tone: "--dept-ops", label: "Log waste", sub: "What got thrown away" },
-  footage: { href: "/marketing/assets", icon: "film", tone: "--dept-marketing", label: "Upload footage", sub: "Videos from the shoot list" },
+  footage: { href: "/marketing/assets", icon: "film", tone: "--dept-marketing", label: "Upload footage", sub: "Only if Elsa asked for footage" },
   decide: { href: "/company/decisions", icon: "scale", tone: "--dept-company", label: "Answer decisions", sub: "Things waiting on you" },
   forRicardo: { href: "/marketing/calendar", icon: "calendar", tone: "--dept-marketing", label: "See finished posts", sub: "Use the “For Ricardo” filter" },
   numbers: { href: "/finance", icon: "wallet", tone: "--dept-finance", label: "See the numbers", sub: "Sales, spending, budget" },

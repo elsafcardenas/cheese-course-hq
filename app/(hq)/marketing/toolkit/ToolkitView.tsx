@@ -18,7 +18,7 @@ const TOOLS: { id: ToolId; title: string; sub: string; icon: string; tone: strin
   { id: "captions", title: "Caption builder", sub: "Fill in 4 boxes, copy a finished caption", icon: "pen", tone: "--dept-marketing" },
   { id: "ideas", title: "Post & Story ideas", sub: "What to post when you're stuck", icon: "idea", tone: "--dept-menu" },
   { id: "replies", title: "Reply templates", sub: "Reviews, DMs, comments, creators", icon: "message", tone: "--dept-customers" },
-  { id: "shoot", title: "Shoot list", sub: "What to film today, store by store", icon: "camera", tone: "--dept-ops" },
+  { id: "shoot", title: "Shoot list", sub: "What to film when a shoot is booked", icon: "camera", tone: "--dept-ops" },
   { id: "brief", title: "Brief for Luis", sub: "Send a design request in one go", icon: "wand", tone: "--dept-marketing" },
   { id: "dates", title: "Key dates", sub: "Holidays and days worth planning for", icon: "calendar", tone: "--dept-finance" },
   { id: "hashtags", title: "Hashtags", sub: "Ready-made sets to paste", icon: "hash", tone: "--dept-company" },

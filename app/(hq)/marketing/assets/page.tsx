@@ -24,7 +24,7 @@ export default async function AssetsPage() {
     <>
       <PageHeader href="/marketing/assets" title="Assets & footage">
         {user.role === "store_manager"
-          ? `Upload footage from ${user.store}, or paste a Drive link. Use the shoot list in Toolkit for what to film.`
+          ? `Upload footage from ${user.store}, or paste a Drive link. When a shoot is booked, the shoot list in Toolkit says what to film.`
           : "Where the footage and finished files live: Drive folders, links, and footage uploaded by the stores."}
       </PageHeader>
       <AssetsView

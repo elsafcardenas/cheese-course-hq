@@ -63,7 +63,6 @@ const checklists = rows("cl", [
       "Rotate stock (first in, first out); check dates",
       "Supplier orders placed",
       "Deep clean slicer and display cases",
-      "Content hour: film the shoot list and upload to Assets",
       "Reply to new reviews",
     ].join("\n"),
   },

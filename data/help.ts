@@ -89,7 +89,7 @@ export const ROLES: { who: L; does: L; steps: L[] }[] = [
       t("Open and close with Checklists: tick each item on the phone.", "Abre y cierra con Checklists: marca cada punto en el móvil."),
       t("Log catering orders as they come in and move them along the board to Picked up.", "Apunta los pedidos de catering al recibirlos y muévelos en el tablero hasta Picked up."),
       t("Report broken equipment in Maintenance and log waste every night in Inventory → Waste log.", "Avisa de equipos rotos en Maintenance y apunta la merma cada noche en Inventory → Waste log."),
-      t("Weekly: film the shoot list from Toolkit and add it in Assets & footage.", "Cada semana: graba la lista de planos de Toolkit y súbela en Assets & footage."),
+      t("If Elsa asks for footage, film it with the shoot list in Toolkit and upload it in Assets & footage. There's no weekly shoot for now.", "Si Elsa te pide vídeos, grábalos con la lista de planos de Toolkit y súbelos en Assets & footage. Por ahora no hay grabación semanal."),
     ],
   },
 ];

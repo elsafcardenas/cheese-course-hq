@@ -69,8 +69,6 @@ export const tasks: Task[] = t([
   { title: "Line up filming in Miami: weekly content hour at each store, or a monthly freelancer (decide with Ricardo)", owner: "Elsa", market: "Miami", workstream: "Production system", priority: "High", status: "To do", deadline: "2026-12-07" },
   { title: "Spain: reserve TikTok and Facebook as @thecheesecourse.es (Instagram done)", owner: "Elsa", market: "Spain", workstream: "Spain brand prep", priority: "High", status: "Doing", deadline: "2026-12-01", notes: "Keep all three private or with zero posts until the venue is signed." },
   // ---- For the store managers (they only see their own store's tasks) ----
-  { title: "Weston: film this week's shoot list (Toolkit > Shoot list) and upload it on the Assets tab", owner: "Store manager", market: "Miami", workstream: "Production system", priority: "Medium", status: "To do", deadline: "2026-12-12", store: "Weston", notes: "Starts once Ricardo confirms the weekly content hour. 20 to 30 minutes, before the lunch rush." },
-  { title: "Pinecrest: film this week's shoot list (Toolkit > Shoot list) and upload it on the Assets tab", owner: "Store manager", market: "Miami", workstream: "Production system", priority: "Medium", status: "To do", deadline: "2026-12-12", store: "Pinecrest", notes: "Starts once Ricardo confirms the weekly content hour. 20 to 30 minutes, before the lunch rush." },
   { title: "Both stores: send Thanksgiving and holiday hours so Google, Instagram and the website match", owner: "Store manager", market: "Miami", workstream: "Platform expansion", priority: "High", status: "To do", deadline: "2026-12-10", store: "Both stores" },
   // ---- Carried over from the old Madrid task list ----
   { title: "Check whether The Cheese Course is registered as a trademark in Spain (OEPM) before go-live", owner: "Elsa", market: "Spain", workstream: "Spain brand prep", priority: "Medium", status: "To do", deadline: "2027-02-08" },
@@ -269,7 +267,7 @@ export const assets: Asset[] = ([
   ["Raw photos: Pinecrest", "Pinecrest", `${DRIVE}10Uy4MNtjtRCElbaPaygON3hV-EBCVzSK`, ""],
   ["Raw videos: Plantation (closed store)", null, `${DRIVE}1jfSM80V3JPO8KGtUrSmjYYVhK92mMGKq`, "Product close-ups only; never show the store."],
   ["Caterings", "Both stores", `${DRIVE}1vK74XCooei__IgUv93EisjXGSVyf3_7J`, "Platter prep, wrapping, finished platters (May and Aug 2026 subfolders)."],
-  ["Weston: no raw footage yet", "Weston", "", "Send the first shoot list here. Weston is about 73% of 2026 sales."],
+  ["Weston: no raw footage yet", "Weston", "", "No raw footage yet; there's no weekly shoot for now. Weston is about 73% of 2026 sales."],
 ] as const).map(([title, store, url, notes], i) => ({
   id: `a${String(i + 1).padStart(2, "0")}`,
   title,

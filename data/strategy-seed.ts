@@ -48,7 +48,7 @@ const LIST: Init[] = [
         end: "2027-02-26",
         subs: [
           { title: "Monday: plan the week in the calendar", owner: "Elsa" },
-          { title: "Send the shoot list to both stores", owner: "Elsa" },
+          { title: "Edit Reels from existing footage in the Drive (no weekly shoot for now)", owner: "Elsa" },
           { title: "Friday: check the numbers and pick what to repeat", owner: "Elsa" },
         ],
       },
