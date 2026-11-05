@@ -1,6 +1,9 @@
 "use client";
 
 import {
+  Award,
+  Mail,
+  Search as SearchIcon,
   Eye,
   Camera,
   Clock,
@@ -78,6 +81,9 @@ const ICONS: Record<string, LucideIcon> = {
   pen: PenLine,
   ruler: Ruler,
   zap: Zap,
+  award: Award,
+  mail: Mail,
+  search: SearchIcon,
 };
 
 export function Icon({ name, ...props }: { name: string } & LucideProps) {

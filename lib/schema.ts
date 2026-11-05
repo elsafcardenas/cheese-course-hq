@@ -92,6 +92,12 @@ export const RECORD_NAMES = [
   "initiative_steps",
   "workflows",
   "workflow_steps",
+  "loyalty_rules",
+  "loyalty_members",
+  "email_campaigns",
+  "seo_tasks",
+  "seo_keywords",
+  "aeo_checks",
   "content_reviews",
   "review_comments",
 ] as const;
@@ -126,7 +132,7 @@ export const MENU_CATEGORIES_BY: Record<(typeof MENU_SECTIONS)[number], readonly
 export const MENU_CATEGORIES = [...new Set(Object.values(MENU_CATEGORIES_BY).flat())];
 export const EXPENSE_CATEGORIES = ["Rent", "Payroll", "Food & supplies", "Packaging", "Utilities", "Marketing", "Repairs & maintenance", "Software", "Insurance", "Fees & taxes", "Other"] as const;
 
-const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comments" | "initiatives" | "initiative_steps" | "workflows" | "workflow_steps"> = {
+const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comments" | "initiatives" | "initiative_steps" | "workflows" | "workflow_steps" | keyof typeof MARKETING_EXTRA> = {
   stores: {
     name: "stores",
     label: "Stores",
@@ -713,6 +719,155 @@ const WORKFLOW_STEPS: RecordDef = {
   ],
 };
 
+// ---------------------------------------------------------------------------
+// Loyalty, email and search (SEO + AI answers). Marketing owns these; store teams can add
+// loyalty members at the counter.
+// ---------------------------------------------------------------------------
+const MKT_READ: Role[] = ["admin", "ops_manager", "editor", "viewer"];
+const MARKET_FIELD: Field = { key: "market", label: "Market", type: "select", options: ["Miami", "Spain"], required: true };
+
+const MARKETING_EXTRA: Record<"loyalty_rules" | "loyalty_members" | "email_campaigns" | "seo_tasks" | "seo_keywords" | "aeo_checks", RecordDef> = {
+  loyalty_rules: {
+    name: "loyalty_rules",
+    label: "Program rules",
+    singular: "Rule",
+    titleKey: "name",
+    subtitleKey: "kind",
+    read: [...MKT_READ, "store_manager"],
+    write: ["admin", "ops_manager"],
+    defaults: { kind: "Reward", status: "Proposal", market: "Miami" },
+    sort: { key: "sortOrder", dir: "asc" },
+    fields: [
+      { key: "name", label: "Rule", type: "text", required: true, table: true, wide: true },
+      { key: "kind", label: "Type", type: "select", options: ["How members earn", "Reward", "Welcome gift", "Birthday", "Limit or condition", "Tool / setup"], table: true, filter: true },
+      { key: "detail", label: "Details", type: "textarea", wide: true, table: true },
+      { key: "status", label: "Status", type: "select", options: ["Idea", "Proposal", "Decided", "Live", "Dropped"], table: true, filter: true },
+      { key: "cost", label: "Cost to us per reward", type: "money", help: "What the reward costs us to give, so the program stays profitable." },
+      { key: "sortOrder", label: "Order", type: "number" },
+      MARKET_FIELD,
+    ],
+  },
+  loyalty_members: {
+    name: "loyalty_members",
+    label: "Members",
+    singular: "Member",
+    titleKey: "name",
+    subtitleKey: "store",
+    read: [...MKT_READ, "store_manager"],
+    write: ["admin", "ops_manager"],
+    storeKey: "store",
+    managerWrite: true,
+    defaults: { store: "Weston", visits: 0, rewardsUsed: 0, status: "Active", market: "Miami" },
+    sort: { key: "joined", dir: "desc" },
+    fields: [
+      { key: "name", label: "Name", type: "text", required: true, table: true },
+      { key: "phone", label: "Phone", type: "text", table: true },
+      { key: "email", label: "Email", type: "text" },
+      { key: "store", label: "Home store", type: "select", options: ["Weston", "Pinecrest", "Madrid"], table: true, filter: true },
+      { key: "joined", label: "Joined", type: "date", table: true },
+      { key: "visits", label: "Stamps / visits", type: "number", table: true },
+      { key: "rewardsUsed", label: "Rewards used", type: "number", table: true },
+      { key: "lastVisit", label: "Last visit", type: "date", table: true },
+      { key: "birthdayMonth", label: "Birthday month", type: "select", options: ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] },
+      { key: "emailOk", label: "Agreed to emails", type: "checkbox" },
+      { key: "status", label: "Status", type: "select", options: ["Active", "Inactive"], filter: true },
+      { key: "notes", label: "Notes", type: "textarea", wide: true },
+      MARKET_FIELD,
+    ],
+  },
+  email_campaigns: {
+    name: "email_campaigns",
+    label: "Email campaigns",
+    singular: "Email",
+    titleKey: "subject",
+    subtitleKey: "audience",
+    read: MKT_READ,
+    write: ["admin", "editor"],
+    defaults: { status: "Idea", audience: "Everyone", market: "Miami" },
+    sort: { key: "sendDate", dir: "asc" },
+    fields: [
+      { key: "subject", label: "Subject line", type: "text", required: true, table: true, wide: true },
+      { key: "preview", label: "Preview text", type: "text", wide: true, help: "The short line people see after the subject in their inbox." },
+      { key: "sendDate", label: "Send date", type: "date", table: true },
+      { key: "status", label: "Status", type: "select", options: ["Idea", "Draft", "Ready", "Scheduled", "Sent"], table: true, filter: true },
+      { key: "audience", label: "Who gets it", type: "select", options: ["Everyone", "Loyalty members", "Catering customers", "Weston customers", "Pinecrest customers", "Waitlist (Madrid)", "Lapsed customers"], table: true, filter: true },
+      { key: "goal", label: "What it's for", type: "text", wide: true },
+      { key: "cta", label: "Main button", type: "text", placeholder: "e.g. Order your platter" },
+      { key: "link", label: "Link to the draft", type: "url" },
+      { key: "sent", label: "Sent to", type: "number", table: true },
+      { key: "openRate", label: "Open rate %", type: "number", table: true },
+      { key: "clickRate", label: "Click rate %", type: "number", table: true },
+      { key: "orders", label: "Orders from it", type: "number" },
+      { key: "revenue", label: "Revenue from it", type: "money" },
+      { key: "notes", label: "Notes", type: "textarea", wide: true },
+      MARKET_FIELD,
+    ],
+  },
+  seo_tasks: {
+    name: "seo_tasks",
+    label: "SEO checklist",
+    singular: "Item",
+    titleKey: "item",
+    subtitleKey: "area",
+    read: MKT_READ,
+    write: ["admin", "editor"],
+    defaults: { status: "To do", area: "Google profiles", market: "Miami", owner: "Elsa" },
+    sort: { key: "sortOrder", dir: "asc" },
+    fields: [
+      { key: "item", label: "What to do", type: "text", required: true, table: true, wide: true },
+      { key: "area", label: "Area", type: "select", options: ["Google profiles", "Other listings", "Website", "Content & FAQs", "Reviews", "AI answers"], table: true, filter: true },
+      { key: "why", label: "Why it matters", type: "textarea", wide: true },
+      { key: "status", label: "Status", type: "select", options: ["To do", "In progress", "Done", "Not needed"], table: true, filter: true },
+      { key: "owner", label: "Who", type: "text", suggestTeam: true, table: true },
+      { key: "due", label: "Due", type: "date", table: true },
+      { key: "sortOrder", label: "Order", type: "number" },
+      MARKET_FIELD,
+    ],
+  },
+  seo_keywords: {
+    name: "seo_keywords",
+    label: "Keywords",
+    singular: "Keyword",
+    titleKey: "keyword",
+    subtitleKey: "page",
+    read: MKT_READ,
+    write: ["admin", "editor"],
+    defaults: { market: "Miami", store: "Both stores" },
+    sort: { key: "keyword", dir: "asc" },
+    fields: [
+      { key: "keyword", label: "What people search", type: "text", required: true, table: true, wide: true },
+      { key: "store", label: "Store", type: "select", options: ["Weston", "Pinecrest", "Both stores", "Madrid"], table: true, filter: true },
+      { key: "page", label: "Our page for it", type: "text", placeholder: "e.g. /catering or the Google profile", table: true },
+      { key: "position", label: "Google position now", type: "number", table: true, help: "Where we show up in Google (1 = top). Leave empty if we're not in the top 50." },
+      { key: "target", label: "Target position", type: "number", table: true },
+      { key: "inMapPack", label: "In the map results (top 3)", type: "checkbox", table: true },
+      { key: "checked", label: "Last checked", type: "date", table: true },
+      { key: "notes", label: "Notes", type: "textarea", wide: true },
+      MARKET_FIELD,
+    ],
+  },
+  aeo_checks: {
+    name: "aeo_checks",
+    label: "AI answers",
+    singular: "Question",
+    titleKey: "question",
+    subtitleKey: "engine",
+    read: MKT_READ,
+    write: ["admin", "editor"],
+    defaults: { market: "Miami", engine: "ChatGPT", result: "Not checked" },
+    sort: { key: "question", dir: "asc" },
+    fields: [
+      { key: "question", label: "Question people ask", type: "text", required: true, table: true, wide: true },
+      { key: "engine", label: "Where we asked", type: "select", options: ["ChatGPT", "Google AI Overview", "Gemini", "Perplexity", "Copilot", "Siri / Apple Maps"], table: true, filter: true },
+      { key: "result", label: "Are we mentioned?", type: "select", options: ["Not checked", "Yes, first", "Yes", "Not mentioned", "Wrong information"], table: true, filter: true },
+      { key: "competitors", label: "Who they named instead", type: "text", table: true },
+      { key: "checked", label: "Last checked", type: "date", table: true },
+      { key: "fix", label: "What to fix", type: "textarea", wide: true, help: "e.g. add this answer to our FAQ page, get listed on the site they quoted, correct our hours." },
+      MARKET_FIELD,
+    ],
+  },
+};
+
 // Content review lives alongside the rest so it gets the same storage, import and permissions.
 const CONTENT_REVIEWS: RecordDef = {
   name: "content_reviews",
@@ -756,7 +911,7 @@ const REVIEW_COMMENTS: RecordDef = {
   ],
 };
 
-export const SCHEMAS: Record<RecordName, RecordDef> = { ...BASE, content_reviews: CONTENT_REVIEWS, review_comments: REVIEW_COMMENTS, initiatives: INITIATIVES, initiative_steps: INITIATIVE_STEPS, workflows: WORKFLOWS, workflow_steps: WORKFLOW_STEPS };
+export const SCHEMAS: Record<RecordName, RecordDef> = { ...BASE, content_reviews: CONTENT_REVIEWS, review_comments: REVIEW_COMMENTS, initiatives: INITIATIVES, initiative_steps: INITIATIVE_STEPS, workflows: WORKFLOWS, workflow_steps: WORKFLOW_STEPS, ...MARKETING_EXTRA };
 
 export const isRecordName = (v: string): v is RecordName => (RECORD_NAMES as readonly string[]).includes(v);
 
@@ -780,6 +935,9 @@ export const PAGE_DATA: Record<string, RecordName[]> = {
   "/marketing/review": ["content_reviews", "review_comments"],
   "/marketing/strategy": ["initiatives", "initiative_steps"],
   "/company/workflows": ["workflows", "workflow_steps"],
+  "/marketing/loyalty": ["loyalty_rules", "loyalty_members"],
+  "/marketing/email": ["email_campaigns"],
+  "/marketing/seo": ["seo_tasks", "seo_keywords", "aeo_checks"],
 };
 
 /** Paused people see nothing; extra pages an admin switched on bring their data with them (view only). */

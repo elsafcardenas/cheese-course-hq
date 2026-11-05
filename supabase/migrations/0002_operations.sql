@@ -489,6 +489,128 @@ create policy "read workflow_steps" on public.workflow_steps for select using (
 );
 create policy "write workflow_steps" on public.workflow_steps for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
 
+create table if not exists public.loyalty_rules (
+  id text primary key default gen_random_uuid()::text,
+  name text,
+  kind text,
+  detail text,
+  status text,
+  cost numeric(12,2),
+  sort_order numeric,
+  market text,
+  created_at timestamptz not null default now()
+);
+alter table public.loyalty_rules enable row level security;
+create policy "read loyalty_rules" on public.loyalty_rules for select using (
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
+  or (public.my_role() = 'store_manager' and true)
+);
+create policy "write loyalty_rules" on public.loyalty_rules for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
+
+create table if not exists public.loyalty_members (
+  id text primary key default gen_random_uuid()::text,
+  name text,
+  phone text,
+  email text,
+  store text,
+  joined date,
+  visits numeric,
+  rewards_used numeric,
+  last_visit date,
+  birthday_month text,
+  email_ok boolean not null default false,
+  status text,
+  notes text,
+  market text,
+  created_at timestamptz not null default now()
+);
+alter table public.loyalty_members enable row level security;
+create policy "read loyalty_members" on public.loyalty_members for select using (
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
+  or (public.my_role() = 'store_manager' and (store is null or store = 'Both stores' or store = public.my_store()))
+);
+create policy "write loyalty_members" on public.loyalty_members for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
+create policy "managers write loyalty_members" on public.loyalty_members for all using (public.my_role() = 'store_manager' and store = public.my_store()) with check (public.my_role() = 'store_manager' and store = public.my_store());
+
+create table if not exists public.email_campaigns (
+  id text primary key default gen_random_uuid()::text,
+  subject text,
+  preview text,
+  send_date date,
+  status text,
+  audience text,
+  goal text,
+  cta text,
+  link text,
+  sent numeric,
+  open_rate numeric,
+  click_rate numeric,
+  orders numeric,
+  revenue numeric(12,2),
+  notes text,
+  market text,
+  created_at timestamptz not null default now()
+);
+alter table public.email_campaigns enable row level security;
+create policy "read email_campaigns" on public.email_campaigns for select using (
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
+);
+create policy "write email_campaigns" on public.email_campaigns for all using (public.my_role() in ('admin', 'editor')) with check (public.my_role() in ('admin', 'editor'));
+
+create table if not exists public.seo_tasks (
+  id text primary key default gen_random_uuid()::text,
+  item text,
+  area text,
+  why text,
+  status text,
+  owner text,
+  due date,
+  sort_order numeric,
+  market text,
+  created_at timestamptz not null default now()
+);
+alter table public.seo_tasks enable row level security;
+create policy "read seo_tasks" on public.seo_tasks for select using (
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
+);
+create policy "write seo_tasks" on public.seo_tasks for all using (public.my_role() in ('admin', 'editor')) with check (public.my_role() in ('admin', 'editor'));
+
+create table if not exists public.seo_keywords (
+  id text primary key default gen_random_uuid()::text,
+  keyword text,
+  store text,
+  page text,
+  position numeric,
+  target numeric,
+  in_map_pack boolean not null default false,
+  checked date,
+  notes text,
+  market text,
+  created_at timestamptz not null default now()
+);
+alter table public.seo_keywords enable row level security;
+create policy "read seo_keywords" on public.seo_keywords for select using (
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
+);
+create policy "write seo_keywords" on public.seo_keywords for all using (public.my_role() in ('admin', 'editor')) with check (public.my_role() in ('admin', 'editor'));
+
+create table if not exists public.aeo_checks (
+  id text primary key default gen_random_uuid()::text,
+  question text,
+  engine text,
+  result text,
+  competitors text,
+  checked date,
+  fix text,
+  market text,
+  created_at timestamptz not null default now()
+);
+alter table public.aeo_checks enable row level security;
+create policy "read aeo_checks" on public.aeo_checks for select using (
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
+);
+create policy "write aeo_checks" on public.aeo_checks for all using (public.my_role() in ('admin', 'editor')) with check (public.my_role() in ('admin', 'editor'));
+
 create table if not exists public.content_reviews (
   id text primary key default gen_random_uuid()::text,
   title text,

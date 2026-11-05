@@ -171,6 +171,37 @@ create policy "granted read workflow_steps" on public.workflow_steps for select 
   public.my_access() && array['miami:/company/workflows', 'spain:/company/workflows']
 );
 
+drop policy if exists "granted read loyalty_rules" on public.loyalty_rules;
+create policy "granted read loyalty_rules" on public.loyalty_rules for select using (
+  public.my_access() && array['miami:/marketing/loyalty', 'spain:/marketing/loyalty']
+);
+
+drop policy if exists "granted read loyalty_members" on public.loyalty_members;
+create policy "granted read loyalty_members" on public.loyalty_members for select using (
+  public.my_access() && array['miami:/marketing/loyalty', 'spain:/marketing/loyalty']
+  and (public.my_role() <> 'store_manager' or store is null or store = 'Both stores' or store = public.my_store())
+);
+
+drop policy if exists "granted read email_campaigns" on public.email_campaigns;
+create policy "granted read email_campaigns" on public.email_campaigns for select using (
+  public.my_access() && array['miami:/marketing/email', 'spain:/marketing/email']
+);
+
+drop policy if exists "granted read seo_tasks" on public.seo_tasks;
+create policy "granted read seo_tasks" on public.seo_tasks for select using (
+  public.my_access() && array['miami:/marketing/seo', 'spain:/marketing/seo']
+);
+
+drop policy if exists "granted read seo_keywords" on public.seo_keywords;
+create policy "granted read seo_keywords" on public.seo_keywords for select using (
+  public.my_access() && array['miami:/marketing/seo', 'spain:/marketing/seo']
+);
+
+drop policy if exists "granted read aeo_checks" on public.aeo_checks;
+create policy "granted read aeo_checks" on public.aeo_checks for select using (
+  public.my_access() && array['miami:/marketing/seo', 'spain:/marketing/seo']
+);
+
 drop policy if exists "granted read content_reviews" on public.content_reviews;
 create policy "granted read content_reviews" on public.content_reviews for select using (
   public.my_access() && array['miami:/marketing/review', 'spain:/marketing/review']
