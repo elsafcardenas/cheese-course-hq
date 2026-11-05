@@ -396,6 +396,13 @@ export async function setLang(lang: string) {
   revalidatePath("/", "layout");
 }
 
+/** Light or dark appearance, remembered per device. */
+export async function setTheme(theme: string) {
+  const store = await cookies();
+  store.set("theme", theme === "dark" ? "dark" : "light", { path: "/", sameSite: "lax", maxAge: 60 * 60 * 24 * 365 });
+  revalidatePath("/", "layout");
+}
+
 /** Switches between the Miami and Spain workspaces. */
 export async function setWorkspace(ws: string) {
   const store = await cookies();

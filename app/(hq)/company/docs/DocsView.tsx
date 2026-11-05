@@ -21,7 +21,8 @@ export function DocsView({ docs, market, canWrite, lockStore }: { docs: Rec[]; m
     const q = params.get("q");
     const hit = q && docs.find((d) => String(d.title).toLowerCase() === q.toLowerCase());
     if (hit) setRead(hit);
-  }, [params, docs]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const card = (d: Rec, open: () => void) => {
     const Icon = ICON[String(d.category)] ?? FileText;

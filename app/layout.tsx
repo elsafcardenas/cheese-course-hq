@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -8,9 +9,13 @@ export const metadata: Metadata = {
   icons: { icon: "/icon.svg" },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Light by default; each person can switch to dark (remembered on their device).
+  const store = await cookies();
+  const dark = store.get("theme")?.value === "dark";
+  const lang = store.get("lang")?.value === "es" ? "es" : "en";
   return (
-    <html lang="en">
+    <html lang={lang} className={dark ? "dark" : ""}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />

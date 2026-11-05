@@ -15,6 +15,7 @@ export function Tabs({ tabs, tone = "--accent", initial }: { tabs: { id: string;
     const p = new URLSearchParams(params.toString());
     p.set("tab", id);
     p.delete("q");
+    p.delete("new");
     router.replace(`?${p.toString()}`, { scroll: false });
   };
   return (

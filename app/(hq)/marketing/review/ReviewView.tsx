@@ -69,6 +69,7 @@ export function ReviewView({
   const [edit, setEdit] = useState<Rec | null>(null);
 
   useEffect(() => {
+    if (params.get("new") === "1" && canWrite) setEdit({ ...blankRecord(SCHEMAS.content_reviews), kind: "Graphic", market, format: "Carousel", submittedBy: me === "Luis" ? "Luis" : "Elsa" });
     const q = params.get("q");
     if (q) {
       const hit = pieces.find((p) => String(p.title).toLowerCase() === q.toLowerCase());
@@ -77,7 +78,8 @@ export function ReviewView({
         setOpenId(hit.id);
       }
     }
-  }, [params, pieces]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const inTab = pieces.filter((p) => (p.kind ?? "Graphic") === tab);
   const shown = inTab

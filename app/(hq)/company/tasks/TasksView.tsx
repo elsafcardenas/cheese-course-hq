@@ -1,6 +1,7 @@
 "use client";
 
 import { List, Plus, Search, SquareKanban, Users } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { setTaskStatus } from "@/app/actions";
 import { blankTask, TaskDrawer } from "@/components/TaskDrawer";
@@ -24,6 +25,13 @@ export function TasksView({ tasks: initial, today, canEdit, canStatus }: { tasks
   const [status, setStatus] = useState("Open");
   const [open, setOpen] = useState<Task | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
+  const params = useSearchParams();
+  useEffect(() => {
+    if (params.get("new") === "1" && canEdit) setOpen(blankTask());
+    const q = params.get("q");
+    if (q) setQ(q);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const { run, error } = useRun();
 
   // Everything except the status filter (the board shows statuses as columns).

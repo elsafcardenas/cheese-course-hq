@@ -34,7 +34,9 @@ export default async function HqLayout({ children }: { children: React.ReactNode
 
   const ws = await getWorkspace(user);
   const market = WS_MARKET[ws];
-  const lang = (await cookies()).get("lang")?.value === "es" ? "es" : "en";
+  const jar = await cookies();
+  const lang = jar.get("lang")?.value === "es" ? "es" : "en";
+  const theme = jar.get("theme")?.value === "dark" ? "dark" : "light";
   const groups = navFor(user.role, ws);
   const load = async (name: RecordName): Promise<Rec[]> =>
     canReadRecords(user.role, name) ? (await repo.listRecords(name)).filter((r) => user.role !== "store_manager" || storeVisible(SCHEMAS[name], r, user.store)) : [];
@@ -87,7 +89,7 @@ export default async function HqLayout({ children }: { children: React.ReactNode
   ].filter((e) => e.label);
 
   return (
-    <Shell groups={groups} user={user} mode={repo.mode} people={people} badges={badges} entries={entries} ws={ws} workspaces={workspacesFor(user.role)} lang={lang}>
+    <Shell groups={groups} user={user} mode={repo.mode} people={people} badges={badges} entries={entries} ws={ws} workspaces={workspacesFor(user.role)} lang={lang} theme={theme}>
       {children}
     </Shell>
   );

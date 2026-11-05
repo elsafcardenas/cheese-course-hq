@@ -6,6 +6,7 @@ import { WORKSTREAMS } from "@/lib/types";
 import { addDays, todayISO } from "@/lib/ui";
 import { getWorkspace, inWorkspace } from "@/lib/workspace";
 import { OpsStrip, type OpsTile } from "./OpsStrip";
+import { QuickActions } from "./QuickActions";
 import { SpainHome } from "./SpainHome";
 import { TodayView } from "./TodayView";
 
@@ -113,8 +114,9 @@ export default async function HomePage() {
       }}
       byWorkstream={WORKSTREAMS.map((w) => ({ name: w, value: open.filter((t) => t.workstream === w).length })).filter((d) => d.value > 0)}
       mix={pillarMix(myPosts, "Miami")}
+      glance={<OpsStrip tiles={tiles} checklists={seesOps ? checklistPct : []} />}
     >
-      <OpsStrip tiles={tiles} checklists={seesOps ? checklistPct : []} />
+      <QuickActions role={user.role} ws="miami" />
     </TodayView>
   );
 }

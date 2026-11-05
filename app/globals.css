@@ -35,8 +35,7 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+:root.dark {
     --bg: 19 20 19;
     --surface: 28 29 28;
     --sunk: 23 24 23;
@@ -67,7 +66,6 @@
     --dept-madrid: 236 128 108;
     --dept-company: 170 168 160;
     color-scheme: dark;
-  }
 }
 
 html,
@@ -146,28 +144,3 @@ body {
   background: rgb(var(--accent) / 0.2);
 }
 
-/* Dark sidebar: the same components, re-coloured by redefining the palette locally. */
-.sidebar-dark {
-  --bg: 17 24 22;
-  --surface: 27 36 33;
-  --sunk: 32 42 39;
-  --ink: 236 238 234;
-  --muted: 150 160 154;
-  --line: 44 55 51;
-  --accent: 150 205 182;
-  --accent-ink: 14 26 22;
-  --dept-home: 150 205 182;
-  --dept-company: 170 178 172;
-  background: rgb(17 24 22);
-  color: rgb(236 238 234);
-  color-scheme: dark;
-}
-@media (prefers-color-scheme: dark) {
-  .sidebar-dark {
-    --bg: 12 14 13;
-    --surface: 22 25 24;
-    --sunk: 28 32 30;
-    --line: 38 42 40;
-    background: rgb(12 14 13);
-  }
-}

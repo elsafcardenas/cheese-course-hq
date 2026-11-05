@@ -51,12 +51,14 @@ export function CalendarView({
   const [mode, setMode] = useState<Mode>(wsMarket === "Spain" ? "list" : "month");
   const params = useSearchParams();
   useEffect(() => {
+    if (params.get("new") === "1" && canEdit) setOpen(blankPost({ market, date: market === "Spain" ? null : today }));
     const q = params.get("q");
     if (q) {
       const hit = initial.find((p) => p.title.toLowerCase() === q.toLowerCase());
       if (hit) setOpen(hit);
     }
-  }, [params, initial]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const market = wsMarket;
   const [pillar, setPillar] = useState<string>("All");
   const [forDad, setForDad] = useState(isDad);

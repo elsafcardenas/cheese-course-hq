@@ -30,6 +30,7 @@ type Props = {
   byWorkstream: { name: string; value: number }[];
   mix: { name: string; planned: number; target: number }[];
   children?: React.ReactNode;
+  glance?: React.ReactNode;
 };
 
 function greeting(name: string) {
@@ -50,17 +51,10 @@ export function TodayView(p: Props) {
         {p.comingUp ? 0 : p.thisWeek.length} due this week{p.needsDad.length ? `, ${p.needsDad.length} decisions waiting on Ricardo` : ""}.
       </PageHeader>
 
-      <Clocks />
       {p.children}
 
-      <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Median Reel views" value={fmtNum(Math.round(s.medianViews))} sub={`Last ${s.reelCount} Reels · target 2,000 by month 3`} tone={s.medianViews >= 2000 ? "good" : "warn"} />
-        <Stat label="Instagram followers" value={fmtNum(s.followers)} sub={s.followersSynced ? "Synced from Meta" : "Baseline Nov 5 · connect Meta to track"} />
-        <Stat label="Feed posts, next 7 days" value={s.postsThisWeek} sub="Miami Instagram · target 4 to 5" tone={s.postsThisWeek >= 4 ? "good" : "warn"} />
-        <Stat label="Open tasks" value={s.openTasks} sub={s.overdue ? `${s.overdue} overdue` : "None overdue"} tone={s.overdue ? "bad" : undefined} />
-      </div>
-
-      <div className="mt-6 grid gap-5 lg:grid-cols-[1.35fr_1fr]">
+      <h2 className="mb-2.5 mt-8 text-[13px] font-bold text-muted">Needs you</h2>
+      <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr]">
         <Section
           title={p.comingUp ? "Coming up" : "Due this week"}
           sub={p.comingUp ? "Nothing due this week. Coming up:" : "Overdue first, then by deadline"}
@@ -172,8 +166,22 @@ export function TodayView(p: Props) {
         </div>
       </div>
 
+      <h2 className="mb-2.5 mt-8 text-[13px] font-bold text-muted">At a glance</h2>
+      {p.glance}
+      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Stat label="Median Reel views" value={fmtNum(Math.round(s.medianViews))} sub={`Last ${s.reelCount} Reels · target 2,000 by month 3`} tone={s.medianViews >= 2000 ? "good" : "warn"} />
+        <Stat label="Instagram followers" value={fmtNum(s.followers)} sub={s.followersSynced ? "Synced from Meta" : "Baseline Nov 5 · connect Meta to track"} />
+        <Stat label="Feed posts, next 7 days" value={s.postsThisWeek} sub="Miami Instagram · target 4 to 5" tone={s.postsThisWeek >= 4 ? "good" : "warn"} />
+        <Stat label="Open tasks" value={s.openTasks} sub={s.overdue ? `${s.overdue} overdue` : "None overdue"} tone={s.overdue ? "bad" : undefined} />
+      </div>
+
+      <div className="mt-3">
+        <Clocks />
+      </div>
       {p.user.role !== "store_manager" && (
-        <div className="mt-5 grid gap-5 lg:grid-cols-2">
+        <details className="group mt-6">
+          <summary className="cursor-pointer list-none text-[13px] font-bold text-muted hover:text-ink">▸ More charts</summary>
+        <div className="mt-3 grid gap-5 lg:grid-cols-2">
           <Section title="Open tasks by workstream">
             <div className="p-3">
               <HBar data={p.byWorkstream} height={Math.max(180, p.byWorkstream.length * 30)} />
@@ -185,6 +193,7 @@ export function TodayView(p: Props) {
             </div>
           </Section>
         </div>
+        </details>
       )}
 
       <TaskDrawer task={task} onClose={() => setTask(null)} canEdit={p.canEditTasks} canStatus={p.canStoreTasks} />

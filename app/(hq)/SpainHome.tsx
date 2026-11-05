@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight, MapPin } from "lucide-react";
+import { QuickActions } from "./QuickActions";
 import { Empty, PageHeader, Pill, Ring, Section, Stat, StatusPill } from "@/components/ui";
 import { LOCATION_STATUSES, type Rec } from "@/lib/schema";
 import type { Decision, Post, Profile, Task } from "@/lib/types";
@@ -50,6 +51,9 @@ export function SpainHome({
         {signed ? `Venue signed: ${signed.area}.` : "Venue not signed yet: Spain accounts stay private until it is."} {tasks.length} open tasks.
       </PageHeader>
 
+      <QuickActions role={user.role} ws="spain" />
+
+      <h2 className="mb-2.5 mt-8 text-[13px] font-bold text-muted">At a glance</h2>
       <div className="grid gap-3 lg:grid-cols-[auto_1fr_1fr_1fr]">
         <div className="card flex items-center gap-4 p-4">
           <Ring value={milestones.length ? done / milestones.length : 0} size={86} stroke={9} color="--dept-madrid" />

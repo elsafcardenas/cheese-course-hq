@@ -8,7 +8,7 @@ export type OpsTile = { href: string; icon: string; tone: string; label: string;
 /** Miami operations at a glance: one clickable tile per area, plus today's checklist progress per store. */
 export function OpsStrip({ tiles, checklists }: { tiles: OpsTile[]; checklists: { store: string; pct: number }[] }) {
   return (
-    <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto]">
+    <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
         {tiles.map((t) => (
           <Link key={t.href + t.label} href={t.href} className={cx("card group p-3.5 transition hover:-translate-y-0.5 hover:shadow-lift", t.alert && "ring-1 ring-bad/40")}>

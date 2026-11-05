@@ -2,7 +2,7 @@
 
 import { ArrowDownUp, Download, LayoutGrid, Plus, Search, Table2, Upload } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Empty, StatusPill } from "@/components/ui";
 import { blankRecord, SCHEMAS, type Field, type Rec, type RecordName } from "@/lib/schema";
 import { cx, fmtDate } from "@/lib/ui";
@@ -102,6 +102,12 @@ export function RecordTable(p: RecordTableProps) {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  // Quick actions on Home link here with ?new=1 to open the form straight away.
+  useEffect(() => {
+    if (params.get("new") === "1" && p.canWrite) newRecord();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const newRecord = () => setOpen({ ...blankRecord(def), ...(p.newDefaults ?? {}), ...(p.lockStore && def.storeKey ? { [def.storeKey]: p.lockStore } : {}) });
 

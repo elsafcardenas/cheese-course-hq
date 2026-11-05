@@ -74,9 +74,10 @@ function useColors(): Palette {
       setC(Object.fromEntries(Object.entries(VARS).map(([k, v]) => [k, `rgb(${cs.getPropertyValue(v).trim().split(/\s+/).join(",")})`])) as Palette);
     };
     read();
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    mq.addEventListener("change", read);
-    return () => mq.removeEventListener("change", read);
+    // Re-read when the Light/Dark switch changes the class on <html>.
+    const obs = new MutationObserver(read);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
   }, []);
   return c;
 }
