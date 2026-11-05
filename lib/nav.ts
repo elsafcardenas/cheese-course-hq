@@ -60,6 +60,7 @@ const MIAMI: NavGroup[] = [
     tone: "--dept-company",
     items: [
       { href: "/company/tasks", label: "Tasks", icon: "list", roles: ALL },
+      { href: "/company/workflows", label: "Workflows", icon: "route", roles: ALL, hint: "How things get done, step by step" },
       { href: "/company/decisions", label: "Decisions & meetings", icon: "scale", roles: MKT },
       { href: "/company/docs", label: "SOPs & documents", icon: "book", roles: ALL },
     ],
@@ -98,6 +99,7 @@ const SPAIN: NavGroup[] = [
     tone: "--dept-company",
     items: [
       { href: "/company/tasks", label: "Tasks", icon: "list", roles: TEAM },
+      { href: "/company/workflows", label: "Workflows", icon: "route", roles: TEAM, hint: "How things get done, step by step" },
       { href: "/company/decisions", label: "Decisions & meetings", icon: "scale", roles: MKT },
       { href: "/company/docs", label: "Documents", icon: "book", roles: TEAM },
     ],

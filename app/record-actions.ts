@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import type { Result } from "@/app/actions";
 import { getRepo } from "@/lib/repo";
 import {
@@ -13,7 +14,8 @@ import {
   type RecordName,
 } from "@/lib/schema";
 import { supabaseServer } from "@/lib/supabase";
-import type { Profile } from "@/lib/types";
+import { can } from "@/lib/auth";
+import { WORKSTREAMS, type Profile } from "@/lib/types";
 import { newId } from "@/lib/ui";
 import { cleanRecord } from "@/lib/validate";
 
@@ -261,4 +263,47 @@ export async function uploadReviewFile(form: FormData): Promise<{ ok: true; url:
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }
+}
+
+/** Turns a workflow into real tasks: one per step, owned by whoever does that step, due on its day. */
+export async function startWorkflow(input: { id: string; start: string; label?: string; store?: string | null }) {
+  return run(async () => {
+    const repo = getRepo();
+    const user = await repo.me();
+    if (!can(user, "edit:tasks")) throw new Error("You can't create tasks.");
+    const v = z
+      .object({
+        id: z.string().min(1),
+        start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Pick a start date."),
+        label: z.string().trim().max(80).optional().default(""),
+        store: z.enum(["Weston", "Pinecrest", "Both stores"]).nullable().optional(),
+      })
+      .parse(input);
+    const flows = await repo.listRecords("workflows");
+    const wf = flows.find((w) => w.id === v.id);
+    if (!wf) throw new Error("That workflow no longer exists.");
+    const steps = (await repo.listRecords("workflow_steps")).filter((s) => s.workflow === v.id).sort((a, b) => Number(a.stepNo ?? 0) - Number(b.stepNo ?? 0));
+    if (!steps.length) throw new Error("This workflow has no steps yet.");
+    const addDays = (iso: string, n: number) => {
+      const d = new Date(`${iso}T12:00:00Z`);
+      d.setUTCDate(d.getUTCDate() + n);
+      return d.toISOString().slice(0, 10);
+    };
+    const prefix = v.label ? `${v.label}: ` : "";
+    for (const [i, st] of steps.entries()) {
+      await repo.upsert("tasks", {
+        id: newId(),
+        title: `${prefix}${String(st.title)}`,
+        owner: String(st.who || "Elsa"),
+        market: wf.market === "Spain" ? "Spain" : "Miami",
+        workstream: WORKSTREAMS.includes(wf.workstream as never) ? (wf.workstream as (typeof WORKSTREAMS)[number]) : "Store operations",
+        priority: "Medium",
+        status: "To do",
+        deadline: addDays(v.start, Number(st.day ?? 0) || 0),
+        notes: `Step ${i + 1} of ${steps.length} in the "${String(wf.name)}" workflow.${st.how ? ` ${String(st.how)}` : ""}`,
+        store: v.store ?? null,
+        sourceMeeting: null,
+      });
+    }
+  });
 }

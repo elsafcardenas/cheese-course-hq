@@ -3,6 +3,7 @@
 import type { Rec, RecordName } from "@/lib/schema";
 import { MENU_SEED } from "./menu-seed";
 import { INITIATIVES_SEED, STEPS_SEED } from "./strategy-seed";
+import { WORKFLOW_STEPS_SEED, WORKFLOWS_SEED } from "./workflow-seed";
 
 const rows = (prefix: string, list: Omit<Rec, "id">[]): Rec[] => list.map((r, i) => ({ id: `${prefix}${String(i + 1).padStart(2, "0")}`, ...r }));
 
@@ -165,4 +166,6 @@ export const OPS_SEED: Partial<Record<RecordName, Rec[]>> = {
   docs,
   initiatives: INITIATIVES_SEED,
   initiative_steps: STEPS_SEED,
+  workflows: WORKFLOWS_SEED,
+  workflow_steps: WORKFLOW_STEPS_SEED,
 };

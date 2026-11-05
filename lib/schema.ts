@@ -1,6 +1,6 @@
 // Operations data model. Each collection is described once here and that description drives
 // the database columns, the forms, the tables, CSV import/export, validation and permissions.
-import type { Profile, Role } from "@/lib/types";
+import { WORKSTREAMS, type Profile, type Role } from "@/lib/types";
 
 export type FieldType =
   | "text"
@@ -90,6 +90,8 @@ export const RECORD_NAMES = [
   "docs",
   "initiatives",
   "initiative_steps",
+  "workflows",
+  "workflow_steps",
   "content_reviews",
   "review_comments",
 ] as const;
@@ -124,7 +126,7 @@ export const MENU_CATEGORIES_BY: Record<(typeof MENU_SECTIONS)[number], readonly
 export const MENU_CATEGORIES = [...new Set(Object.values(MENU_CATEGORIES_BY).flat())];
 export const EXPENSE_CATEGORIES = ["Rent", "Payroll", "Food & supplies", "Packaging", "Utilities", "Marketing", "Repairs & maintenance", "Software", "Insurance", "Fees & taxes", "Other"] as const;
 
-const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comments" | "initiatives" | "initiative_steps"> = {
+const BASE: Omit<Record<RecordName, RecordDef>, "content_reviews" | "review_comments" | "initiatives" | "initiative_steps" | "workflows" | "workflow_steps"> = {
   stores: {
     name: "stores",
     label: "Stores",
@@ -642,6 +644,75 @@ const INITIATIVE_STEPS: RecordDef = {
   ],
 };
 
+export const WORKFLOW_AREAS = ["Marketing", "Operations", "Catering", "Menu", "Finance", "Customers", "Team", "Madrid"] as const;
+/** Pages a workflow step can point to (label → address). */
+export const WORKFLOW_PAGES: Record<string, string> = {
+  Home: "/",
+  Tasks: "/company/tasks",
+  "Content calendar": "/marketing/calendar",
+  "Review & approval": "/marketing/review",
+  "Strategy & campaigns": "/marketing/strategy",
+  Platforms: "/marketing/platforms",
+  Performance: "/marketing/performance",
+  Toolkit: "/marketing/toolkit",
+  "Assets & footage": "/marketing/assets",
+  Stores: "/ops/stores",
+  Catering: "/ops/catering",
+  "Staff & schedule": "/ops/staff",
+  Checklists: "/ops/checklists",
+  Inventory: "/ops/inventory",
+  Maintenance: "/ops/maintenance",
+  "Menu & pricing": "/menu",
+  Finance: "/finance",
+  Customers: "/customers",
+  "Decisions & meetings": "/company/decisions",
+  "SOPs & documents": "/company/docs",
+  "Opening project": "/madrid",
+  "Outside HQ": "",
+};
+
+const WORKFLOWS: RecordDef = {
+  name: "workflows",
+  label: "Workflows",
+  singular: "Workflow",
+  titleKey: "name",
+  subtitleKey: "area",
+  read: ALL,
+  write: ["admin", "ops_manager"],
+  defaults: { area: "Operations", market: "Miami", workstream: "Store operations" },
+  sort: { key: "name", dir: "asc" },
+  fields: [
+    { key: "name", label: "Name", type: "text", required: true, table: true, wide: true },
+    { key: "area", label: "Area", type: "select", options: WORKFLOW_AREAS, required: true, table: true, filter: true },
+    { key: "trigger", label: "When it starts", type: "text", wide: true, placeholder: "e.g. A customer asks for a catering order" },
+    { key: "outcome", label: "Done when", type: "text", wide: true, placeholder: "e.g. The order is picked up and paid" },
+    { key: "workstream", label: "Tasks go under", type: "select", options: WORKSTREAMS, help: "When you start this workflow, its tasks are filed under this workstream." },
+    { key: "market", label: "Market", type: "select", options: ["Miami", "Spain"], required: true },
+    { key: "notes", label: "Notes", type: "textarea", wide: true },
+  ],
+};
+
+const WORKFLOW_STEPS: RecordDef = {
+  name: "workflow_steps",
+  label: "Workflow steps",
+  singular: "Step",
+  titleKey: "title",
+  subtitleKey: "who",
+  read: ALL,
+  write: ["admin", "ops_manager"],
+  defaults: { day: 0, where: "Outside HQ" },
+  sort: { key: "stepNo", dir: "asc" },
+  fields: [
+    { key: "title", label: "Step", type: "text", required: true, table: true, wide: true },
+    { key: "workflow", label: "Workflow", type: "ref", ref: "workflows", required: true },
+    { key: "stepNo", label: "Step number", type: "number", required: true },
+    { key: "who", label: "Who does it", type: "text", suggestTeam: true, table: true },
+    { key: "where", label: "Where in HQ", type: "select", options: Object.keys(WORKFLOW_PAGES) },
+    { key: "day", label: "Day", type: "number", help: "Days after the start (0 = same day). Used for the task's deadline." },
+    { key: "how", label: "How to do it", type: "textarea", wide: true },
+  ],
+};
+
 // Content review lives alongside the rest so it gets the same storage, import and permissions.
 const CONTENT_REVIEWS: RecordDef = {
   name: "content_reviews",
@@ -685,7 +756,7 @@ const REVIEW_COMMENTS: RecordDef = {
   ],
 };
 
-export const SCHEMAS: Record<RecordName, RecordDef> = { ...BASE, content_reviews: CONTENT_REVIEWS, review_comments: REVIEW_COMMENTS, initiatives: INITIATIVES, initiative_steps: INITIATIVE_STEPS };
+export const SCHEMAS: Record<RecordName, RecordDef> = { ...BASE, content_reviews: CONTENT_REVIEWS, review_comments: REVIEW_COMMENTS, initiatives: INITIATIVES, initiative_steps: INITIATIVE_STEPS, workflows: WORKFLOWS, workflow_steps: WORKFLOW_STEPS };
 
 export const isRecordName = (v: string): v is RecordName => (RECORD_NAMES as readonly string[]).includes(v);
 
@@ -708,6 +779,7 @@ export const PAGE_DATA: Record<string, RecordName[]> = {
   "/company/docs": ["docs"],
   "/marketing/review": ["content_reviews", "review_comments"],
   "/marketing/strategy": ["initiatives", "initiative_steps"],
+  "/company/workflows": ["workflows", "workflow_steps"],
 };
 
 /** Paused people see nothing; extra pages an admin switched on bring their data with them (view only). */

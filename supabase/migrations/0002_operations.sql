@@ -453,6 +453,42 @@ create policy "read initiative_steps" on public.initiative_steps for select usin
 );
 create policy "write initiative_steps" on public.initiative_steps for all using (public.my_role() in ('admin')) with check (public.my_role() in ('admin'));
 
+create table if not exists public.workflows (
+  id text primary key default gen_random_uuid()::text,
+  name text,
+  area text,
+  trigger text,
+  outcome text,
+  workstream text,
+  market text,
+  notes text,
+  created_at timestamptz not null default now()
+);
+alter table public.workflows enable row level security;
+create policy "read workflows" on public.workflows for select using (
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
+  or (public.my_role() = 'store_manager' and true)
+);
+create policy "write workflows" on public.workflows for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
+
+create table if not exists public.workflow_steps (
+  id text primary key default gen_random_uuid()::text,
+  title text,
+  workflow text,
+  step_no numeric,
+  who text,
+  where text,
+  day numeric,
+  how text,
+  created_at timestamptz not null default now()
+);
+alter table public.workflow_steps enable row level security;
+create policy "read workflow_steps" on public.workflow_steps for select using (
+  public.my_role() in ('admin', 'ops_manager', 'editor', 'viewer')
+  or (public.my_role() = 'store_manager' and true)
+);
+create policy "write workflow_steps" on public.workflow_steps for all using (public.my_role() in ('admin', 'ops_manager')) with check (public.my_role() in ('admin', 'ops_manager'));
+
 create table if not exists public.content_reviews (
   id text primary key default gen_random_uuid()::text,
   title text,

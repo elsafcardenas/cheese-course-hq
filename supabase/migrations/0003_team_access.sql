@@ -161,6 +161,16 @@ create policy "granted read initiative_steps" on public.initiative_steps for sel
   public.my_access() && array['miami:/marketing/strategy', 'spain:/marketing/strategy']
 );
 
+drop policy if exists "granted read workflows" on public.workflows;
+create policy "granted read workflows" on public.workflows for select using (
+  public.my_access() && array['miami:/company/workflows', 'spain:/company/workflows']
+);
+
+drop policy if exists "granted read workflow_steps" on public.workflow_steps;
+create policy "granted read workflow_steps" on public.workflow_steps for select using (
+  public.my_access() && array['miami:/company/workflows', 'spain:/company/workflows']
+);
+
 drop policy if exists "granted read content_reviews" on public.content_reviews;
 create policy "granted read content_reviews" on public.content_reviews for select using (
   public.my_access() && array['miami:/marketing/review', 'spain:/marketing/review']

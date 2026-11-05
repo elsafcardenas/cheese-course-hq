@@ -24,14 +24,14 @@
   --pillar-bts: 185 185 185;
   --pillar-community: 115 115 115;
 
-  --dept-home: 10 10 10;
-  --dept-marketing: 10 10 10;
-  --dept-ops: 10 10 10;
-  --dept-menu: 10 10 10;
-  --dept-finance: 10 10 10;
-  --dept-customers: 10 10 10;
-  --dept-madrid: 10 10 10;
-  --dept-company: 10 10 10;
+  --dept-home: 31 61 54;
+  --dept-marketing: 190 70 102;
+  --dept-ops: 196 128 32;
+  --dept-menu: 52 132 92;
+  --dept-finance: 56 104 178;
+  --dept-customers: 214 150 24;
+  --dept-madrid: 196 74 54;
+  --dept-company: 108 106 100;
   color-scheme: light;
 }
 
@@ -57,14 +57,14 @@
     --pillar-bts: 100 100 100;
     --pillar-community: 165 165 165;
 
-    --dept-home: 240 240 240;
-    --dept-marketing: 240 240 240;
-    --dept-ops: 240 240 240;
-    --dept-menu: 240 240 240;
-    --dept-finance: 240 240 240;
-    --dept-customers: 240 240 240;
-    --dept-madrid: 240 240 240;
-    --dept-company: 240 240 240;
+    --dept-home: 132 186 168;
+    --dept-marketing: 236 128 158;
+    --dept-ops: 232 172 88;
+    --dept-menu: 112 196 148;
+    --dept-finance: 128 168 236;
+    --dept-customers: 240 196 92;
+    --dept-madrid: 236 128 108;
+    --dept-company: 170 168 160;
     color-scheme: dark;
 }
 
@@ -145,8 +145,8 @@ body {
 }
 
 
-/* Black and white throughout (white on dark in dark mode). The only colour left is red, for
-   errors, overdue dates and counts that need attention. */
+/* Black text and buttons on white (white on dark in dark mode). Colour is kept for the icons;
+   red marks errors, overdue dates and counts that need attention. */
 .text-accent,
 .text-good,
 .text-warn,

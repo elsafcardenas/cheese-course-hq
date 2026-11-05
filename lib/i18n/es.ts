@@ -673,6 +673,17 @@ export const ES: Record<string, string> = {
   "All strategy & campaigns": "Toda la estrategia y campañas",
   "In charge": "Responsable",
   "No dates yet": "Sin fechas todavía",
+  Workflows: "Flujos de trabajo",
+  "All workflows": "Todos los flujos",
+  "New workflow": "Nuevo flujo",
+  "Start this workflow": "Iniciar este flujo",
+  "Starts when": "Empieza cuando",
+  "Done when": "Termina cuando",
+  "The steps": "Los pasos",
+  "Who does what": "Quién hace qué",
+  "Click a step to see how to do it.": "Pulsa un paso para ver cómo hacerlo.",
+  "See them in Tasks": "Verlas en Tareas",
+  "Edit step": "Editar paso",
   // Page descriptions
   "Baselines, 3- and 6-month targets, a monthly log, every Reel's views, and sales by store. Connected apps fill their numbers in automatically.": "Puntos de partida, objetivos a 3 y 6 meses, registro mensual, las vistas de cada Reel y las ventas por tienda. Las apps conectadas rellenan sus números solas.",
   "Broken equipment, repairs and building issues for each store, from reported to fixed, with what they cost.": "Equipos rotos, reparaciones e incidencias del local de cada tienda, desde el aviso hasta el arreglo, con lo que cuestan.",
@@ -726,6 +737,9 @@ function date(s: string): string | null {
 }
 
 export const ES_PATTERNS: [RegExp, (m: RegExpMatchArray) => string][] = [
+  [/^(\d+) steps$/, (m) => `${m[1]} pasos`],
+  [/^Day (\d+)$/, (m) => `Día ${m[1]}`],
+  [/^Create (\d+) tasks$/, (m) => `Crear ${m[1]} tareas`],
   [/^Add to (.+)$/, (m) => `Añadir a ${ES[m[1]] ?? m[1]}`],
   [/^In (\d+) days$/, (m) => `En ${m[1]} días`],
   [/^Opens (\d+) pages? plus Home and Help$/, (m) => `Abre ${m[1]} página${m[1] === "1" ? "" : "s"} más Inicio y Ayuda`],
