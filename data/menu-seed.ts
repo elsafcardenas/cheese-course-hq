@@ -253,7 +253,7 @@ export const MENU_SEED: Item[] = [
   { name: "Fresh Fruit Bowl", section: "Catering", category: "Dessert platters", price: 90, serves: "Serves 10", source: EZ },
 
   // Retail
-  { name: "Cheese cut to order", section: "Retail", category: "Cheese by weight", price: null, size: "per lb", description: "Over 100 cheeses. Add your bestsellers here with their price per pound.", source: "Add prices from the cheese case." },
+  { name: "Cheese cut to order", section: "Retail", category: "Cheese by weight", price: null, size: "per lb", description: "Over 150 cheeses, as the website says. Add your bestsellers here with their price per pound.", source: "Add prices from the cheese case." },
   { name: "Charcuterie, small", section: "Retail", category: "Charcuterie", price: 4.8, source: W },
   { name: "Charcuterie, medium", section: "Retail", category: "Charcuterie", price: 9.6, source: W },
   { name: "Charcuterie, large", section: "Retail", category: "Charcuterie", price: 16.8, source: W },

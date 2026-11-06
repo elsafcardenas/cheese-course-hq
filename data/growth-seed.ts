@@ -85,6 +85,10 @@ export const SEO_TASKS_SEED: Rec[] = [
     ["Ask every catering customer for a Google review", "Reviews", "Catering customers are our happiest and most detailed reviewers.", "Store manager"],
     ["Check the AI answers tracker every month", "AI answers", "Ask the questions below in ChatGPT, Google and Perplexity and note whether we're mentioned.", "Elsa"],
     ["Get into local guides and best-of lists", "AI answers", "AI tools build answers from sites like Miami food blogs and best-of lists; being there gets us named.", "Elsa"],
+    ["Make 'breakfast & brunch' obvious for Weston", "AI answers", "Nov 6 check: ChatGPT left us out of 'brunch in Weston' (named Little Hen and Café Bastille, on our street). Google category, website text, photos and reviews should all say brunch.", "Elsa"],
+    ["Win 'office lunch catering in Weston'", "AI answers", "Nov 6 check: not named for office catering, twice. Needs the catering page with per-person prices, Google 'Catering' service and office reviews.", "Elsa"],
+    ["Name the nearby areas on the Pinecrest page", "AI answers", "Nov 6 check: first for 'charcuterie Pinecrest' but missing for 'South Miami'. Mention South Miami, Palmetto Bay and Coral Gables.", "Elsa"],
+    ["Confirm the hours and delivery details AI tools repeat", "AI answers", "ChatGPT quotes our hours, phone, '150+ cheeses' and daily delivery from 10am. If any is out of date, fix Google and the website first.", "María"],
   ]),
   ...seo("Spain", [
     ["Reserve the domain and a Spanish website page", "Website", "Ready to publish when the venue is signed.", "Elsa"],
@@ -107,14 +111,73 @@ const KW: [string, string][] = [
 ];
 export const SEO_KEYWORDS_SEED: Rec[] = KW.map(([keyword, store]) => ({ id: id("kw"), keyword, store, page: "", position: null, target: 3, inMapPack: false, checked: null, notes: "", market: "Miami" }));
 
-const Q: [string, string, "Miami" | "Spain"][] = [
-  ["What's the best cheese shop in Weston, Florida?", "ChatGPT", "Miami"],
-  ["Where can I get a charcuterie board for a party in Pinecrest?", "Google AI Overview", "Miami"],
-  ["Who does good office lunch catering in Weston, FL?", "Perplexity", "Miami"],
-  ["Where can I buy good cheese in Pinecrest or South Miami?", "ChatGPT", "Miami"],
-  ["Nice café for brunch in Weston", "Google AI Overview", "Miami"],
-  ["Cheese gift ideas with delivery in Miami", "Perplexity", "Miami"],
-  ["¿Dónde comer una buena tabla de quesos en Madrid?", "ChatGPT", "Spain"],
-  ["Best brunch with cheese in Madrid", "Google AI Overview", "Spain"],
+type Check = { q: string; engine: string; result: string; competitors?: string; fix?: string; checked?: string | null; market: "Miami" | "Spain" };
+// Miami checks: Elsa asked these in ChatGPT on Nov 6, 2026.
+const CHECKS: Check[] = [
+  {
+    q: "Cheese shop in Weston Florida",
+    engine: "ChatGPT",
+    result: "Yes, first",
+    competitors: "Meat Town Express (listed as another option)",
+    fix: "It quotes our hours (Mon–Wed 9–9, Thu–Sat 9–10, Sun 9–8), phone and '150+ cheeses'. Confirm those are right on Google and the website.",
+    checked: "2026-11-06",
+    market: "Miami",
+  },
+  {
+    q: "Cheese gift ideas with delivery in south Florida",
+    engine: "ChatGPT",
+    result: "Yes, first",
+    competitors: "Graze Craze (Cooper City)",
+    fix: "It says Weston delivers daily from 10am until closing. Confirm that's still true; add a gift page so Pinecrest gets named too.",
+    checked: "2026-11-06",
+    market: "Miami",
+  },
+  {
+    q: "Nice cafe brunch in Weston",
+    engine: "ChatGPT",
+    result: "Not mentioned",
+    competitors: "Little Hen, Café Bastille Weston (1660 Market St, same street), Eclair Affaire Weston",
+    fix: "Say 'breakfast & brunch' clearly: Google profile category and description, the breakfast menu as text on the website, and brunch photos. Ask happy brunch customers for reviews that mention brunch.",
+    checked: "2026-11-06",
+    market: "Miami",
+  },
+  {
+    q: "Office lunch catering in Weston",
+    engine: "ChatGPT",
+    result: "Not mentioned",
+    competitors: "Offerdahl's Off-The-Grill, Salumeria 104, Mitch's Westside Bagels",
+    fix: "A catering page with platters, prices and 'serves 10'; add 'Catering' as a Google service; keep the ezCater listing complete; get office customers to leave reviews.",
+    checked: "2026-11-06",
+    market: "Miami",
+  },
+  {
+    q: "Best office lunch catering in Weston for 15–30 people, healthy, delivery",
+    engine: "ChatGPT",
+    result: "Not mentioned",
+    competitors: "Fresh Kitchen Weston (best overall), $18–25 per person",
+    fix: "Show per-person pricing and healthy options (salad bowls, Greek, caprese) for groups on the catering page.",
+    checked: "2026-11-06",
+    market: "Miami",
+  },
+  {
+    q: "Charcuterie board in south miami",
+    engine: "ChatGPT",
+    result: "Not mentioned",
+    competitors: "The Board Miami, Antipasti Market, Babette Miami",
+    fix: "Pinecrest is next to South Miami but we're not named. Mention South Miami, Palmetto Bay and Coral Gables on the Pinecrest page and Google profile description.",
+    checked: "2026-11-06",
+    market: "Miami",
+  },
+  {
+    q: "Charcuterie board in Pinecrest",
+    engine: "ChatGPT",
+    result: "Yes, first",
+    competitors: "The Board Miami, Charcuterie Bree",
+    fix: "Named 'Best in Pinecrest' with a board at about $55. Keep the price and phone current.",
+    checked: "2026-11-06",
+    market: "Miami",
+  },
+  { q: "¿Dónde comer una buena tabla de quesos en Madrid?", engine: "ChatGPT", result: "Not checked", market: "Spain" },
+  { q: "Best brunch with cheese in Madrid", engine: "Google AI Overview", result: "Not checked", market: "Spain" },
 ];
-export const AEO_SEED: Rec[] = Q.map(([question, engine, market]) => ({ id: id("ai"), question, engine, result: "Not checked", competitors: "", checked: null, fix: "", market }));
+export const AEO_SEED: Rec[] = CHECKS.map((c) => ({ id: id("ai"), question: c.q, engine: c.engine, result: c.result, competitors: c.competitors ?? "", checked: c.checked ?? null, fix: c.fix ?? "", market: c.market }));
