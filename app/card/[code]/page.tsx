@@ -5,8 +5,15 @@ import { CARD, staffUrl } from "@/lib/loyalty";
 import { LOYALTY_COPY, type LoyaltyMarket } from "@/lib/loyalty-copy";
 import { qrSvg } from "@/lib/qr";
 import { getServiceRepo } from "@/lib/repo";
+import SaveCard from "./SaveCard";
 
-export const metadata: Metadata = { title: "My loyalty card · The Cheese Course", robots: { index: false } };
+export const metadata: Metadata = {
+  title: "My loyalty card · The Cheese Course",
+  robots: { index: false },
+  // Saved to an iPhone or Android home screen, the card opens full screen like an app.
+  appleWebApp: { capable: true, title: "Cheese Card", statusBarStyle: "default" },
+  icons: { icon: "/icon.svg", apple: "/apple-touch-icon.png" },
+};
 export const dynamic = "force-dynamic";
 
 /** A member's own card, kept on their phone. Staff scan its QR to add a stamp inside HQ. */
@@ -85,7 +92,7 @@ export default async function CardPage({ params, searchParams }: { params: Promi
           {t.rewards}: {Number(m.rewardsUsed ?? 0)}
         </span>
       </div>
-      <p className="mt-4 text-[12.5px] text-muted">{t.save}</p>
+      <SaveCard market={market} />
     </main>
   );
 }
