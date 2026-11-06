@@ -770,6 +770,8 @@ const MARKETING_EXTRA: Record<"loyalty_rules" | "loyalty_members" | "email_campa
       { key: "lastVisit", label: "Last visit", type: "date", table: true },
       { key: "birthdayMonth", label: "Birthday month", type: "select", options: ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] },
       { key: "emailOk", label: "Agreed to emails", type: "checkbox" },
+      { key: "cardCode", label: "Card code", type: "text", help: "Made automatically; it's what their QR code points to." },
+      { key: "source", label: "How they joined", type: "select", options: ["At the counter", "Scanned the QR", "Imported"] },
       { key: "status", label: "Status", type: "select", options: ["Active", "Inactive"], filter: true },
       { key: "notes", label: "Notes", type: "textarea", wide: true },
       MARKET_FIELD,

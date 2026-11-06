@@ -9,3 +9,11 @@ export type { Repo, Collections, CollectionName } from "./types";
 export function getRepo(): Repo {
   return isLive() ? new SupabaseRepo() : new MemoryRepo();
 }
+
+/**
+ * Only for the public loyalty pages (sign-up and card), which have no logged-in visitor.
+ * Those actions read and write loyalty members only, with their own checks.
+ */
+export function getServiceRepo(): Repo {
+  return isLive() ? new SupabaseRepo(true) : new MemoryRepo();
+}

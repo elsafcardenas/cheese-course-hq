@@ -1,7 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC = ["/login", "/auth", "/api/cron"];
+/** Open without signing in: login, the loyalty sign-up page customers scan, and their own card. */
+const PUBLIC = ["/login", "/auth", "/api/cron", "/join", "/card/"];
 
 export async function middleware(req: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -40,6 +41,8 @@ export async function middleware(req: NextRequest) {
  * Fails closed: a deployed demo with no password set shows nothing.
  */
 function demoGate(req: NextRequest) {
+  const path = req.nextUrl.pathname;
+  if (path.startsWith("/join") || path.startsWith("/card/")) return NextResponse.next(); // customers scan these
   const password = process.env.SITE_PASSWORD;
   if (!password) {
     if (process.env.VERCEL) {

@@ -15,6 +15,7 @@ import {
 } from "@/lib/schema";
 import { supabaseServer } from "@/lib/supabase";
 import { can } from "@/lib/auth";
+import { CARD } from "@/lib/loyalty";
 import { WORKSTREAMS, type Profile } from "@/lib/types";
 import { newId } from "@/lib/ui";
 import { cleanRecord } from "@/lib/validate";
@@ -304,6 +305,28 @@ export async function startWorkflow(input: { id: string; start: string; label?: 
         store: v.store ?? null,
         sourceMeeting: null,
       });
+    }
+  });
+}
+
+/**
+ * Staff add a stamp or give the reward, usually after scanning a member's card QR.
+ * One stamp a day; the reward needs a full card.
+ */
+export async function stampMember(input: { id: string; kind: "stamp" | "reward" }) {
+  return run(async () => {
+    const { repo, user } = await writer("loyalty_members");
+    const today = new Date().toISOString().slice(0, 10);
+    const m = (await repo.listRecords("loyalty_members")).find((x) => x.id === input.id);
+    if (!m) throw new Error("That member no longer exists.");
+    checkStore(user, "loyalty_members", m);
+    const visits = Number(m.visits ?? 0);
+    if (input.kind === "stamp") {
+      if (String(m.lastVisit ?? "") === today) throw new Error(`${String(m.name)} already got today's stamp (one a day).`);
+      await repo.upsertRecords("loyalty_members", [{ ...m, visits: visits + 1, lastVisit: today, status: "Active" }]);
+    } else {
+      if (visits < CARD) throw new Error(`Not enough stamps yet: ${visits} of ${CARD}.`);
+      await repo.upsertRecords("loyalty_members", [{ ...m, visits: visits - CARD, rewardsUsed: Number(m.rewardsUsed ?? 0) + 1, lastVisit: today }]);
     }
   });
 }

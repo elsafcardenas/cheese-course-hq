@@ -92,8 +92,14 @@ export class SupabaseRepo implements Repo {
     return (data ?? []).map((r) => fromRow<StoredIntegration>(r));
   }
 
+  /** Public pages (loyalty sign-up and card) use the service key; everything else uses the visitor's session. */
+  constructor(private readonly service = false) {}
+  private async records() {
+    return this.service ? supabaseAdmin() : await supabaseServer();
+  }
+
   async listRecords(name: RecordName): Promise<Rec[]> {
-    const sb = await supabaseServer();
+    const sb = await this.records();
     const def = SCHEMAS[name];
     let q = sb.from(name).select("*").limit(5000);
     if (def.sort) q = q.order(columnFor(def.sort.key), { ascending: def.sort.dir === "asc", nullsFirst: false });
@@ -105,7 +111,7 @@ export class SupabaseRepo implements Repo {
 
   async upsertRecords(name: RecordName, rows: Rec[]) {
     if (!rows.length) return;
-    const sb = await supabaseServer();
+    const sb = await this.records();
     const keys = SCHEMAS[name].fields.map((f) => f.key);
     const { error } = await sb.from(name).upsert(rows.map((r) => recordToRow(keys, r)));
     check(error);

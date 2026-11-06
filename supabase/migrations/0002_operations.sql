@@ -519,6 +519,8 @@ create table if not exists public.loyalty_members (
   last_visit date,
   birthday_month text,
   email_ok boolean not null default false,
+  card_code text,
+  source text,
   status text,
   notes text,
   market text,
